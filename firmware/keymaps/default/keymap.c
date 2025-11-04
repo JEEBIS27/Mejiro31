@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "a2j/translate_ansi_to_jis.h"
 
 // レイヤー定義（enumの値を0から連番で確保する）
 enum layer_names {
@@ -10,6 +11,7 @@ enum layer_names {
 enum custom_keycodes {
     KC_DZ = SAFE_RANGE,  // 00キー
     MT_TGL,  // タップで_GEMINIレイヤーをトグル、ホールドで_NUMBERレイヤーをモーメンタリにアクティブ
+    TG_JIS,  // JISモード切替キー
 };
 
 #define MT_SPC MT(MOD_LSFT, KC_SPC)  // タップでSpace、ホールドでControl
@@ -29,7 +31,10 @@ static uint16_t mt_tgl_timer;
 // このキーが押されているかどうかの追跡
 static bool mt_tgl_pressed = false;
 
+static bool is_jis_mode = true; // JISモード判定フラグ
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    uint8_t ime_mod_pressed = get_mods() & (MOD_BIT(KC_LALT) | MOD_BIT(KC_LCTL) | MOD_BIT(KC_RALT) | MOD_BIT(KC_RCTL));
     switch (keycode) {
         case MT_TGL:
             if (record->event.pressed) {
@@ -59,6 +64,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING("00");
             }
             return true;
+        case TG_JIS:
+            if (record->event.pressed) {
+                // 押された瞬間にJISモードをトグル
+                is_jis_mode = !is_jis_mode;
+            }
+            return false;
+        case KC_GRV:
+            if(is_jis_mode) {
+                if (ime_mod_pressed) {
+                    return true;
+                }
+                else{
+                    break;
+                }
+            }
+            break;
         default:
             // 他のキーが押されたとき (Permissive Hold ロジック)
             if (record->event.pressed && mt_tgl_pressed && !mt_tgl_is_held) {
@@ -76,8 +97,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 mt_tgl_number_active = false;
                 // 以降、MT_TGLはホールドとして振る舞う
             }
-            return true;
+            break;
     }
+    if (is_jis_mode) {
+        // is_jis_modeフラグがあるため、JIS変換が必要な場合のみ呼ぶようにするのが効率的
+        return process_record_user_a2j(keycode, record); 
+    }
+    
+    // JISモードでない場合は、通常のQMK処理を続行させる
+    return true;
 }
 void matrix_scan_user(void) {
     if (mt_tgl_number_active && !mt_tgl_is_held) {
@@ -189,6 +217,7 @@ const uint16_t PROGMEM qwerty_combo18[] = {KC_9, KC_0, COMBO_END};
 const uint16_t PROGMEM qwerty_combo19[] = {KC_1, KC_7, COMBO_END};
 const uint16_t PROGMEM qwerty_combo20[] = {KC_2, KC_8, COMBO_END};
 const uint16_t PROGMEM qwerty_combo21[] = {KC_3, KC_9, COMBO_END};
+const uint16_t PROGMEM qwerty_combo22[] = {KC_F13, KC_F14, COMBO_END};
 
 
 combo_t key_combos[] = {
@@ -213,6 +242,7 @@ combo_t key_combos[] = {
     COMBO(qwerty_combo19, KC_4),
     COMBO(qwerty_combo20, KC_5),
     COMBO(qwerty_combo21, KC_6),
+    COMBO(qwerty_combo22, TG_JIS),
 };
 
 // Initialize the steno protocol
