@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "os_detection.h"
 #include "a2j/translate_ansi_to_jis.h"
 
 // レイヤー定義（enumの値を0から連番で確保する）
@@ -13,9 +14,9 @@ enum custom_keycodes {
     TG_JIS,  // JISモード切替キー
 };
 
-#define MT_SPC MT(MOD_LSFT, KC_SPC)  // タップでSpace、ホールドでControl
+#define MT_SPC MT(MOD_LSFT, KC_SPC)  // タップでSpace、ホールドでShift
 #define MT_ENT MT(MOD_LSFT, KC_ENT)  // タップでEnter、ホールドでShift
-#define MT_ESC MT(MOD_LCTL, KC_ESC)  // タップでEscape、ホールドでControl
+#define MT_ESC MT(MOD_LGUI, KC_ESC)  // タップでEscape、ホールドでGUI
 #define MO_FUN MO(_FUNCTION)  // ホールドで_FUNCTIONレイヤー
 #define MT_TGL LT(_NUMBER, KC_F24)  // タップで_GEMINIレイヤー切替、ホールドで_NUMBERレイヤー
 
@@ -23,7 +24,11 @@ static uint16_t default_layer = 0; // デフォルトレイヤー状態を保存
 static bool is_jis_mode = true; // JISモード判定フラグ
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    uint8_t ime_mod_pressed = get_mods() & (MOD_BIT(KC_LALT) | MOD_BIT(KC_LCTL) | MOD_BIT(KC_RALT) | MOD_BIT(KC_RCTL));
+
+    os_variant_t os = detected_host_os();
+    bool is_mac = (os == OS_MACOS || os == OS_IOS);
+
+    bool ime_mod_pressed = get_mods() & (MOD_BIT(KC_LALT) | MOD_BIT(KC_LCTL) | MOD_BIT(KC_RALT) | MOD_BIT(KC_RCTL));
     
     switch (keycode) {
         case MT_TGL:  // MT_TGLキー
@@ -32,9 +37,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     // _QWERTY と _GEMINI の間でトグル切り替えを行う
                     if (default_layer == 0) {
                         set_single_persistent_default_layer(_GEMINI);
+                        tap_code16(is_mac ? KC_LNG1 : KC_INT4); // Macなら「かな」キー、Windowsなら「変換」キーを送信
                         default_layer = 1;
                     } else {
                         set_single_persistent_default_layer(_QWERTY);
+                        tap_code16(is_mac ? KC_LNG2 : KC_INT5); // Macなら「英数」キー、Windowsなら「無変換」キーを送信
                         default_layer = 0;
                     }
                 }
@@ -63,11 +70,68 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             break;
+        case KC_LCTL:
+            if (is_mac) {
+                // Macの場合はCommandとして振る舞わせる
+                if (record->event.pressed) {
+                    register_code(KC_LGUI);
+                } else {
+                    unregister_code(KC_LGUI);
+                }
+                return false;
+            }
+            return true;
+        case KC_LGUI:
+            if (is_mac) {
+                // Macの場合はControlとして振る舞わせる
+                if (record->event.pressed) {
+                    register_code(KC_LCTL);
+                } else {
+                    unregister_code(KC_LCTL);
+                }
+                return false;
+            }
+            return true;
         default:
             break;
     }
+    // Mod-Tapキーのホールド時にLCTL・LGUIが割り当てられている場合の処理
+    if ((keycode >= QK_MOD_TAP && keycode <= QK_MOD_TAP_MAX)) {
+    // ホールド時の修飾キーが LCTL であるか確認
+        if (QK_MOD_TAP_GET_MODS(keycode) == MOD_LCTL) {
+            if (is_mac) {
+                if (record->event.pressed) {
+                    if (record->tap.count > 0) {
+                        return true; // タップ時は通常のキーを送信
+                    } else {
+                        register_code(KC_LGUI); // Macなら Command を送信
+                        return false;
+                    }
+                } else {
+                    unregister_code(KC_LGUI);
+                    return true; // 離した時のタップ処理は QMK 本体に任せる
+                }
+            }
+        }
+        // ホールド時の修飾キーが LGUI であるか確認
+        else if (QK_MOD_TAP_GET_MODS(keycode) == MOD_LGUI) {
+            if (is_mac) {
+                if (record->event.pressed) {
+                    if (record->tap.count > 0) {
+                        return true; // タップ時は通常のキーを送信
+                    } else {
+                        register_code(KC_LCTL); // Macなら Control を送信
+                        return false;
+                    }
+                } else {
+                    unregister_code(KC_LCTL);
+                    return true; // 離した時のタップ処理は QMK 本体に任せる
+                }
+            }
+        }
+    }
+    // JISモードの場合、ANSIからJISへの変換処理を呼び出す
     if (is_jis_mode) {
-        // is_jis_modeフラグがあるため、JIS変換が必要な場合のみ呼ぶようにするのが効率的
         return process_record_user_a2j(keycode, record); 
     }
     
@@ -87,13 +151,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     //                         ┌───────────┐             ┌───────────┐
     //                         │   SandS   │             │   EandS   │
     //                         ├─────┬─────┤   ┌─────┐   ├─────┬─────┤
-    //                         │ WIN │ ALT │   │MT_TG│   │  [  =  ]  │
+    //                         │ ALT │ CTL │   │MT_TG│   │  [  =  ]  │
     //                         └─────┴─────┘   └─────┘   └─────┴─────┘
     [_QWERTY] = LAYOUT(
         KC_GRV,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_MINS,
         MT_ESC,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_BSLS,
                                             MT_SPC , MT_TGL,  MT_ENT,
-                                            KC_LGUI, KC_LALT, KC_LBRC, KC_RBRC
+                                            KC_LALT, KC_LCTL, KC_LBRC, KC_RBRC
     ),
     // GEMINI
     // ┌─────┬─────┬─────┬─────┬─────┬─────┐             ┌─────┬─────┬─────┬─────┬─────┬─────┐
@@ -127,7 +191,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_GRV, KC_MINS, KC_1,  KC_2,  KC_3,  KC_DZ,   KC_PGUP, KC_HOME, KC_UP,   KC_END,   KC_CAPS, TG_JIS,
         MT_ESC, KC_DOT,  KC_7,  KC_8,  KC_9,  KC_0,    KC_PGDN, KC_LEFT, KC_DOWN, KC_RIGHT, KC_LSFT, MO_FUN,
                                               MT_SPC,  KC_TRNS, MT_ENT,
-                                              KC_LGUI, KC_LALT, KC_INT5, KC_INT4
+                                              KC_LALT, KC_LCTL, KC_INT5, KC_INT4
     ),
     // FUNCTION
     // ┌─────┬─────┬─────┬─────┬─────┬─────┐             ┌─────┬─────┬─────┬─────┬─────┬─────┐
