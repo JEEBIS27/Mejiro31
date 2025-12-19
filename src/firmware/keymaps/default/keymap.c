@@ -14,6 +14,14 @@ enum custom_keycodes {
     TG_JIS,  // JISモード切替キー
 };
 
+typedef union {
+    uint32_t raw;
+    struct {
+        bool is_jis_mode : 1; // JISモードフラグ
+    };
+} user_config_t;
+user_config_t user_config;
+
 #define MT_SPC MT(MOD_LSFT, KC_SPC)  // タップでSpace、ホールドでShift
 #define MT_ENT MT(MOD_LSFT, KC_ENT)  // タップでEnter、ホールドでShift
 #define MT_ESC MT(MOD_LGUI, KC_ESC)  // タップでEscape、ホールドでGUI
@@ -21,7 +29,17 @@ enum custom_keycodes {
 #define MT_TGL LT(_NUMBER, KC_F24)  // タップで_GEMINIレイヤー切替、ホールドで_NUMBERレイヤー
 
 static uint16_t default_layer = 0; // デフォルトレイヤー状態を保存する変数 (0:_QWERTY, 1: _GEMINI)
-static bool is_jis_mode = true; // JISモード判定フラグ
+
+void eeconfig_init_user(void) {
+    user_config.raw = 1; // 初期化時にJISモードを有効化
+    user_config.is_jis_mode = true;
+    eeconfig_update_user(user_config.raw);
+    steno_set_mode(STENO_MODE_GEMINI);  // or STENO_MODE_BOLT
+}
+
+void keyboard_post_init_user(void) {
+    user_config.raw = eeconfig_read_user();
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
@@ -57,11 +75,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case TG_JIS:
             if (record->event.pressed) {
                 // 押された瞬間にJISモードをトグル
-                is_jis_mode = !is_jis_mode;
+                user_config.is_jis_mode = !user_config.is_jis_mode;
+                eeconfig_update_user(user_config.raw);
             }
             return false;
         case KC_GRV:
-            if(is_jis_mode) {
+            if(user_config.is_jis_mode) {
                 if (ime_mod_pressed) {
                     return true;
                 }
@@ -131,14 +150,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
     }
     // JISモードの場合、ANSIからJISへの変換処理を呼び出す
-    if (is_jis_mode) {
+    if (user_config.is_jis_mode) {
         return process_record_user_a2j(keycode, record); 
     }
     
     // JISモードでない場合は、通常のQMK処理を続行させる
     return true;
 }
-
 // ..................................................................... Keymaps
 //
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -197,7 +215,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // ┌─────┬─────┬─────┬─────┬─────┬─────┐             ┌─────┬─────┬─────┬─────┬─────┬─────┐
     // │ F1  │ F2  │ F3  │ F4  │ F5  │ F11 │             │ PGU │ HOM │  ↑  │ END │ CAP │ JIS │
     // ├─────┼─────┼─────┼─────┼─────┼─────┤             ├─────┼─────┼─────┼─────┼─────┼─────┤
-    // │ ESC │ F6  │ F7  │ F8  │ F9  │ F10 │             │ PGD │  ←  │  ↓  │  →  │ ESC │MO_FN│
+    // │ ESC │ F6  │ F7  │ F8  │ F9  │ F10 │             │ PGD │  ←  │  ↓  │  →  │ SFT │MO_FN│
     // └─────┴─────┴─────┴─────┴─────┴─────┘             └─────┴─────┴─────┴─────┴─────┴─────┘
     //                         ┌───────────┐             ┌───────────┐
     //                         │   SandS   │             │   EandS   │
@@ -219,22 +237,22 @@ const uint16_t PROGMEM qwerty_combo2[] = {KC_W, KC_X, COMBO_END};
 const uint16_t PROGMEM qwerty_combo3[] = {KC_E, KC_C, COMBO_END};
 const uint16_t PROGMEM qwerty_combo4[] = {KC_R, KC_V, COMBO_END};
 const uint16_t PROGMEM qwerty_combo5[] = {KC_T, KC_B, COMBO_END};
-const uint16_t PROGMEM qwerty_combo6[] = {KC_V, KC_B, COMBO_END};
-const uint16_t PROGMEM qwerty_combo7[] = {KC_Y, KC_N, COMBO_END};
-const uint16_t PROGMEM qwerty_combo8[] = {KC_U, KC_M, COMBO_END};
-const uint16_t PROGMEM qwerty_combo9[] = {KC_I, KC_COMM, COMBO_END};
-const uint16_t PROGMEM qwerty_combo10[] = {KC_O, KC_DOT, COMBO_END};
-const uint16_t PROGMEM qwerty_combo11[] = {KC_P, KC_SLSH, COMBO_END};
-const uint16_t PROGMEM qwerty_combo12[] = {KC_MINS, KC_BSLS, COMBO_END};
-const uint16_t PROGMEM qwerty_combo13[] = {KC_N, KC_M, COMBO_END};
-const uint16_t PROGMEM qwerty_combo14[] = {KC_Y, KC_U, COMBO_END};
-const uint16_t PROGMEM qwerty_combo15[] = {KC_LBRC, KC_RBRC, COMBO_END};
-const uint16_t PROGMEM qwerty_combo16[] = {KC_PGDN, KC_LEFT, COMBO_END};
-const uint16_t PROGMEM qwerty_combo17[] = {KC_PGUP, KC_HOME, COMBO_END};
-const uint16_t PROGMEM qwerty_combo18[] = {KC_9, KC_0, COMBO_END};
-const uint16_t PROGMEM qwerty_combo19[] = {KC_1, KC_7, COMBO_END};
-const uint16_t PROGMEM qwerty_combo20[] = {KC_2, KC_8, COMBO_END};
-const uint16_t PROGMEM qwerty_combo21[] = {KC_3, KC_9, COMBO_END};
+const uint16_t PROGMEM qwerty_combo6[] = {KC_Y, KC_N, COMBO_END};
+const uint16_t PROGMEM qwerty_combo7[] = {KC_U, KC_M, COMBO_END};
+const uint16_t PROGMEM qwerty_combo8[] = {KC_I, KC_COMM, COMBO_END};
+const uint16_t PROGMEM qwerty_combo9[] = {KC_O, KC_DOT, COMBO_END};
+const uint16_t PROGMEM qwerty_combo10[] = {KC_P, KC_SLSH, COMBO_END};
+const uint16_t PROGMEM qwerty_combo11[] = {KC_MINS, KC_BSLS, COMBO_END};
+const uint16_t PROGMEM qwerty_combo12[] = {KC_LBRC, KC_RBRC, COMBO_END};
+const uint16_t PROGMEM qwerty_func_combo1[] = {KC_V, KC_B, COMBO_END};
+const uint16_t PROGMEM qwerty_func_combo2[] = {KC_N, KC_M, COMBO_END};
+const uint16_t PROGMEM qwerty_func_combo3[] = {KC_Y, KC_U, COMBO_END};
+const uint16_t PROGMEM number_combo1[] = {KC_1, KC_7, COMBO_END};
+const uint16_t PROGMEM number_combo2[] = {KC_2, KC_8, COMBO_END};
+const uint16_t PROGMEM number_combo3[] = {KC_3, KC_9, COMBO_END};
+const uint16_t PROGMEM number_func_combo1[] = {KC_PGDN, KC_LEFT, COMBO_END};
+const uint16_t PROGMEM number_func_combo2[] = {KC_PGUP, KC_HOME, COMBO_END};
+const uint16_t PROGMEM number_func_combo3[] = {KC_9, KC_0, COMBO_END};
 
 
 combo_t key_combos[] = {
@@ -243,25 +261,20 @@ combo_t key_combos[] = {
     COMBO(qwerty_combo3, KC_D),
     COMBO(qwerty_combo4, KC_F),
     COMBO(qwerty_combo5, KC_G),
-    COMBO(qwerty_combo6, KC_TAB),
-    COMBO(qwerty_combo7, KC_H),
-    COMBO(qwerty_combo8, KC_J),
-    COMBO(qwerty_combo9, KC_K),
-    COMBO(qwerty_combo10, KC_L),
-    COMBO(qwerty_combo11, KC_SCLN),
-    COMBO(qwerty_combo12, KC_QUOT),
-    COMBO(qwerty_combo13, KC_BSPC),
-    COMBO(qwerty_combo14, KC_DEL),
-    COMBO(qwerty_combo15, KC_EQL),
-    COMBO(qwerty_combo16, KC_BSPC),
-    COMBO(qwerty_combo17, KC_DEL),
-    COMBO(qwerty_combo18, KC_TAB),
-    COMBO(qwerty_combo19, KC_4),
-    COMBO(qwerty_combo20, KC_5),
-    COMBO(qwerty_combo21, KC_6),
+    COMBO(qwerty_combo6, KC_H),
+    COMBO(qwerty_combo7, KC_J),
+    COMBO(qwerty_combo8, KC_K),
+    COMBO(qwerty_combo9, KC_L),
+    COMBO(qwerty_combo10, KC_SCLN),
+    COMBO(qwerty_combo11, KC_QUOT),
+    COMBO(qwerty_combo12, KC_EQL),
+    COMBO(qwerty_func_combo1, KC_TAB),
+    COMBO(qwerty_func_combo2, KC_BSPC),
+    COMBO(qwerty_func_combo3, KC_DEL),
+    COMBO(number_combo1, KC_4),
+    COMBO(number_combo2, KC_5),
+    COMBO(number_combo3, KC_6),
+    COMBO(number_func_combo1, KC_BSPC),
+    COMBO(number_func_combo2, KC_DEL),
+    COMBO(number_func_combo3, KC_TAB),
 };
-
-// Initialize the steno protocol
-void eeconfig_init_user(void) {
-    steno_set_mode(STENO_MODE_GEMINI);  // or STENO_MODE_BOLT
-}
