@@ -5,4 +5,4 @@ STRING_ENABLE = yes
 EEPROM_ENABLE = yes
 OS_DETECTION_ENABLE = yes
 VIA_ENABLE = yes
-SRC += a2j/translate_ansi_to_jis.c
+KEY_OVERRIDE_ENABLE = yes
