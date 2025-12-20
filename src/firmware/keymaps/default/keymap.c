@@ -203,7 +203,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     //                         ┌───────────┐             ┌───────────┐
     //                         │   SandS   │             │   EandS   │
     //                         ├─────┬─────┤   ┌─────┐   ├─────┬─────┤
-    //                         │ WIN │ ALT │   │MT_TG│   │INT5 │INT4 │
+    //                         │ ALT │ CTL │   │MT_TG│   │INT5 │INT4 │
     //                         └─────┴─────┘   └─────┘   └─────┴─────┘
     [_NUMBER] = LAYOUT(
         KC_GRV, KC_MINS, KC_1,  KC_2,  KC_3,  KC_DZ,   KC_PGUP, KC_HOME, KC_UP,   KC_END,   KC_CAPS, TG_JIS,
@@ -213,18 +213,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     // FUNCTION
     // ┌─────┬─────┬─────┬─────┬─────┬─────┐             ┌─────┬─────┬─────┬─────┬─────┬─────┐
-    // │ F1  │ F2  │ F3  │ F4  │ F5  │ F11 │             │ PGU │ HOM │  ↑  │ END │ CAP │ JIS │
+    // │ F1  │ F2  │ F3  │ F4  │ F5  │ F11 │             │ VLU │ MUT │ x|| │ PSC │ BRU │ PWR │
     // ├─────┼─────┼─────┼─────┼─────┼─────┤             ├─────┼─────┼─────┼─────┼─────┼─────┤
-    // │ ESC │ F6  │ F7  │ F8  │ F9  │ F10 │             │ PGD │  ←  │  ↓  │  →  │ SFT │MO_FN│
+    // │ WIN │ F6  │ F7  │ F8  │ F9  │ F10 │             │ VLD │ |<< │ >|| │ >>| │ BRD │MO_FN│
     // └─────┴─────┴─────┴─────┴─────┴─────┘             └─────┴─────┴─────┴─────┴─────┴─────┘
     //                         ┌───────────┐             ┌───────────┐
     //                         │   SandS   │             │   EandS   │
     //                         ├─────┬─────┤   ┌─────┐   ├─────┬─────┤
-    //                         │ WIN │ ALT │   │MT_TG│   │ F12 │ F13 │
+    //                         │ ALT │ CTL │   │MT_TG│   │ F12 │ F13 │
     //                         └─────┴─────┘   └─────┘   └─────┴─────┘
     [_FUNCTION] = LAYOUT(
-        KC_F1,   KC_F2,  KC_F3,  KC_F4, KC_F5,   KC_F11,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-        KC_TRNS, KC_F6,  KC_F7,  KC_F8, KC_F9,   KC_F10,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+        KC_F1,   KC_F2,  KC_F3,  KC_F4, KC_F5,   KC_F11,  KC_VOLU, KC_MUTE, KC_MSTP, KC_PSCR, KC_BRIU, KC_PWR,
+        KC_LGUI, KC_F6,  KC_F7,  KC_F8, KC_F9,   KC_F10,  KC_VOLD, KC_MPRV, KC_MPLY, KC_MNXT, KC_BRID, KC_TRNS,
                                         KC_TRNS, KC_TRNS, KC_TRNS,
                                         KC_TRNS, KC_TRNS, KC_F12, KC_F13
     ),

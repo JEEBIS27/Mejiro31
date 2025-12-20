@@ -132,37 +132,37 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     // NUMBER
     // ┌─────┬─────┬─────┬─────┬─────┬─────┐             ┌─────┬─────┬─────┬─────┬─────┬─────┐
-    // │  `  │  -  │  1  │  2  │  3  │ DBZ │             │ PGU │ HOM │  ↑  │ END │ CAP │ RSC │
+    // │  `  │  -  │  1  │  2  │  3  │ 00  │             │ PGU │ HOM │  ↑  │ END │ CAP │ JIS │
     // ├─────┼─────┼──4──┼──5──┼──6──┼─────┤             ├─────┼─────┼─────┼─────┼─────┼─────┤
-    // │ ESC │  .  │  7  │  8  │  9  │  0  │             │ PGD │  ←  │  ↓  │  →  │ ESC │ PSC │
+    // │ ESC │  .  │  7  │  8  │  9  │  0  │             │ PGD │  ←  │  ↓  │  →  │ SFT │MO_FN│
     // └─────┴─────┴─────┴─────┴─────┴─────┘             └─────┴─────┴─────┴─────┴─────┴─────┘
     //                         ┌───────────┐             ┌───────────┐
     //                         │   SandS   │             │   EandS   │
     //                         ├─────┬─────┤   ┌─────┐   ├─────┬─────┤
-    //                         │ WIN │ ALT │   │MT_TG│   │ F13 │ F14 │
+    //                         │ ALT │ CTL │   │MT_TG│   │INT5 │INT4 │
     //                         └─────┴─────┘   └─────┘   └─────┴─────┘
     [_NUMBER] = LAYOUT(
-        KC_GRV, KC_MINS, KC_1,  KC_2,  KC_3,  KC_DZ,   KC_PGUP, KC_HOME, KC_UP,   KC_END,   KC_CAPS, RSCR,
-        MT_ESC, KC_DOT,  KC_7,  KC_8,  KC_9,  KC_0,    KC_PGDN, KC_LEFT, KC_DOWN, KC_RIGHT, MT_ESC,  PSCR,
+        KC_GRV, KC_MINS, KC_1,  KC_2,  KC_3,  KC_DZ,   KC_PGUP, KC_HOME, KC_UP,   KC_END,   KC_CAPS, TG_JIS,
+        MT_ESC, KC_DOT,  KC_7,  KC_8,  KC_9,  KC_0,    KC_PGDN, KC_LEFT, KC_DOWN, KC_RIGHT, KC_LSFT, MO_FUN,
                                               MT_SPC,  KC_TRNS, MT_ENT,
-                                              KC_LGUI, KC_LALT, KC_F13, KC_F14
+                                              KC_LALT, KC_LCTL, KC_INT5, KC_INT4
     ),
     // FUNCTION
     // ┌─────┬─────┬─────┬─────┬─────┬─────┐             ┌─────┬─────┬─────┬─────┬─────┬─────┐
-    // │ F1  │ F2  │ F3  │ F4  │ F5  │ F6  │             │ PGU │ HOM │  ↑  │ END │ CAP │ RSC │
+    // │ F1  │ F2  │ F3  │ F4  │ F5  │ F11 │             │ VLU │ MUT │ x|| │ PSC │ BRU │ PWR │
     // ├─────┼─────┼─────┼─────┼─────┼─────┤             ├─────┼─────┼─────┼─────┼─────┼─────┤
-    // │ F7  │ F8  │ F9  │ F10 │ F11 │ F12 │             │ PGD │  ←  │  ↓  │  →  │ ESC │ PSC │
+    // │ WIN │ F6  │ F7  │ F8  │ F9  │ F10 │             │ VLD │ |<< │ >|| │ >>| │ BRD │MO_FN│
     // └─────┴─────┴─────┴─────┴─────┴─────┘             └─────┴─────┴─────┴─────┴─────┴─────┘
     //                         ┌───────────┐             ┌───────────┐
     //                         │   SandS   │             │   EandS   │
     //                         ├─────┬─────┤   ┌─────┐   ├─────┬─────┤
-    //                         │ WIN │ ALT │   │MT_TG│   │ F13 │ F14 │
+    //                         │ ALT │ CTL │   │MT_TG│   │ F12 │ F13 │
     //                         └─────┴─────┘   └─────┘   └─────┴─────┘
     [_FUNCTION] = LAYOUT(
-        KC_F1,  KC_F2,  KC_F3,  KC_F4,  KC_F5,   KC_F6,   KC_PGUP, KC_HOME, KC_UP,   KC_END,   KC_CAPS, RSCR,
-        KC_F7,  KC_F8,  KC_F9,  KC_F10, KC_F11,  KC_F12,  KC_PGDN, KC_LEFT, KC_DOWN, KC_RIGHT, MT_ESC,  PSCR,
-                                        MT_SPC,  KC_TRNS, MT_ENT,
-                                        KC_LGUI, KC_LALT, KC_F13, KC_F14
+        KC_F1,   KC_F2,  KC_F3,  KC_F4, KC_F5,   KC_F11,  KC_VOLU, KC_MUTE, KC_MSTP, KC_PSCR, KC_BRIU, KC_PWR,
+        KC_LGUI, KC_F6,  KC_F7,  KC_F8, KC_F9,   KC_F10,  KC_VOLD, KC_MPRV, KC_MPLY, KC_MNXT, KC_BRID, KC_TRNS,
+                                        KC_TRNS, KC_TRNS, KC_TRNS,
+                                        KC_TRNS, KC_TRNS, KC_F12, KC_F13
     ),
 };
 // ..................................................................... Keymaps
