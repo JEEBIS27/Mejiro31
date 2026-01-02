@@ -67,7 +67,7 @@ Mejiro31 は US キーボードとして出力するので、 PC が JIS レイ�
 ## キーの入れ替え方法
 
 まずはこちらのファイルをダウンロードします。
-- [mejiro31_via_keymap.json](https://github.com/JEEBIS27/Mejiro31/releases/latest/download/mejiro31_via_keymap.json)
+- [mejiro31_via_keymap.json](https://github.com/JEEBIS27/Mejiro31/releases/latest/download/via_keymap.json)
 
 次に、お好きなブラウザーから`VIA`にアクセスして、 DESIGN を選びます。
 
