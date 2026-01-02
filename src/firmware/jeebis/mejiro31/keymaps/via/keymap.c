@@ -245,9 +245,11 @@ static void update_lang(uint8_t lang) {
     eeconfig_update_user(user_config.raw);
 }
 
-// モディファイア押下中は強制的にQWERTY
 static void refresh_force_qwerty_state(void) {
-    bool should_force = mods_except_shift_active();
+    uint8_t current_layer = get_highest_layer(layer_state | default_layer_state);
+    bool is_number_or_function = (current_layer == _NUMBER || current_layer == _FUNCTION);
+
+    bool should_force = mods_except_shift_active() && !is_number_or_function;
     layer_state_t qwerty_default = (layer_state_t)1UL << _QWERTY;
 
     if (should_force) {
