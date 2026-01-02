@@ -3,18 +3,19 @@
 ![](docs/imgs/1.White_front.jpg)
 
 ## 組み立て、初期設定 / Setup Manual
-組み立てキット / for Assembly Kits
-- [日本語](/doc/BUILD.md) / [English](/doc/BUILD_EN.md)
+- [Mejiro31 の組み立て方](/docs/BUILD.md)
 
 ## 使用方法 / How to Use
-- [日本語](/doc/USAGE.md) / [English](/doc/USAGE_EN.md)
+- [Mejiro31 の使い方](/docs/USAGE.md)
 
-Firmware Sourcecode
+## ビルド環境の構築 / How to Build Firmware
+ファームウェアのソースコード / Firmware Sourcecode
 - https://github.com/JEEBIS27/qmk_firmware/tree/master/keyboards/jeebis/mejiro31
 
-## 販売ページ
-- [遊舎工房](https://shop.yushakobo.jp/products/11447)（白）
-- [遊舎工房](https://shop.yushakobo.jp/products/11447)（黒）
+ファームウェアをクローンする / Cloning the Repo for Firmware Build
+```
+git clone https://github.com/JEEBIS27/qmk_firmware.git
+```
 
 ***
 
