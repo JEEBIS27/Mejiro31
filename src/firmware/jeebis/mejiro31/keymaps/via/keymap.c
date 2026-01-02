@@ -48,9 +48,9 @@ static bool is_alt_mode = false;
 static bool force_qwerty_active = false;
 static bool is_mac = false;
 // 0:未使用, 1:英語, 2:日本語, 3:無変更
-static int stn_lang = 2; // ステノ時の言語
-static int kbd_lang = 1; // キーボード時の言語
-static int alt_lang = 1; // Alternative Layoutの言語設定
+static int stn_lang = 0; // ステノ時の言語
+static int kbd_lang = 0; // キーボード時の言語
+static int alt_lang = 0; // Alternative Layoutの言語設定
 
 typedef union {
     uint32_t raw;
@@ -169,6 +169,7 @@ static inline uint16_t alt_transform(uint16_t kc) {
         case KC_I: return KC_O;
         case KC_O: return KC_U;
         case KC_P: return KC_J;
+        case KC_MINS: return KC_MINS;
 
         case KC_A: return KC_N;
         case KC_S: return KC_R;
@@ -192,6 +193,7 @@ static inline uint16_t alt_transform(uint16_t kc) {
         case KC_COMM: return KC_COMM;
         case KC_DOT: return KC_DOT;
         case KC_SLSH: return KC_SLSH;
+        case KC_BSLS: return KC_BSLS;
         default: return kc;
     }
 }
