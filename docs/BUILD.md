@@ -56,7 +56,7 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 ## 3. 組み立て
 
 まずはこちらのファイルをダウンロードします。
-- [mejiro31_via.uf2](https://github.com/JEEBIS27/Mejiro31/releases/latest/download/jeebis_mejiro31_via.uf2)
+- [jeebis_mejiro31_via.uf2](https://github.com/JEEBIS27/Mejiro31/releases/latest/download/jeebis_mejiro31_via.uf2)
 
 PCにBOOTボタンを押しながら接続します。
 
