@@ -1,4 +1,4 @@
-# Mejiro31 の使い方
+# Mejiro31 の使い方 ([スタートページに戻る](../README.md))
 
 ![](./imgs/5.Both_parallel.JPG)
 
@@ -67,7 +67,7 @@ Mejiro31 は US キーボードとして出力するので、 PC が JIS レイ�
 ## キーの入れ替え方法
 
 まずはこちらのファイルをダウンロードします。
-- [via_keymap.json](https://github.com/JEEBIS27/Mejiro31/releases/latest/download/via_keymap.json)
+- [via_keymap.json](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.0.0/via_keymap.json)
 
 次に、お好きなブラウザーから`VIA`にアクセスして、 DESIGN を選びます。
 
@@ -96,6 +96,8 @@ CONFIGURE タブの`Authorize device`ボタンを押し、ポップアップ画�
 するとキーマップ編集画面に遷移するので、キーボードのキーをクリックし変更したいキーを下から選んでクリックすることでキーを入れ替えることができます。
 
 ![](./imgs/via_QWERTY.png)
+
+一度ここまでくれば、今後は VIA の CONFIGURE タブを開いて Mejiro31 を接続するだけでキーマップの変更が可能です。つまり、 JSON ファイルの読み込みは一度だけで大丈夫です。
 
 (VIA からだと上下キーの同時押しの再定義ができません。なので事実上変えることができるのは NUMBER レイヤーや FUNCTION レイヤーのキーだけです。もし Dvorak や大西配列のような代替レイアウトを使用したい場合は[高度なカスタム](#高度なカスタム)の章をご覧ください。)
 
@@ -181,15 +183,15 @@ PC 環境によってやり方が異なるのでここでは詳しく紹介し�
 
 ※ MacOS 環境ではデフォルトで IME のオンオフキーが動作するため、特に設定を行う必要はありません。)
 
-Mejiro31 の言語設定をするにはまず、あなたがフォークしたリポジトリの`keyboards/jeebis/mejiro31/keymaps/via/keymap.c`を開きます。
+Mejiro31 の言語設定をするにはまず、あなたがフォークしたリポジトリの`keyboards/jeebis/mejiro31/keymaps/jp_qwerty/keymap.c`を開きます。
 
 すると51 行目あたりに以下のコードがあります。
 
 ```
-<keymaps/via/keymap.c>
+<keymaps/jp_qwerty/keymap.c>
 // 0:未使用, 1:英語, 2:日本語, 3:無変更
-static int stn_lang = 0; // ステノ時の言語
-static int kbd_lang = 0; // キーボード時の言語
+static int stn_lang = 2; // ステノ時の言語
+static int kbd_lang = 1; // キーボード時の言語
 ```
 
 ここでは、`stn_lang`が GEMINI レイヤー (ステノモード) の言語設定、`kbd_lang`が QWERTY レイヤー (キーボードモード) の言語設定を表しています。
@@ -202,18 +204,12 @@ static int kbd_lang = 0; // キーボード時の言語
 | 2    | 日本語  |
 | その他 | 無変更 |
 
-例えば、メジロ式で日本語入力、キーボードで英語入力を行いたい場合は以下のように設定します。
-
-```
-<keymaps/via/keymap.c>
-static int stn_lang = 2; // ステノ時の言語
-static int kbd_lang = 1; // キーボード時の言語
-```
+デフォルトでは、ステノモードはメジロ式で日本語入力、キーボードモードでは英語入力を QWERTY で行うように設定されています。
 
 逆に、キーボードで日本語入力、英語速記で英語入力を行いたい場合は以下のように設定します。
 
 ```
-<keymaps/via/keymap.c>
+<keymaps/jp_qwerty/keymap.c>
 static int stn_lang = 1; // ステノ時の言語
 static int kbd_lang = 2; // キーボード時の言語
 ```
@@ -224,20 +220,19 @@ static int kbd_lang = 2; // キーボード時の言語
 
 ただし、モディファイアキーを押している間は代替レイアウトは無効になり、 QWERTY として動作します。
 
-まず、`keyboards/jeebis/mejiro31/keymaps/via/keymap.c`を開きます。
+ここでは大西配列の設定を例として紹介します。
 
-51 行目あたりに以下のコードがあります。
+まずは、`keyboards/jeebis/mejiro31/keymaps/jp_o24/keymap.c`を開きます。
+
+54 行目あたりに以下のコードがあります。
 ```
-<keymaps/via/keymap.c>
-// 0:未使用, 1:英語, 2:日本語, 3:無変更
-...
-...
-static int alt_lang = 0; // Alternative Layoutの言語設定
+<keymaps/jp_o24/keymap.c>
+static int alt_lang = 3; // Alternative Layoutの言語設定
 ```
 
-ここの`alt_lang`変数はデフォルトでは 0 (未使用) に設定されています。
+ここの`alt_lang`変数はデフォルトでは 3 (日英両方) に設定されています。
 
-これを以下の数値に設定することで代替レイアウトを有効化できます。
+これを以下の数値に変更することで代替レイアウトの言語を設定できます。
 
 | 数値 | 言語設定 |
 | ---- | ------- |
@@ -245,95 +240,50 @@ static int alt_lang = 0; // Alternative Layoutの言語設定
 | 2    | 日本語 |
 | 3    | 日英両方 |
 
-NUMBER レイヤーの右親指下段にあるキーで IME の切り替えと代替レイアウトの有効・無効を同時に切り替えることができます。
+たとえば、 Dvorak などのレイアウトを英語入力の時だけで使用したい場合は 1 に設定します。
 
-1 あるいは 2 を設定した場合、 IME 切替キーを有効化する必要があります。全章の[レイヤーごとの言語設定](#レイヤーごとの言語設定)をご覧ください。
+```
+<keymaps/jp_dvorak/keymap.c>
+static int alt_lang = 1; // Alternative Layoutの言語設定
+```
+
+また、大西配列などのレイアウトを日本語入力の時だけで使用したい場合は 2 に設定します。
+
+```<keymaps/jp_o24/keymap.c>
+static int alt_lang = 2; // Alternative Layoutの言語設定
+```
+
+ここで言語を設定すると、NUMBER レイヤーの右親指下段にある変換・無変換キーで IME の切り替えと代替レイアウトの有効・無効を同時に切り替えることができるようになります。
+
+`alt_lang`変数を 1 あるいは 2 を設定した場合、 IME 切替キーを有効化する必要があります。全章の[レイヤーごとの言語設定](#レイヤーごとの言語設定)をご覧ください。
 
 次に、代替レイアウトのキーマップを定義します。
 
-153 行目あたりに以下のコードがあります。
+90 行目あたりに以下のコードがあります。
 
 ```
-<keymaps/via/keymap.c>
-/*---------------------------------------------------------------------------------------------------*/
-/*----------------------------------------Alternative Layout-----------------------------------------*/
-/*---------------------------------------------------------------------------------------------------*/
-
-// Alternative Layout変換
-// 配列名：Graphite
-static inline uint16_t alt_transform(uint16_t kc) {
-    if (!is_alt_mode || force_qwerty_active) return kc;
-    switch (kc) {
-        case KC_Q: return KC_B;
-        case KC_W: return KC_L;
-        case KC_E: return KC_D;
-        case KC_R: return KC_W;
-        case KC_T: return KC_Z;
-        case KC_Y: return KC_QUOT;
-        case KC_U: return KC_F;
-        case KC_I: return KC_O;
-        case KC_O: return KC_U;
-        case KC_P: return KC_J;
-        case KC_MINS: return KC_MINS;
-
-        case KC_A: return KC_N;
-        case KC_S: return KC_R;
-        case KC_D: return KC_T;
-        case KC_F: return KC_S;
-        case KC_G: return KC_G;
-        case KC_H: return KC_Y;
-        case KC_J: return KC_H;
-        case KC_K: return KC_A;
-        case KC_L: return KC_E;
-        case KC_SCLN: return KC_I;
-        case KC_QUOT: return KC_SCLN;
-
-        case KC_Z: return KC_Q;
-        case KC_X: return KC_X;
-        case KC_C: return KC_M;
-        case KC_V: return KC_C;
-        case KC_B: return KC_V;
-        case KC_N: return KC_K;
-        case KC_M: return KC_P;
-        case KC_COMM: return KC_COMM;
-        case KC_DOT: return KC_DOT;
-        case KC_SLSH: return KC_SLSH;
-        case KC_BSLS: return KC_BSLS;
-        default: return kc;
-    }
-}
-```
-
-ここで定義されている`alt_transform`関数が代替レイアウトのキーマップを定義しています。
-
-デフォルトでは英語用配列の Graphite レイアウトが定義されていますが、ここを書き換えることで好きなレイアウトを定義することができます。
-
-例えば、大西配列を定義したい場合は以下のように書き換えます。
-
-```
-<keymaps/via/keymap.c>
-// Alternative Layout変換
+<keymaps/jp_o24/keymap.c>
 // 配列名：大西配列
-static inline uint16_t alt_transform(uint16_t kc) {
+uint16_t alt_transform(uint16_t kc) {
     if (!is_alt_mode || force_qwerty_active) return kc;
     switch (kc) {
         case KC_Q: return KC_Q;
         case KC_W: return KC_L;
         case KC_E: return KC_U;
-        case KC_R: return KC_MINS;
+        case KC_R: return KC_COMM;
         case KC_T: return KC_DOT;
         case KC_Y: return KC_F;
         case KC_U: return KC_W;
         case KC_I: return KC_R;
         case KC_O: return KC_Y;
         case KC_P: return KC_P;
-        case KC_MINS: return KC_SCLN;
+        case KC_MINS: return KC_SLSH;
 
         case KC_A: return KC_E;
         case KC_S: return KC_I;
         case KC_D: return KC_A;
         case KC_F: return KC_O;
-        case KC_G: return KC_COMM;
+        case KC_G: return KC_MINS;
         case KC_H: return KC_K;
         case KC_J: return KC_T;
         case KC_K: return KC_N;
@@ -345,7 +295,7 @@ static inline uint16_t alt_transform(uint16_t kc) {
         case KC_X: return KC_X;
         case KC_C: return KC_C;
         case KC_V: return KC_V;
-        case KC_B: return KC_SLSH;
+        case KC_B: return KC_SCLN;
         case KC_N: return KC_G;
         case KC_M: return KC_D;
         case KC_COMM: return KC_M;
@@ -357,42 +307,39 @@ static inline uint16_t alt_transform(uint16_t kc) {
 }
 ```
 
+ここで定義されている`alt_transform`関数が代替レイアウトのキーマップを定義しています。
+
+ここでは大西配列が定義されていますが、ここを書き換えることで好きなレイアウトを定義することができます。
+
+とはいえ、個々人でこれを設定するのは大変なので、いくつか代表的なレイアウトはすでに用意してあります。それを [releases](https://github.com/JEEBIS27/Mejiro31/releases/latest) からダウンロードして利用することをおすすめします。
+
+現状（v0.1.0）では以下のレイアウトが用意されています。
+- [qwerty (QWERTY 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_qwerty.uf2)
+- [dvorak (Dvorak 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_dvorak.uf2)
+- [colemak (Colemak 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_colemak.uf2)
+- [colemak-dh (Colemak-DH 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_colemak-dh.uf2)
+- [workman (Workman 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_workman.uf2)
+- [eucalyn (Eucalyn 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_eucalyn.uf2)
+- [tomisuke (Tomisuke 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_tomisuke.uf2)
+- [astarte (Astarte 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_astarte.uf2)
+- [o24 (大西配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_o24.uf2)
+- [graphite (Graphite 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_graphite.uf2)
+
+もし他のレイアウトを追加してほしい場合は GitHub の [Issues](https://github.com/JEEBIS27/Mejiro31/issues) からリクエストしてください。
+
 ### コンボの詳細設定
 
 Mejiro31 では QMK 標準のコンボ機能を使用しておらず、独自実装のコンボ機能を使用しています。
 
-それは、 QWERTY レイヤーでの中段キーの入力を同時押しで行う二段圧縮入力によって QMK の想定以上に多くのコンボが発生してしまうためです。
+そのため、コンボの定義を行うにはソースコードを書き換える必要があります。
 
-そのため、コンボの詳細設定を行うにはソースコードを書き換える必要があります。
-
-コンボの設定をするには`keyboards/jeebis/mejiro31/keymaps/via/keymap.c`を開き、 271 行目あたりの以下のコードを編集します。
+既存のコンボを変更したり、新しいコンボを追加したりするには 196 行目あたりの以下のコードを編集します。
 
 ```
-<keymaps/via/keymap.c>
-/*---------------------------------------------------------------------------------------------------*/
-/*--------------------------------------------FIFOコンボ----------------------------------------------*/
-/*---------------------------------------------------------------------------------------------------*/
-
-#define COMBO_FIFO_LEN       30  // FIFOの長さ
-#define COMBO_TIMEOUT_MS     100 // コンボ待機のタイムアウト時間(ms) ※ QMKコンボでいうところのCOMBO_TERM
-#define HOLD_TIME_THRESHOLD_MS 200  // 長押し判定の閾値(ms)
-```
-
-ここで、`COMBO_TIMEOUT_MS`がコンボの同時押しとして認識される最大時間を表しています。
-
-例えば、`COMBO_TIMEOUT_MS`を 150 に設定すると、 150 ms 以内に押されたキー同士がコンボとして認識されるようになります。
-
-また、長押しの閾値もここで設定できます。`HOLD_TIME_THRESHOLD_MS`が長押しとして認識される最小時間を表しています。
-
-例えば、`HOLD_TIME_THRESHOLD_MS`を 300 に設定すると、 300 ms 以上押されたキーが長押しとして認識されるようになります。
-
-既存のコンボを変更したり、新しいコンボを追加したりするには 303 行目あたりの以下のコードを編集します。
-
-```
-<keymaps/via/keymap.c>
+<keymaps/jp_qwerty/keymap.c>
 // コンボ定義（順不同）
-static const combo_pair_t combo_pairs[] PROGMEM = {
-    // QWERTY
+const combo_pair_t combo_pairs[] PROGMEM = {
+
     {KC_Q,    KC_Z,    KC_A,    _QWERTY},
     {KC_W,    KC_X,    KC_S,    _QWERTY},
     {KC_E,    KC_C,    KC_D,    _QWERTY},
@@ -410,7 +357,6 @@ static const combo_pair_t combo_pairs[] PROGMEM = {
     {KC_N,    KC_M,    KC_BSPC, _QWERTY},
     {KC_Y,    KC_U,    KC_DEL,  _QWERTY},
 
-    // NUMBER
     {KC_1,    KC_7,    KC_4,     _NUMBER},
     {KC_2,    KC_8,    KC_5,     _NUMBER},
     {KC_3,    KC_9,    KC_6,     _NUMBER},
@@ -422,7 +368,7 @@ static const combo_pair_t combo_pairs[] PROGMEM = {
 };
 ```
 
-例えば、 QWERTY レイヤーで V キーと M キーの同時押しで Enter キーを出力するコンボを追加したい場合は、以下のようにコードを追加します。
+例えば、 QWERTY レイヤーで V キーと M キーの同時押しで Enter キーを出力するコンボを追加したい場合は、以下のようなコードを追加します。
 
 ```
 <keymaps/via/keymap.c>
@@ -441,26 +387,18 @@ Mejiro31 のファームウェアは QMK ですので、標準で利用できる
 
 ```
 <config.h>
-#define TAPPING_TERM 200
+#define TAPPING_TERM 300
 ```
 
 ここで設定されている数値はミリ秒単位で、キーが長押しとして認識されるまでの時間を表しています。
 
-例えば、`TAPPING_TERM`を 300 に設定すると、 300 ms 以上押されたキーは長押しとして認識されるようになります。
-
-また、オートシフト機能を有効化したい場合は`config.h`に以下のコードを追加します。
-
-```
-<config.h>
-#define AUTO_SHIFT_TIMEOUT 150
-#define AUTO_SHIFT_MODS MOD_MASK_SHIFT
-```
+例えば、`TAPPING_TERM`を 200 に設定すると、 200 ms 以上押された Mod-Tap のキーは長押しとして認識されるようになります。
 
 このような`config.h`の設定は、 QMK の公式ドキュメントをご覧ください。
 - [QMK Config Options](https://docs.qmk.fm/config_options)
 
 ## お問い合わせ
 
-お問い合わせは`jeebis.iox@gmail.com`へお願いします。
+お問い合わせは`jeebis.iox@gmail.com`か、特に不具合等は Mejiro31 の GitHub リポジトリの [Issues](https://github.com/JEEBIS27/Mejiro31/issues) へお願いします。
 
-[スタートページに戻る](../readme.md)
+[スタートページに戻る](../README.md)
