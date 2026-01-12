@@ -1,4 +1,4 @@
-# Mejiro31 の組み立て方
+# Mejiro31 の組み立て方 ([スタートページに戻る](../README.md))
 
 ![](./imgs/5.Both_parallel.JPG)
 
@@ -55,32 +55,46 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 ## 3. 組み立て
 
-まずはこちらのファイルをダウンロードします。
-- [jeebis_mejiro31_via.uf2](https://github.com/JEEBIS27/Mejiro31/releases/latest/download/jeebis_mejiro31_via.uf2)
+まずはファームウェアのファイルをダウンロードします。
 
-PCにBOOTボタンを押しながら接続します。
+普通のQWERTY配列を使いたい場合は [こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/jeebis_mejiro31_qwerty.uf2) をダウンロードしてください。
+
+その他の代替配列を使いたい場合は以下のリンクからダウンロードしてください。
+
+- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_dvorak.uf2)
+- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_colemak.uf2)
+- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_colemak-dh.uf2)
+- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_workman.uf2)
+- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_eucalyn.uf2)
+- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_tomisuke.uf2)
+- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_astarte.uf2)
+- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_o24.uf2)
+- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_graphite.uf2)
+
+ダウンロードしたら、基板のBOOTボタンを押しながら、PCと接続します。
 
 ドライブとして認識されるのでダウンロードしたファイルをドラッグ&ドロップします。
 
 ドライブが自動的に消えれば準備完了です。(PCの設定によっては警告が出る場合もありますが大丈夫です。)
 
-トッププレートに、QRコードが隠れるようにして基板をはめ込みます。
+トッププレートに基板をはめ込みます。
 
 フォームプレートを、くぼみに基板の部品がはまるようにしてはめ込みます。
 
 ボトムプレートを、ネジ穴のくぼみが見える形で上に乗せます。
 
-6か所にネジを締めます。(強く押し込むようにしてネジを回し、少し回りずらくなったくらいで止めます。強く締めすぎるとネジ穴が削れ、ネジが閉まらなくなる恐れがあります。)
+6か所にネジを締めます。(フォームを押し込むようにしてネジを回し、少し回りづらくなったくらいで止めます。強く締めすぎるとネジ穴が削れ、ネジが閉まらなくなる恐れがあります。)
 
 6か所にゴム足を張ります。
 
----
-
 キースイッチの足とはめ込む穴に気を付けながら、スイッチをはめ込みます。
 
-(薄紫になっている穴にはGateronが、もう一方にはChoc互換がはまります。)
+(薄紫になっている穴には MX 互換の Gateron が、もう一方には Choc 互換がはまります。)
 
 キーキャップを取り付けます。
+
+完成！
+
 ## 4. トラブルシュート
 
 - キーが反応しない。
@@ -99,8 +113,8 @@ PCにBOOTボタンを押しながら接続します。
 
 はんだ付けにミスがある可能性があります。お手数ですが[お問い合わせ](#5-お問い合わせ)をお願いいたします。
 
-## 5. お問い合わせ
+## お問い合わせ
 
-お問い合わせは`jeebis.iox@gmail.com`へお願いします。
+お問い合わせは`jeebis.iox@gmail.com`か、特に根本的な問題等は Mejiro31 の GitHub リポジトリの [Issues](https://github.com/JEEBIS27/Mejiro31/issues) へお願いします。
 
-[スタートページに戻る](../readme.md)
+[スタートページに戻る](../README.md)
