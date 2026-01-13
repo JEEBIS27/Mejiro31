@@ -69,6 +69,7 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 - [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_tomisuke.uf2)
 - [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_astarte.uf2)
 - [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_o24.uf2)
+- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_merlin.uf2)
 - [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_graphite.uf2)
 
 ダウンロードしたら、基板のBOOTボタンを押しながら、PCと接続します。
