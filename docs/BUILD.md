@@ -1,6 +1,6 @@
 # Mejiro31 の組み立て方 ([スタートページに戻る](../README.md))
 
-![](./imgs/5.Both_parallel.JPG)
+![](./imgs/keyboard_black.jpg)
 
 ## 目次
   1. [キット以外に必要なもの](#1.キット以外に必要なもの)
@@ -10,7 +10,6 @@
   5. [お問い合わせ](#5-お問い合わせ)
 
 ## 1. キット以外に必要なもの
-(必要なものの写真)
 
 | 必要なもの | 個数 |
 | --------- | ---- |
@@ -42,7 +41,7 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 ## 2. 内容品の確認
 
-(内容品の写真)
+![](./imgs/build_all.jpeg)
 
 | 内容品 | 個数 |
 | ------ | --- |
@@ -50,6 +49,7 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 | トップレート | 1 |
 | ボトムプレート | 1 |
 | フォームプレート | 1 |
+| スタビライザー | 2 |
 | ネジ | 6 |
 | ゴム足 | 6 |
 
@@ -57,7 +57,7 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 まずはファームウェアのファイルをダウンロードします。
 
-普通のQWERTY配列を使いたい場合は [こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/jeebis_mejiro31_qwerty.uf2) をダウンロードしてください。
+普通のQWERTY配列を使いたい場合は [こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_qwerty.uf2) をダウンロードしてください。
 
 その他の代替配列を使いたい場合は以下のリンクからダウンロードしてください。
 
@@ -73,27 +73,83 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 ダウンロードしたら、基板のBOOTボタンを押しながら、PCと接続します。
 
+![](./imgs/build_firmware.jpeg)
+
 ドライブとして認識されるのでダウンロードしたファイルをドラッグ&ドロップします。
 
 ドライブが自動的に消えれば準備完了です。(PCの設定によっては警告が出る場合もありますが大丈夫です。)
 
-トッププレートに基板をはめ込みます。
+ファームウェアの書き込みが完了したら、組み立てを始めます。
 
-フォームプレートを、くぼみに基板の部品がはまるようにしてはめ込みます。
+まずは、基板についている余分な部分をペンチ等で切り取ります。
 
-ボトムプレートを、ネジ穴のくぼみが見える形で上に乗せます。
+![](./imgs/build_trimming_bottom_side.jpeg)
 
-6か所にネジを締めます。(フォームを押し込むようにしてネジを回し、少し回りづらくなったくらいで止めます。強く締めすぎるとネジ穴が削れ、ネジが閉まらなくなる恐れがあります。)
+![](./imgs/build_trimming_bottom_middle.jpeg)
+
+![](./imgs/build_trimming_top_edge.jpeg)
+
+![](./imgs/build_trimming_top_middle.jpeg)
+
+切り取り切るとこのようになります。
+
+![](./imgs/build_front_pcb.jpeg)
+
+次に、トッププレートに基板をはめ込みます。
+
+![](./imgs/build_direction_pcb.jpeg)
+
+![](./imgs/build_fits_pcb.jpeg)
+
+トッププレートの柱が基盤の穴にピッタリハマるようにはめ込んでください。
+
+![](./imgs/build_zoom_pcb.jpeg)
+
+次に、フォームプレートをくぼみに基板の部品がはまるようにしてはめ込んでください。
+
+![](./imgs/build_turning_foam.jpeg)
+
+フォームが壁より高い位置に来ないくらいまでしっかりと押し込みます。
+
+![](./imgs/build_put_foam.jpeg)
+
+次に、ボトムプレートをネジ穴のくぼみが見える形で上に乗せます。
+
+![](./imgs/build_put_bottom.jpeg)
+
+6か所にネジを締めます。
+
+(フォームを押し込むようにしてネジを回し、少し回りづらくなったくらいで止めます。強く締めすぎるとネジ穴が削れ、ネジが閉まらなくなる恐れがあります。)
+
+![](./imgs/build_screwfastening.jpeg)
+
+![](./imgs/build_screw_fastened.jpeg)
 
 6か所にゴム足を張ります。
 
+![](./imgs/build_anti_slip.jpeg)
+
+![](./imgs/build_fits_anti_slip.jpeg)
+
+これで、キーボードのベース部分は完成しました。
+
+今度は、2か所にスタビライザーをはめ込みます。
+
+![](./imgs/build_fitting_stab.jpeg)
+
+![](./imgs/build_fits_stab.jpeg)
+
+次に、キースイッチをはめます。
+
 キースイッチの足とはめ込む穴に気を付けながら、スイッチをはめ込みます。
 
-(薄紫になっている穴には MX 互換の Gateron が、もう一方には Choc 互換がはまります。)
+![](./imgs/build_fit_switches.jpeg)
 
 キーキャップを取り付けます。
 
 完成！
+
+![](./imgs/keyboard_white.jpg)
 
 ## 4. トラブルシュート
 

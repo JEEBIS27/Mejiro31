@@ -1,6 +1,6 @@
 # Mejiro31 の使い方 ([スタートページに戻る](../README.md))
 
-![](./imgs/5.Both_parallel.JPG)
+![](./imgs/layer_QWERTY.png)
 
 ## 目次
   1. [キーレイアウト](#キーレイアウト)
