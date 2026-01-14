@@ -92,7 +92,7 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 ![](./imgs/build_trimming_top_middle.jpeg)
 
-切り取り切るとこのようになります。
+取り切るとこのようになります。
 
 ![](./imgs/build_front_pcb.jpeg)
 
@@ -172,6 +172,6 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 ## お問い合わせ
 
-お問い合わせは`jeebis.iox@gmail.com`か、特に根本的な問題等は Mejiro31 の GitHub リポジトリの [Issues](https://github.com/JEEBIS27/Mejiro31/issues) へお願いします。
+お問い合わせは`jeebis.iox@gmail.com`へお願いします。
 
 [スタートページに戻る](../README.md)

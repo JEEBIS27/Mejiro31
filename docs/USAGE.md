@@ -323,6 +323,7 @@ uint16_t alt_transform(uint16_t kc) {
 - [tomisuke (Tomisuke 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_tomisuke.uf2)
 - [astarte (Astarte 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_astarte.uf2)
 - [o24 (大西配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_o24.uf2)
+- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_merlin.uf2)
 - [graphite (Graphite 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_graphite.uf2)
 
 もし他のレイアウトを追加してほしい場合は GitHub の [Issues](https://github.com/JEEBIS27/Mejiro31/issues) からリクエストしてください。
