@@ -259,52 +259,53 @@ static int alt_lang = 2; // Alternative Layoutの言語設定
 
 次に、代替レイアウトのキーマップを定義します。
 
-90 行目あたりに以下のコードがあります。
+202 行目あたりに以下のコードがあります。
 
 ```
 <keymaps/jp_o24/keymap.c>
-// 配列名：大西配列
-uint16_t alt_transform(uint16_t kc) {
-    if (!is_alt_mode || force_qwerty_active) return kc;
-    switch (kc) {
-        case KC_Q: return KC_Q;
-        case KC_W: return KC_L;
-        case KC_E: return KC_U;
-        case KC_R: return KC_COMM;
-        case KC_T: return KC_DOT;
-        case KC_Y: return KC_F;
-        case KC_U: return KC_W;
-        case KC_I: return KC_R;
-        case KC_O: return KC_Y;
-        case KC_P: return KC_P;
-        case KC_MINS: return KC_SLSH;
+// 配列：大西配列
+// ┌─────┬─────┬─────┬─────┬─────┐┌─────┬─────┬─────┬─────┬─────┬─────┐
+// │  q  │  l  │  u  │  ,  │  .  ││  f  │  w  │  r  │  y  │  p  │  /  │
+// ├──e──┼──i──┼──a──┼──o──┼──-──┤├──k──┼──t──┼──n──┼──s──┼──h──┼──'──┤
+// │  z  │  x  │  c  │  v  │  ;  ││  g  │  d  │  m  │  j  │  b  │  \  │
+// └─────┴─────┴─────┴─────┴─────┘└─────┴─────┴─────┴─────┴─────┴─────┘
+static const alt_mapping_t alt_mappings[] PROGMEM = {
+    {KC_Q,    KC_Q,    KC_Q},
+    {KC_W,    KC_L,    KC_L},
+    {KC_E,    KC_U,    KC_U},
+    {KC_R,    KC_COMM, KC_LABK},
+    {KC_T,    KC_DOT,  KC_RABK},
+    {KC_Y,    KC_F,    KC_F},
+    {KC_U,    KC_W,    KC_W},
+    {KC_I,    KC_R,    KC_R},
+    {KC_O,    KC_Y,    KC_Y},
+    {KC_P,    KC_P,    KC_P},
+    {KC_MINS, KC_SLSH, KC_QUES},
 
-        case KC_A: return KC_E;
-        case KC_S: return KC_I;
-        case KC_D: return KC_A;
-        case KC_F: return KC_O;
-        case KC_G: return KC_MINS;
-        case KC_H: return KC_K;
-        case KC_J: return KC_T;
-        case KC_K: return KC_N;
-        case KC_L: return KC_S;
-        case KC_SCLN: return KC_H;
-        case KC_QUOT: return KC_QUOT;
+    {KC_A,    KC_E,    KC_E},
+    {KC_S,    KC_I,    KC_I},
+    {KC_D,    KC_A,    KC_A},
+    {KC_F,    KC_O,    KC_O},
+    {KC_G,    KC_MINS, KC_UNDS},
+    {KC_H,    KC_K,    KC_K},
+    {KC_J,    KC_T,    KC_T},
+    {KC_K,    KC_N,    KC_N},
+    {KC_L,    KC_S,    KC_S},
+    {KC_SCLN, KC_H,    KC_H},
+    {KC_QUOT, KC_QUOT, KC_DQUO},
 
-        case KC_Z: return KC_Z;
-        case KC_X: return KC_X;
-        case KC_C: return KC_C;
-        case KC_V: return KC_V;
-        case KC_B: return KC_SCLN;
-        case KC_N: return KC_G;
-        case KC_M: return KC_D;
-        case KC_COMM: return KC_M;
-        case KC_DOT: return KC_J;
-        case KC_SLSH: return KC_B;
-        case KC_BSLS: return KC_BSLS;
-        default: return kc;
-    }
-}
+    {KC_Z,    KC_Z,    KC_Z},
+    {KC_X,    KC_X,    KC_X},
+    {KC_C,    KC_C,    KC_C},
+    {KC_V,    KC_V,    KC_V},
+    {KC_B,    KC_SCLN, KC_COLN},
+    {KC_N,    KC_G,    KC_G},
+    {KC_M,    KC_D,    KC_D},
+    {KC_COMM, KC_M,    KC_M},
+    {KC_DOT,  KC_J,    KC_J},
+    {KC_SLSH, KC_B,    KC_B},
+    {KC_BSLS, KC_BSLS, KC_PIPE},
+};
 ```
 
 ここで定義されている`alt_transform`関数が代替レイアウトのキーマップを定義しています。
@@ -313,18 +314,20 @@ uint16_t alt_transform(uint16_t kc) {
 
 とはいえ、個々人でこれを設定するのは大変なので、いくつか代表的なレイアウトはすでに用意してあります。それを [releases](https://github.com/JEEBIS27/Mejiro31/releases/latest) からダウンロードして利用することをおすすめします。
 
-現状（v0.1.0）では以下のレイアウトが用意されています。
-- [qwerty (QWERTY 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_qwerty.uf2)
-- [dvorak (Dvorak 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_dvorak.uf2)
-- [colemak (Colemak 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_colemak.uf2)
-- [colemak-dh (Colemak-DH 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_colemak-dh.uf2)
-- [workman (Workman 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_workman.uf2)
-- [eucalyn (Eucalyn 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_eucalyn.uf2)
-- [tomisuke (Tomisuke 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_tomisuke.uf2)
-- [astarte (Astarte 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_astarte.uf2)
-- [o24 (大西配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_o24.uf2)
-- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_merlin.uf2)
-- [graphite (Graphite 配列)](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_graphite.uf2)
+現状（v0.2.0）では以下のレイアウトが用意されています。
+- [QWERTY 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_qwerty.uf2)
+- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_dvorak.uf2)
+- [Boo 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_boo.uf2)
+- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_colemak.uf2)
+- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_colemak-dh.uf2)
+- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_workman.uf2)
+- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_graphite.uf2)
+- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_astarte.uf2)
+- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_eucalyn.uf2)
+- [Eucalyn 改](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_eucalyn.uf2)
+- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_tomisuke.uf2)
+- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_o24.uf2)
+- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_merlin.uf2)
 
 もし他のレイアウトを追加してほしい場合は GitHub の [Issues](https://github.com/JEEBIS27/Mejiro31/issues) からリクエストしてください。
 
@@ -334,7 +337,7 @@ Mejiro31 では QMK 標準のコンボ機能を使用しておらず、独自実
 
 そのため、コンボの定義を行うにはソースコードを書き換える必要があります。
 
-既存のコンボを変更したり、新しいコンボを追加したりするには 196 行目あたりの以下のコードを編集します。
+既存のコンボを変更したり、新しいコンボを追加したりするには 373 行目あたりの以下のコードを編集します。
 
 ```
 <keymaps/jp_qwerty/keymap.c>
@@ -361,9 +364,10 @@ const combo_pair_t combo_pairs[] PROGMEM = {
     {KC_1,    KC_7,    KC_4,     _NUMBER},
     {KC_2,    KC_8,    KC_5,     _NUMBER},
     {KC_3,    KC_9,    KC_6,     _NUMBER},
+    {KC_0,    KC_DZ,   KC_TZ,    _NUMBER},
     {KC_DOT,  KC_MINS, KC_COMMA, _NUMBER},
-    {KC_9,    KC_0,    KC_TAB,   _NUMBER},
-    {KC_3,    KC_DZ,   KC_ESC,   _NUMBER},
+    {KC_9,    KC_DOT,  KC_TAB,   _NUMBER},
+    {KC_3,    KC_MINS, KC_ESC,   _NUMBER},
     {KC_PGDN, KC_LEFT, KC_BSPC,  _NUMBER},
     {KC_PGUP, KC_HOME, KC_DEL,   _NUMBER},
 };
@@ -388,12 +392,12 @@ Mejiro31 のファームウェアは QMK ですので、標準で利用できる
 
 ```
 <config.h>
-#define TAPPING_TERM 300
+#define TAPPING_TERM 200
 ```
 
 ここで設定されている数値はミリ秒単位で、キーが長押しとして認識されるまでの時間を表しています。
 
-例えば、`TAPPING_TERM`を 200 に設定すると、 200 ms 以上押された Mod-Tap のキーは長押しとして認識されるようになります。
+例えば、`TAPPING_TERM`を 300 に設定すると、 300 ms 以上押された Mod-Tap のキーは長押しとして認識されるようになります。
 
 このような`config.h`の設定は、 QMK の公式ドキュメントをご覧ください。
 - [QMK Config Options](https://docs.qmk.fm/config_options)
