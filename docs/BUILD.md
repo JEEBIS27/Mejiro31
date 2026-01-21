@@ -17,6 +17,7 @@
 | キースイッチ | 31 |
 | USB-C ケーブル | 1 |
 | 精密ドライバー | 1 |
+| ペンチ | 1 |
 
 ### キースイッチの互換性
 
@@ -57,20 +58,22 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 まずはファームウェアのファイルをダウンロードします。
 
-普通のQWERTY配列を使いたい場合は [こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_qwerty.uf2) をダウンロードしてください。
+普通のQWERTY配列を使いたい場合は [こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_qwerty.uf2) をダウンロードしてください。
 
 その他の代替配列を使いたい場合は以下のリンクからダウンロードしてください。
-
-- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_dvorak.uf2)
-- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_colemak.uf2)
-- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_colemak-dh.uf2)
-- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_workman.uf2)
-- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_eucalyn.uf2)
-- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_tomisuke.uf2)
-- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_astarte.uf2)
-- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_o24.uf2)
-- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_merlin.uf2)
-- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.1.0/mejiro31_jp_graphite.uf2)
+- [QWERTY 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_qwerty.uf2)
+- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_dvorak.uf2)
+- [Boo 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_boo.uf2)
+- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_colemak.uf2)
+- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_colemak-dh.uf2)
+- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_workman.uf2)
+- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_graphite.uf2)
+- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_astarte.uf2)
+- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_eucalyn.uf2)
+- [Eucalyn 改](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_eucalyn.uf2)
+- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_tomisuke.uf2)
+- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_o24.uf2)
+- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_jp_merlin.uf2)
 
 ダウンロードしたら、基板のBOOTボタンを押しながら、PCと接続します。
 
