@@ -1,6 +1,6 @@
 # How to Use Mejiro31 ([Back to Start Page](../README.md))
 
-![](./imgs/layer_QWERTY.png)
+![](./imgs/layer_qwerty_2.png)
 
 ## Table of Contents
   1. [Key Layouts](#key-layouts)
