@@ -17,7 +17,7 @@
 The default key layout looks like this.
 
 ### QWERTY Layer
-![](./imgs/layer_QWERTY.png)
+![](./imgs/layer_qwerty_2.png)
 The QWERTY layer is the standard layer.
 
 Every time you connect Mejiro31, it starts on this layer.
@@ -30,33 +30,59 @@ If you want an alternate layout such as Dvorak or Colemak instead of QWERTY, see
 
 The left and right spacebars are Space and Enter, respectively, but a long press turns them into Shift.
 
+When Shift is held, the layout changes as shown below.
+
+![](./imgs/layer_qwerty_2_shift.png)
+
 Tap the center layer key to switch to the GEMINI layer; hold it to switch to the NUMBER layer.
 
 ### GEMINI Layer
-![](./imgs/layer_GEMINI.png)
-The GEMINI layer is required for using the Mejiro-style system.
+![](./imgs/layer_gemini.png)
+The GEMINI layer is required for using stenography systems other than Mejiro-style.
 
-It outputs codes dedicated to Plover, the software that drives Mejiro-style stenography.
+It outputs codes dedicated to Plover, the software that drives stenography.
 
 You generally do not change this keymap.
 
 If the keyboard suddenly stops typing, check that you have not switched to the GEMINI layer.
 
+By default, this layer is disabled and overridden by the QMK Mejiro-style layer.
+
+![](./imgs/layer_mejiro.png)
+
 Tap the center layer key to go back to the QWERTY layer; hold it to switch to the NUMBER layer.
 
 ### NUMBER Layer
-![](./imgs/layer_NUMBER.png)
+![](./imgs/layer_number.png)
 The NUMBER layer holds numbers, arrow keys, the Windows key, and other function keys.
 
 The key above 0 is a 00 key that outputs two zeros.
+
+When Shift is held, the layout changes as shown below.
+
+![](./imgs/layer_number_shift.png)
+
+On the far left, the top key is the QMK Mejiro-style toggle. Holding it disables Mejiro-style mode and activates the GEMINI layer.
 
 On the far right, the top key toggles alternate layouts on or off, and the bottom key (hold) moves to the FUNCTION layer.
 
 By default, the alternate-layout toggle is disabled because no alternate layout is defined. To enable one, see [Advanced Customization](#advanced-customization).
 
 ### FUNCTION Layer
-![](./imgs/layer_FUNCTION.png)
+![](./imgs/layer_function.png)
 The FUNCTION layer provides F1–F13 keys and media keys.
+
+On the far left, the top key (hold) toggles a mode that allows US keyboard input even when the PC keyboard layout is set to JIS.
+
+Mejiro31 outputs as a US keyboard, so if your PC is set to JIS layout, you should enable this mode for proper output.
+
+By default, this mode is enabled.
+
+Note that PC-side shortcuts remain JIS.
+
+On the far right, the top key (hold) toggles a mode that changes the symbols on the QWERTY and NUMBER layers to standard keyboard layout.
+
+When enabled, pressing `Shift + 2` on the NUMBER layer outputs `@`, for example.
 
 ## How to Remap Keys
 
@@ -222,18 +248,18 @@ Dvorak is shown above; edit this table to define any layout you like.
 
 However, common layouts are already prepared. Download them from [releases](https://github.com/JEEBIS27/Mejiro31/releases/latest) and use them.
 
-As of v0.2.0, these layouts are available:
-- [QWERTY Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_qwerty.uf2)
-- [Dvorak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_dvorak.uf2)
-- [Colemak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_colemak.uf2)
-- [Colemak-DH Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_colemak-dh.uf2)
-- [Workman Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_workman.uf2)
-- [Graphite Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_graphite.uf2)
-- [Gallium Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_gallium.uf2)
-- [Handsdown-neu Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_handsdown-neu.uf2)
-- [Sturdy Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_sturdy.uf2)
-- [Canary Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_canary.uf2)
-- [Engram Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.2.0/jeebis_mejiro31_en_engram.uf2)
+As of v0.3.0, these layouts are available:
+- [QWERTY Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_qwerty.uf2)
+- [Dvorak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_dvorak.uf2)
+- [Colemak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_colemak.uf2)
+- [Colemak-DH Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_colemak-dh.uf2)
+- [Workman Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_workman.uf2)
+- [Graphite Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_graphite.uf2)
+- [Gallium Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_gallium.uf2)
+- [Handsdown-neu Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_handsdown-neu.uf2)
+- [Sturdy Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_sturdy.uf2)
+- [Canary Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_canary.uf2)
+- [Engram Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_en_engram.uf2)
 
 If you want another layout added, request it via GitHub [Issues](https://github.com/JEEBIS27/Mejiro31/issues).
 
