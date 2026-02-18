@@ -8,7 +8,7 @@
      - [GEMINI レイヤー](#gemini-レイヤー)
      - [NUMBER レイヤー](#number-レイヤー)
      - [FUNCTION レイヤー](#function-レイヤー)
-  2. [キーの入れ替え方法](#キーの入れ替え方法) 
+  2. [キーの入れ替え方法](#キーの入れ替え方法)
   3. [高度なカスタム](#高度なカスタム)
   4. [お問い合わせ](#お問い合わせ)
 
@@ -131,7 +131,7 @@ CONFIGURE タブの`Authorize device`ボタンを押し、ポップアップ画�
      - [レイヤーごとの言語設定](#レイヤーごとの言語設定)
      - [代替レイアウトの有効化](#代替レイアウトの有効化)
      - [コンボの詳細設定](#コンボの詳細設定)
-     - [config.h の設定](#config.h-の設定) 
+     - [config.h の設定](#config.h-の設定)
 
 Mejiro31 は高度なカスタムとして、 QMK ファームウェアの設定を変更することでより細かい需要にこたえることができます。
 
@@ -334,20 +334,20 @@ static const alt_mapping_t alt_mappings[] PROGMEM = {
 
 とはいえ、個々人でこれを設定するのは大変なので、いくつか代表的なレイアウトはすでに用意してあります。それを [releases](https://github.com/JEEBIS27/Mejiro31/releases/latest) からダウンロードして利用することをおすすめします。
 
-現状（v0.3.0）では以下のレイアウトが用意されています。
-- [QWERTY 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_qwerty.uf2)
-- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_dvorak.uf2)
-- [Boo 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_boo.uf2)
-- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_colemak.uf2)
-- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_colemak-dh.uf2)
-- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_workman.uf2)
-- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_graphite.uf2)
-- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_astarte.uf2)
-- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_eucalyn.uf2)
-- [Eucalyn 改](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_eucalyn.uf2)
-- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_tomisuke.uf2)
-- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_o24.uf2)
-- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.0/jeebis_mejiro31_jp_merlin.uf2)
+現状（v0.3.1）では以下のレイアウトが用意されています。
+- [QWERTY 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_qwerty.uf2)
+- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_dvorak.uf2)
+- [Boo 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_boo.uf2)
+- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_colemak.uf2)
+- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_colemak-dh.uf2)
+- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_workman.uf2)
+- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_graphite.uf2)
+- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_astarte.uf2)
+- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_eucalyn.uf2)
+- [Eucalyn 改](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_eucalyn.uf2)
+- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_tomisuke.uf2)
+- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_o24.uf2)
+- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_jp_merlin.uf2)
 
 もし他のレイアウトを追加してほしい場合は GitHub の [Issues](https://github.com/JEEBIS27/Mejiro31/issues) からリクエストしてください。
 
