@@ -248,18 +248,18 @@ Dvorak is shown above; edit this table to define any layout you like.
 
 However, common layouts are already prepared. Download them from [releases](https://github.com/JEEBIS27/Mejiro31/releases/latest) and use them.
 
-As of v0.3.1, these layouts are available:
-- [QWERTY Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_qwerty.uf2)
-- [Dvorak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_dvorak.uf2)
-- [Colemak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_colemak.uf2)
-- [Colemak-DH Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_colemak-dh.uf2)
-- [Workman Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_workman.uf2)
-- [Graphite Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_graphite.uf2)
-- [Gallium Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_gallium.uf2)
-- [Handsdown-neu Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_handsdown-neu.uf2)
-- [Sturdy Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_sturdy.uf2)
-- [Canary Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_canary.uf2)
-- [Engram Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.1/mejiro31_en_engram.uf2)
+As of v0.3.2, these layouts are available:
+- [QWERTY Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_qwerty.uf2)
+- [Dvorak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_dvorak.uf2)
+- [Colemak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_colemak.uf2)
+- [Colemak-DH Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_colemak-dh.uf2)
+- [Workman Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_workman.uf2)
+- [Graphite Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_graphite.uf2)
+- [Gallium Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_gallium.uf2)
+- [Handsdown-neu Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_handsdown-neu.uf2)
+- [Sturdy Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_sturdy.uf2)
+- [Canary Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_canary.uf2)
+- [Engram Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_engram.uf2)
 
 If you want another layout added, request it via GitHub [Issues](https://github.com/JEEBIS27/Mejiro31/issues).
 
