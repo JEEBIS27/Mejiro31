@@ -4,8 +4,8 @@
 
 ## Table of Contents
   1. [Key Layouts](#key-layouts)
-     - [QWERTY Layer](#qwerty-layer)
-     - [GEMINI Layer](#gemini-layer)
+     - [KEYBOARD Layer](#keyboard-layer)
+     - [STENO Layer](#steno-layer)
      - [NUMBER Layer](#number-layer)
      - [FUNCTION Layer](#function-layer)
   2. [How to Remap Keys](#how-to-remap-keys)
@@ -16,9 +16,9 @@
 
 The default key layout looks like this.
 
-### QWERTY Layer
+### KEYBOARD Layer
 ![](./imgs/layer_qwerty_2.png)
-The QWERTY layer is the standard layer.
+The KEYBOARD layer is the standard layer.
 
 Every time you connect Mejiro31, it starts on this layer.
 
@@ -26,7 +26,7 @@ It uses [two-step compression](https://note.com/jeebis_keyboard/n/ncbc327906050)
 
 ![](./imgs/二段圧縮.png)
 
-If you want an alternate layout such as Dvorak or Colemak instead of QWERTY, see [Advanced Customization](#advanced-customization).
+If you want an alternate layout such as Dvorak or Colemak instead of QWERTY, see the firmware list in the [Start Page](../README.md) to download and flash your preferred layout. If you want another layout added, request it via GitHub [Issues](https://github.com/JEEBIS27/Mejiro31/issues).
 
 The left and right spacebars are Space and Enter, respectively, but a long press turns them into Shift.
 
@@ -34,23 +34,24 @@ When Shift is held, the layout changes as shown below.
 
 ![](./imgs/layer_qwerty_2_shift.png)
 
-Tap the center layer key to switch to the GEMINI layer; hold it to switch to the NUMBER layer.
+Tap the center layer key to switch to the STENO layer; hold it to switch to the NUMBER layer.
 
-### GEMINI Layer
+### STENO Layer
+![](./imgs/layer_mejiro.png)
+The STENO layer runs QMK Mejiro-style stenography by default.
+
+Holding the QMK Mejiro-style toggle key (described later) switches this to the GEMINI layer.
+
 ![](./imgs/layer_gemini.png)
-The GEMINI layer is required for using stenography systems other than Mejiro-style.
+The GEMINI layer is required for using stenography with Plover software.
 
-It outputs codes dedicated to Plover, the software that drives stenography.
+It outputs codes dedicated to Plover.
 
 You generally do not change this keymap.
 
 If the keyboard suddenly stops typing, check that you have not switched to the GEMINI layer.
 
-By default, this layer is disabled and overridden by the QMK Mejiro-style layer.
-
-![](./imgs/layer_mejiro.png)
-
-Tap the center layer key to go back to the QWERTY layer; hold it to switch to the NUMBER layer.
+Tap the center layer key to go back to the KEYBOARD layer; hold it to switch to the NUMBER layer.
 
 ### NUMBER Layer
 ![](./imgs/layer_number.png)
@@ -64,9 +65,7 @@ When Shift is held, the layout changes as shown below.
 
 On the far left, the top key is the QMK Mejiro-style toggle. Holding it disables Mejiro-style mode and activates the GEMINI layer.
 
-On the far right, the top key toggles alternate layouts on or off, and the bottom key (hold) moves to the FUNCTION layer.
-
-By default, the alternate-layout toggle is disabled because no alternate layout is defined. To enable one, see [Advanced Customization](#advanced-customization).
+On the far right, the top key (hold) toggles alternate layouts on or off, and the bottom key (hold) moves to the FUNCTION layer.
 
 ### FUNCTION Layer
 ![](./imgs/layer_function.png)
@@ -129,7 +128,8 @@ Once you do this setup, future changes only require opening the VIA CONFIGURE ta
      - [Set up the firmware build environment](#set-up-the-firmware-build-environment)
   2. [Examples of advanced customization](#examples-of-advanced-customization)
      - [Language settings per layer](#language-settings-per-layer)
-     - [Enable alternate layouts](#enable-alternate-layouts)
+     - [Language settings for alternate layouts](#language-settings-for-alternate-layouts)
+     - [Define alternate layouts](#define-alternate-layouts)
      - [Detailed combo settings](#detailed-combo-settings)
      - [config.h settings](#configh-settings)
 
@@ -183,85 +183,140 @@ When you see a command like `git clone <repository_url>`, use the URL of your fo
 
 Editing the firmware source allows fine-grained customization.
 
-#### Enable alternate layouts
+#### Language settings per layer
 
-By default, only the QWERTY layer is defined, but you can use any alternate layout such as Dvorak or Colemak.
+Mejiro31 can automatically switch the IME according to the set language whenever a layer changes.
 
-Alternate layouts are disabled while a modifier key is held; they fall back to QWERTY.
+This feature lets the center layer key act both as a keyboard/steno mode toggle and an IME switcher.
 
-Here is the Dvorak example.
+By default, steno mode uses Mejiro-style for Japanese input and keyboard mode uses English input.
 
-Open `keyboards/jeebis/mejiro31/keymaps/en_dvorak/keymap.c`.
+For advanced customization, for example, if you want to use romaji for Japanese and stenography for English, you can configure the QWERTY layer to turn IME ON and the GEMINI layer to turn IME OFF.
 
-Around line 202 you will find:
+To configure Mejiro31's language settings, open `keyboards/jeebis/mejiro31/keymaps/en_qwerty/keymap.c` in your forked repository.
+
+Around line 72 you will find:
+
+```
+<keymaps/en_qwerty/keymap.c>
+// 0:unused, 1:English, 2:Japanese, 3:no change
+static int stn_lang = 2; // Language for steno mode
+static int kbd_lang = 1; // Language for keyboard mode
+```
+
+Here, `stn_lang` represents the language setting for the GEMINI layer (steno mode), and `kbd_lang` represents the language setting for the QWERTY layer (keyboard mode).
+
+Set each variable to one of these values:
+
+| Value | Language |
+| ----- | -------- |
+| 1     | English  |
+| 2     | Japanese |
+| Other | No change |
+
+To type Japanese in keyboard mode and English in steno mode, configure as follows:
+
+```
+<keymaps/en_qwerty/keymap.c>
+static int stn_lang = 1; // Language for steno mode
+static int kbd_lang = 2; // Language for keyboard mode
+```
+
+#### Language settings for alternate layouts
+
+Here we use the Onishi layout as an example.
+
+Open `keyboards/jeebis/mejiro31/keymaps/en_o24/keymap.c`.
+
+Around line 74 you will find:
+
+```
+<keymaps/en_o24/keymap.c>
+static int alt_lang = 3; // Alternative Layout language setting
+```
+
+The `alt_lang` variable is set to 3 (both languages) by default.
+
+Change it to one of these values to configure the alternate layout language:
+
+| Value | Language |
+| ----- | -------- |
+| 1     | English only |
+| 2     | Japanese only |
+| 3     | Both languages |
+
+For example, to use Dvorak only for English input, set it to 1:
 
 ```
 <keymaps/en_dvorak/keymap.c>
-// Layout: Dvorak
+static int alt_lang = 1; // Alternative Layout language setting
+```
+
+To use the Onishi layout only for Japanese input, set it to 2:
+
+```
+<keymaps/en_o24/keymap.c>
+static int alt_lang = 2; // Alternative Layout language setting
+```
+
+Once you configure the language, the Eisu/Kana key on the NUMBER layer (lower right thumb) will toggle both IME and the alternate layout simultaneously.
+
+#### Define alternate layouts
+
+Next, we will show how to define a custom alternate layout keymap not yet supported by Mejiro31.
+
+Around line 254 you will find:
+
+```
+<keymaps/en_o24/keymap.c>
+// Layout: Onishi (O24)
 // ┌─────┬─────┬─────┬─────┬─────┐┌─────┬─────┬─────┬─────┬─────┬─────┐
-// │  '  │  ,  │  .  │  p  │  y  ││  f  │  g  │  c  │  r  │  l  │  /  │
-// ├──a──┼──o──┼──e──┼──u──┼──i──┤├──d──┼──h──┼──t──┼──n──┼──s──┼──-──┤
-// │  ;  │  q  │  j  │  k  │  x  ││  b  │  m  │  w  │  v  │  z  │  \  │
+// │  q  │  l  │  u  │  ,  │  .  ││  f  │  w  │  r  │  y  │  p  │  /  │
+// ├──e──┼──i──┼──a──┼──o──┼──-──┤├──k──┼──t──┼──n──┼──s──┼──h──┼──'──┤
+// │  z  │  x  │  c  │  v  │  ;  ││  g  │  d  │  m  │  j  │  b  │  \  │
 // └─────┴─────┴─────┴─────┴─────┘└─────┴─────┴─────┴─────┴─────┴─────┘
 static const alt_mapping_t alt_mappings[] PROGMEM = {
-    {KC_Q,    KC_QUOT, KC_DQUO},
-    {KC_W,    KC_COMM, KC_LABK},
-    {KC_E,    KC_DOT,  KC_RABK},
-    {KC_R,    KC_P,    KC_P},
-    {KC_T,    KC_Y,    KC_Y},
+    {KC_Q,    KC_Q,    KC_Q},
+    {KC_W,    KC_L,    KC_L},
+    {KC_E,    KC_U,    KC_U},
+    {KC_R,    KC_COMM, KC_LABK},
+    {KC_T,    KC_DOT,  KC_RABK},
     {KC_Y,    KC_F,    KC_F},
-    {KC_U,    KC_G,    KC_G},
-    {KC_I,    KC_C,    KC_C},
-    {KC_O,    KC_R,    KC_R},
-    {KC_P,    KC_L,    KC_L},
+    {KC_U,    KC_W,    KC_W},
+    {KC_I,    KC_R,    KC_R},
+    {KC_O,    KC_Y,    KC_Y},
+    {KC_P,    KC_P,    KC_P},
     {KC_MINS, KC_SLSH, KC_QUES},
 
-    {KC_A,    KC_A,    KC_A},
-    {KC_S,    KC_O,    KC_O},
-    {KC_D,    KC_E,    KC_E},
-    {KC_F,    KC_U,    KC_U},
-    {KC_G,    KC_I,    KC_I},
-    {KC_H,    KC_D,    KC_D},
-    {KC_J,    KC_H,    KC_H},
-    {KC_K,    KC_T,    KC_T},
-    {KC_L,    KC_N,    KC_N},
-    {KC_SCLN, KC_S,    KC_S},
-    {KC_QUOT, KC_MINS, KC_UNDS},
+    {KC_A,    KC_E,    KC_E},
+    {KC_S,    KC_I,    KC_I},
+    {KC_D,    KC_A,    KC_A},
+    {KC_F,    KC_O,    KC_O},
+    {KC_G,    KC_MINS, KC_UNDS},
+    {KC_H,    KC_K,    KC_K},
+    {KC_J,    KC_T,    KC_T},
+    {KC_K,    KC_N,    KC_N},
+    {KC_L,    KC_S,    KC_S},
+    {KC_SCLN, KC_H,    KC_H},
+    {KC_QUOT, KC_QUOT, KC_DQUO},
 
-    {KC_Z,    KC_SCLN, KC_COLN},
-    {KC_X,    KC_Q,    KC_Q},
-    {KC_C,    KC_J,    KC_J},
-    {KC_V,    KC_K,    KC_K},
-    {KC_B,    KC_X,    KC_X},
-    {KC_N,    KC_B,    KC_B},
-    {KC_M,    KC_M,    KC_M},
-    {KC_COMM, KC_W,    KC_W},
-    {KC_DOT,  KC_V,    KC_V},
-    {KC_SLSH, KC_Z,    KC_Z},
+    {KC_Z,    KC_Z,    KC_Z},
+    {KC_X,    KC_X,    KC_X},
+    {KC_C,    KC_C,    KC_C},
+    {KC_V,    KC_V,    KC_V},
+    {KC_B,    KC_SCLN, KC_COLN},
+    {KC_N,    KC_G,    KC_G},
+    {KC_M,    KC_D,    KC_D},
+    {KC_COMM, KC_M,    KC_M},
+    {KC_DOT,  KC_J,    KC_J},
+    {KC_SLSH, KC_B,    KC_B},
     {KC_BSLS, KC_BSLS, KC_PIPE},
 };
 ```
 
 The `alt_transform` function defined here maps the alternate layout.
 
-Dvorak is shown above; edit this table to define any layout you like.
-
-However, common layouts are already prepared. Download them from [releases](https://github.com/JEEBIS27/Mejiro31/releases/latest) and use them.
-
-As of v0.3.2, these layouts are available:
-- [QWERTY Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_qwerty.uf2)
-- [Dvorak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_dvorak.uf2)
-- [Colemak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_colemak.uf2)
-- [Colemak-DH Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_colemak-dh.uf2)
-- [Workman Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_workman.uf2)
-- [Graphite Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_graphite.uf2)
-- [Gallium Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_gallium.uf2)
-- [Handsdown-neu Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_handsdown-neu.uf2)
-- [Sturdy Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_sturdy.uf2)
-- [Canary Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_canary.uf2)
-- [Engram Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_en_engram.uf2)
-
-If you want another layout added, request it via GitHub [Issues](https://github.com/JEEBIS27/Mejiro31/issues).
+The Onishi layout is shown above; edit this table to define any layout you like.
 
 #### Detailed combo settings
 

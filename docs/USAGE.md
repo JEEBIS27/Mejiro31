@@ -1,11 +1,11 @@
 # Mejiro31 の使い方 ([スタートページに戻る](../README.md))
 
-![](./imgs/layer_qwerty_2.png)
+![](./imgs/layer_qwerty.png)
 
 ## 目次
   1. [キーレイアウト](#キーレイアウト)
-     - [QWERTY レイヤー](#qwerty-レイヤー)
-     - [GEMINI レイヤー](#gemini-レイヤー)
+     - [KEYBOARD レイヤー](#keyboard-レイヤー)
+     - [STENO レイヤー](#steno-レイヤー)
      - [NUMBER レイヤー](#number-レイヤー)
      - [FUNCTION レイヤー](#function-レイヤー)
   2. [キーの入れ替え方法](#キーの入れ替え方法)
@@ -16,9 +16,9 @@
 
 デフォルトではこのようなキー配置になっています。
 
-### QWERTY レイヤー
-![](./imgs/layer_qwerty_2.png)
-QWERTY レイヤーは標準のレイヤーです。
+### KEYBOARD レイヤー
+![](./imgs/layer_qwerty.png)
+KEYBOARD レイヤーは標準のレイヤーです。
 
 Mejiro31 を接続したときは毎回このレイヤーでスタートします。
 
@@ -26,19 +26,24 @@ Mejiro31 を接続したときは毎回このレイヤーでスタートしま�
 
 ![](./imgs/二段圧縮.png)
 
-もし QWERTY ではなく、Dvorakや大西配列のような代替レイアウトを使用したい場合は[高度なカスタム](#高度なカスタム)の章をご覧ください。
+もし QWERTY ではなく、Dvorakや大西配列のような代替レイアウトを使用したい場合は[スタートページ](../README.md)のファームウェア一覧の章をご覧いただき、使いたいレイアウトのファームウェアをダウンロードして書き込むことができます。もし他のレイアウトを追加してほしい場合は GitHub の [Issues](https://github.com/JEEBIS27/Mejiro31/issues) からリクエストしてください。
 
 また、左右のスペースバーはそれぞれ Space と Enter ですが、長押しで Shift キーとして動作します。
 
 Shift キーを押したときの配列は以下のようになります。
 
-![](./imgs/layer_qwerty_2_shift.png)
+![](./imgs/layer_qwerty_shift.png)
 
-真ん中のレイヤーキーを短く押すと GEMINI レイヤーに切り替わり、長押しで NUMBER レイヤーに切り替わります。
+真ん中のレイヤーキーを短く押すと STENO レイヤーに切り替わり、長押しで NUMBER レイヤーに切り替わります。
 
-### GEMINI レイヤー
+### STENO レイヤー
+![](./imgs/layer_mejiro.png)
+STENO レイヤーは、デフォルトでは QMK 版メジロ式が動作します。
+
+後述の QMK 版メジロ式切り替えキーを長押しすることで、 GEMINI レイヤーに切り替えることができます。
+
 ![](./imgs/layer_gemini.png)
-GEMINI レイヤーはメジロ式以外の方式の速記を使うために必要なレイヤーです。
+GEMINI レイヤーは速記を使うために必要なレイヤーです。
 
 速記を動かす Plover というソフト専用の出力が割り当たっています。
 
@@ -46,11 +51,7 @@ GEMINI レイヤーはメジロ式以外の方式の速記を使うために必�
 
 急にキーボードが入力できなくなったときは GEMINI レイヤーになってしまっていないかご確認ください。
 
-デフォルトでこのレイヤーは無効になっていて、QMK版メジロ式用レイヤーで上書きされています。
-
-![](./imgs/layer_mejiro.png)
-
-真ん中のレイヤーキーを短く押すと QWERTY レイヤーに切り替わり、長押しで NUMBER レイヤーに切り替わります。
+真ん中のレイヤーキーを短く押すと KEYBOARD レイヤーに切り替わり、長押しで NUMBER レイヤーに切り替わります。
 
 ### NUMBER レイヤー
 ![](./imgs/layer_number.png)
@@ -62,25 +63,19 @@ Shift キーを押したときの配列は以下のようになります。
 
 ![](./imgs/layer_number_shift.png)
 
-一番左の、上段のキーはQMK版メジロ式切り替えキーで、これを長押しするとメジロ式は無効化され、 GEMINI レイヤーが有効化されます。
+一番左の、上段のキーは QMK 版メジロ式切り替えキーで、これを長押しするとメジロ式は無効化され、 GEMINI レイヤーが有効化されます。もう一度長押しすると元に戻ります。
 
 一番右の、上段のキーは長押しで代替レイアウトの有効・無効を切りかえるキーで、下段のキーは長押しで FUNCTION レイヤーに遷移するキーです。
 
-ただし、デフォルトの設定では代替レイアウトキーは無効になっています。それは代替レイアウトが定義されていないからです。代替レイアウトを有効化したい場合は[高度なカスタム](#高度なカスタム)の章をご覧ください。
-
 ### FUNCTION レイヤー
 ![](./imgs/layer_function.png)
-FUNCTION レイヤーには F1 ~ F13 キーやメディアキーが割り当たっています。
+FUNCTION レイヤーには F1 ~ F12 キーやメディアキーが割り当たっています。
 
-一番左の、上段のキーは長押しで PC のキーボード設定が JIS でも US キーボードとして入力できるモードの切り替えキーです。
+一番左の、上段のキーは長押しで JIS モードと US モードを切り替えるキーです。
 
-Mejiro31 は US キーボードとして出力するので、 PC が JIS レイアウトの時はこのモードをオンにしないと設定どおりの出力になりません。
+デフォルトでは JIS モードになっていますから、 PC の設定が US になっている場合はこのキーを長押しして US モードに切り替える必要があります。
 
-デフォルトではこれがオンになっています。
-
-ただし、PC 側のショートカットキーは JIS のままなのでお気を付けください。
-
-一番右の、上段のキーは長押しで QWERTY レイヤーと NUMBER レイヤーの記号を普通のキーボード通りに変更するキーです。
+一番右の、上段のキーは長押しで KEYBOARD レイヤーと NUMBER レイヤーの記号を普通のキーボード通りに変更するキーです。
 
 これをオンにすることで普段通りに、例えば NUMBER レイヤーで `Shift + 2` を押すと `@` が出力されるようになります。
 
@@ -185,27 +180,17 @@ PC 環境によってやり方が異なるのでここでは詳しく紹介し�
 
 #### レイヤーごとの言語設定
 
-レイヤーが切り替わるごとに、設定した言語に対応して IME を自動で切り替えることができます。
+Mejiro31 ではレイヤーが切り替わるごとに、設定した言語に対応して IME を自動で切り替えることができます。
 
 この機能によって、真ん中のレイヤーキーをキーボード・ステノモードの切り替えキーかつ IME 切り替えキーとして使用することができます。
 
-例えば、日本語入力はメジロ式、英語入力は普通のキーボード入力で行うという場合、 QWERTY レイヤーで IME OFF 、 GEMINI レイヤーでは IME ON に自動で切り替えるようにすることができます。
+デフォルトでは、ステノモードはメジロ式で日本語入力、キーボードモードでは英語入力を行うように設定されています。
 
-(※ Windows11 環境では IME のオンオフキーがデフォルトでは動作しないため、この機能を使用する場合は以下の設定を行う必要があります。
-
-まず設定アプリを開き、`時刻と言語` > `言語と地域` > `オプション` > `Microsoft IME` > `キーのタッチとカスタマイズ` に移動します。
-
-![](./imgs/win_ime_setting_1.png)
-
-ここの`キーの割り当て`で変換キーと無変換キーの割り当てをそれぞれ`IME オン`と`IME オフ`に変更します。
-
-![](./imgs/win_ime_setting_2.png)
-
-※ MacOS 環境ではデフォルトで IME のオンオフキーが動作するため、特に設定を行う必要はありません。)
+高度なカスタムではこれを、例えば、日本語入力はローマ字、英語入力は速記で行うという場合、 QWERTY レイヤーで IME ON 、 GEMINI レイヤーでは IME OFF に自動で切り替えるようにすることができます。
 
 Mejiro31 の言語設定をするにはまず、あなたがフォークしたリポジトリの`keyboards/jeebis/mejiro31/keymaps/jp_qwerty/keymap.c`を開きます。
 
-すると51 行目あたりに以下のコードがあります。
+すると 72 行目あたりに以下のコードがあります。
 
 ```
 <keymaps/jp_qwerty/keymap.c>
@@ -224,9 +209,8 @@ static int kbd_lang = 1; // キーボード時の言語
 | 2    | 日本語  |
 | その他 | 無変更 |
 
-デフォルトでは、ステノモードはメジロ式で日本語入力、キーボードモードでは英語入力を QWERTY で行うように設定されています。
 
-逆に、キーボードで日本語入力、英語速記で英語入力を行いたい場合は以下のように設定します。
+キーボードで日本語入力、速記で英語入力を行いたい場合は以下のように設定します。
 
 ```
 <keymaps/jp_qwerty/keymap.c>
@@ -234,17 +218,13 @@ static int stn_lang = 1; // ステノ時の言語
 static int kbd_lang = 2; // キーボード時の言語
 ```
 
-#### 代替レイアウトの有効化
-
-デフォルトでは QWERTY レイヤーのみが定義されていますが、 Dvorak や大西配列のような代替レイアウトを何でも好きに使うことができます。
-
-ただし、モディファイアキーを押している間は代替レイアウトは無効になり、 QWERTY として動作します。
+#### 代替レイアウトの言語設定
 
 ここでは大西配列の設定を例として紹介します。
 
 まずは、`keyboards/jeebis/mejiro31/keymaps/jp_o24/keymap.c`を開きます。
 
-54 行目あたりに以下のコードがあります。
+74 行目あたりに以下のコードがあります。
 ```
 <keymaps/jp_o24/keymap.c>
 static int alt_lang = 3; // Alternative Layoutの言語設定
@@ -273,13 +253,13 @@ static int alt_lang = 1; // Alternative Layoutの言語設定
 static int alt_lang = 2; // Alternative Layoutの言語設定
 ```
 
-ここで言語を設定すると、NUMBER レイヤーの右親指下段にある変換・無変換キーで IME の切り替えと代替レイアウトの有効・無効を同時に切り替えることができるようになります。
+ここで言語を設定すると、NUMBER レイヤーの右親指下段にある英数・かなキーで IME の切り替えと代替レイアウトの有効・無効を同時に切り替えることができるようになります。
 
-`alt_lang`変数を 1 あるいは 2 を設定した場合、 IME 切替キーを有効化する必要があります。全章の[レイヤーごとの言語設定](#レイヤーごとの言語設定)をご覧ください。
+#### 代替レイアウトの定義追加
 
-次に、代替レイアウトのキーマップを定義します。
+次に、Mejiro31 で対応していない代替レイアウトのキーマップを定義する方法を紹介します。。
 
-202 行目あたりに以下のコードがあります。
+254 行目あたりに以下のコードがあります。
 
 ```
 <keymaps/jp_o24/keymap.c>
@@ -332,32 +312,13 @@ static const alt_mapping_t alt_mappings[] PROGMEM = {
 
 ここでは大西配列が定義されていますが、ここを書き換えることで好きなレイアウトを定義することができます。
 
-とはいえ、個々人でこれを設定するのは大変なので、いくつか代表的なレイアウトはすでに用意してあります。それを [releases](https://github.com/JEEBIS27/Mejiro31/releases/latest) からダウンロードして利用することをおすすめします。
-
-現状（v0.3.2）では以下のレイアウトが用意されています。
-- [QWERTY 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_qwerty.uf2)
-- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_dvorak.uf2)
-- [Boo 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_boo.uf2)
-- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_colemak.uf2)
-- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_colemak-dh.uf2)
-- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_workman.uf2)
-- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_graphite.uf2)
-- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_astarte.uf2)
-- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_eucalyn.uf2)
-- [Eucalyn 改](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_eucalyn.uf2)
-- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_tomisuke.uf2)
-- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_o24.uf2)
-- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_merlin.uf2)
-
-もし他のレイアウトを追加してほしい場合は GitHub の [Issues](https://github.com/JEEBIS27/Mejiro31/issues) からリクエストしてください。
-
 ### コンボの詳細設定
 
 Mejiro31 では QMK 標準のコンボ機能を使用しておらず、独自実装のコンボ機能を使用しています。
 
 そのため、コンボの定義を行うにはソースコードを書き換える必要があります。
 
-既存のコンボを変更したり、新しいコンボを追加したりするには 373 行目あたりの以下のコードを編集します。
+既存のコンボを変更したり、新しいコンボを追加したりするには 452 行目あたりの以下のコードを編集します。
 
 ```
 <keymaps/jp_qwerty/keymap.c>

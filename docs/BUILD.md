@@ -76,6 +76,7 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 - [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.2/mejiro31_jp_merlin.uf2)
 
 ダウンロードしたら、基板のBOOTボタンを押しながら、PCと接続します。
+(二回目以降に書き込む場合は、キーボードの一番左上のキーを押しながら接続してください。)
 
 ![](./imgs/build_firmware.jpeg)
 
