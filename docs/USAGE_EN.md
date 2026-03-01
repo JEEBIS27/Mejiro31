@@ -55,7 +55,7 @@ Tap the center layer key to go back to the KEYBOARD layer; hold it to switch to 
 
 ### NUMBER Layer
 ![](./imgs/layer_number.png)
-The NUMBER layer holds numbers, arrow keys, the Windows key, and other function keys.
+The NUMBER layer holds numbers, arrow keys, and other function keys.
 
 The key above 0 is a 00 key that outputs two zeros.
 
