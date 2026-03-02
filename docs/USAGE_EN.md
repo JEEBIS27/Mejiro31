@@ -128,7 +128,7 @@ Once you do this setup, future changes only require opening the VIA CONFIGURE ta
      - [Set up the firmware build environment](#set-up-the-firmware-build-environment)
   2. [Examples of advanced customization](#examples-of-advanced-customization)
      - [Language settings per layer](#language-settings-per-layer)
-     - [Language settings for alternate layouts](#language-settings-for-alternate-layouts)
+     - [Alternate layout settings](#alternate-layout-settings)
      - [Define alternate layouts](#define-alternate-layouts)
      - [Detailed combo settings](#detailed-combo-settings)
      - [config.h settings](#configh-settings)
@@ -222,101 +222,92 @@ static int stn_lang = 1; // Language for steno mode
 static int kbd_lang = 2; // Language for keyboard mode
 ```
 
-#### Language settings for alternate layouts
+#### Alternate layout settings
 
-Here we use the Onishi layout as an example.
+Here is an example of using the Onishi layout for Japanese input and Graphite for English input.
 
-Open `keyboards/jeebis/mejiro31/keymaps/en_o24/keymap.c`.
+First, open `keyboards/jeebis/mejiro31/keymaps/jp_default/keymap.c` in your forked repository.
 
-Around line 74 you will find:
-
-```
-<keymaps/en_o24/keymap.c>
-static int alt_lang = 3; // Alternative Layout language setting
-```
-
-The `alt_lang` variable is set to 3 (both languages) by default.
-
-Change it to one of these values to configure the alternate layout language:
-
-| Value | Language |
-| ----- | -------- |
-| 1     | English only |
-| 2     | Japanese only |
-| 3     | Both languages |
-
-For example, to use Dvorak only for English input, set it to 1:
+Around line 73 you will find:
 
 ```
-<keymaps/en_dvorak/keymap.c>
-static int alt_lang = 1; // Alternative Layout language setting
+<keymaps/jp_default/keymap.c>
+static alt_layout_def_t alt_en_layout = ALT_LAYOUT(qwerty);  // Layout for English mode
+static alt_layout_def_t alt_jp_layout = ALT_LAYOUT(qwerty);  // Layout for Japanese mode
 ```
 
-To use the Onishi layout only for Japanese input, set it to 2:
+The `alt_en_layout` and `alt_jp_layout` variables default to `qwerty`.
+
+You can change them to any supported alternate layout name to set different layouts for each language mode:
 
 ```
-<keymaps/en_o24/keymap.c>
-static int alt_lang = 2; // Alternative Layout language setting
+<keymaps/jp_default/keymap.c>
+static alt_layout_def_t alt_en_layout = ALT_LAYOUT(graphite);  // Layout for English mode
+static alt_layout_def_t alt_jp_layout = ALT_LAYOUT(o24);  // Layout for Japanese mode
 ```
 
-Once you configure the language, the Eisu/Kana key on the NUMBER layer (lower right thumb) will toggle both IME and the alternate layout simultaneously.
+Once you configure this, the Eisu/Kana key on the NUMBER layer (lower right thumb) will automatically switch both the IME and the alternate layout together.
 
 #### Define alternate layouts
 
-Next, we will show how to define a custom alternate layout keymap not yet supported by Mejiro31.
+Next, we will show how to define your own custom alternate layout keymap.
 
-Around line 254 you will find:
+First, open `keyboards/jeebis/mejiro31/alt_layouts_definitions.h` in your forked repository.
+
+For example, around line 67 you will find:
 
 ```
-<keymaps/en_o24/keymap.c>
-// Layout: Onishi (O24)
-// ┌─────┬─────┬─────┬─────┬─────┐┌─────┬─────┬─────┬─────┬─────┬─────┐
-// │  q  │  l  │  u  │  ,  │  .  ││  f  │  w  │  r  │  y  │  p  │  /  │
-// ├──e──┼──i──┼──a──┼──o──┼──-──┤├──k──┼──t──┼──n──┼──s──┼──h──┼──'──┤
-// │  z  │  x  │  c  │  v  │  ;  ││  g  │  d  │  m  │  j  │  b  │  \  │
-// └─────┴─────┴─────┴─────┴─────┘└─────┴─────┴─────┴─────┴─────┴─────┘
-static const alt_mapping_t alt_mappings[] PROGMEM = {
-    {KC_Q,    KC_Q,    KC_Q},
+<keyboards/jeebis/mejiro31/alt_layouts_definitions.h>
+// ====== GRAPHITE ======
+static const alt_mapping_t graphite[] PROGMEM = {
+
+    {KC_Q,    KC_B,    KC_B},
     {KC_W,    KC_L,    KC_L},
-    {KC_E,    KC_U,    KC_U},
-    {KC_R,    KC_COMM, KC_LABK},
-    {KC_T,    KC_DOT,  KC_RABK},
-    {KC_Y,    KC_F,    KC_F},
-    {KC_U,    KC_W,    KC_W},
-    {KC_I,    KC_R,    KC_R},
-    {KC_O,    KC_Y,    KC_Y},
-    {KC_P,    KC_P,    KC_P},
-    {KC_MINS, KC_SLSH, KC_QUES},
+    {KC_E,    KC_D,    KC_D},
+    {KC_R,    KC_W,    KC_W},
+    {KC_T,    KC_Z,    KC_Z},
+    {KC_Y,    KC_QUOT, KC_UNDS},
+    {KC_U,    KC_F,    KC_F},
+    {KC_I,    KC_O,    KC_O},
+    {KC_O,    KC_U,    KC_U},
+    {KC_P,    KC_J,    KC_J},
+    {KC_MINS, KC_SCLN, KC_COLN},
 
-    {KC_A,    KC_E,    KC_E},
-    {KC_S,    KC_I,    KC_I},
-    {KC_D,    KC_A,    KC_A},
-    {KC_F,    KC_O,    KC_O},
-    {KC_G,    KC_MINS, KC_UNDS},
-    {KC_H,    KC_K,    KC_K},
-    {KC_J,    KC_T,    KC_T},
-    {KC_K,    KC_N,    KC_N},
-    {KC_L,    KC_S,    KC_S},
-    {KC_SCLN, KC_H,    KC_H},
-    {KC_QUOT, KC_QUOT, KC_DQUO},
+    {KC_A,    KC_N,    KC_N},
+    {KC_S,    KC_R,    KC_R},
+    {KC_D,    KC_T,    KC_T},
+    {KC_F,    KC_S,    KC_S},
+    {KC_G,    KC_G,    KC_G},
+    {KC_H,    KC_Y,    KC_Y},
+    {KC_J,    KC_H,    KC_H},
+    {KC_K,    KC_A,    KC_A},
+    {KC_L,    KC_E,    KC_E},
+    {KC_SCLN, KC_I,    KC_I},
+    {KC_QUOT, KC_COMM, KC_QUES},
 
-    {KC_Z,    KC_Z,    KC_Z},
+    {KC_Z,    KC_Q,    KC_Q},
     {KC_X,    KC_X,    KC_X},
-    {KC_C,    KC_C,    KC_C},
-    {KC_V,    KC_V,    KC_V},
-    {KC_B,    KC_SCLN, KC_COLN},
-    {KC_N,    KC_G,    KC_G},
-    {KC_M,    KC_D,    KC_D},
-    {KC_COMM, KC_M,    KC_M},
-    {KC_DOT,  KC_J,    KC_J},
-    {KC_SLSH, KC_B,    KC_B},
+    {KC_C,    KC_M,    KC_M},
+    {KC_V,    KC_C,    KC_C},
+    {KC_B,    KC_V,    KC_V},
+    {KC_N,    KC_K,    KC_K},
+    {KC_M,    KC_P,    KC_P},
+    {KC_COMM, KC_DOT,  KC_RABK},
+    {KC_DOT,  KC_MINS, KC_DQUO},
+    {KC_SLSH, KC_SLSH, KC_LABK},
     {KC_BSLS, KC_BSLS, KC_PIPE},
+
 };
 ```
 
-The `alt_transform` function defined here maps the alternate layout.
+This defines the keymap for the Graphite layout.
 
-The Onishi layout is shown above; edit this table to define any layout you like.
+You can copy this and modify it to create your own custom layout.
+
+The definition format is: each line contains:
+1. QWERTY keycode (left)
+2. Alternate layout keycode (middle)
+3. Alternate layout keycode when Shift is pressed (right)
 
 #### Detailed combo settings
 
