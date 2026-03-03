@@ -41,7 +41,7 @@
 
 ## ビルド環境の構築 / How to Build Firmware
 
-ファームウェアのソースコード / Firmware Sourcecode
+ファームウェアのソースコード / Firmware Source Code
 - https://github.com/JEEBIS27/qmk_firmware/tree/master/keyboards/jeebis/mejiro31
 
 ファームウェアをクローンする / Cloning the Repo for Firmware Build
