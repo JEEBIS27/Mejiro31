@@ -66,7 +66,9 @@ STENO レイヤーは、デフォルトでは QMK 版メジロ式が動作しま
 | z<   | 《 |
 | z>   | 》 |
 
-後述の QMK 版メジロ式切り替えキーを長押しすることで、 GEMINI レイヤーに切り替えることができます。
+GoogleIME のローマテーブル設定ファイルは[こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.6/romantable.txt)からダウンロードして、インポートして使うことをおすすめします。
+
+STENO レイヤーでは、後述の QMK 版メジロ式切り替えキーを長押しすることで、 GEMINI レイヤーに切り替えることができます。
 
 ![](./imgs/layer_gemini.png)
 GEMINI レイヤーは速記を使うために必要なレイヤーです。
