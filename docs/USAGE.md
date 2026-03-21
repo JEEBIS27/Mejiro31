@@ -53,10 +53,6 @@ STENO レイヤーは、デフォルトでは QMK 版メジロ式が動作しま
 | zj   | ↓  |
 | zk   | ↑  |
 | zl   | →  |
-| zhk  | ↖  |
-| zhj  | ↙  |
-| zlk  | ↗  |
-| zlj  | ↘  |
 | z[   | 『 |
 | z]   | 』 |
 | z(   | 【 |
@@ -66,7 +62,7 @@ STENO レイヤーは、デフォルトでは QMK 版メジロ式が動作しま
 | z<   | 《 |
 | z>   | 》 |
 
-GoogleIME のローマテーブル設定ファイルは[こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.6/romantable.txt)からダウンロードして、インポートして使うことをおすすめします。
+GoogleIME のローマテーブル設定ファイルは[こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/romantable.txt)からダウンロードして、インポートして使うことをおすすめします。
 
 STENO レイヤーでは、後述の QMK 版メジロ式切り替えキーを長押しすることで、 GEMINI レイヤーに切り替えることができます。
 
