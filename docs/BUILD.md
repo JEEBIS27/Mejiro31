@@ -37,7 +37,7 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 | [Nuphy Gateron low-profile 3.0](https://sanyollc.com/products/nuphy-gateron-low-profile-3-0-switches) | POM素材 | 45~37g | 不要 |
 | [Lofree Hades POM](https://lofree.co.jp/products/hades-low-profile-pom-switches) | 静音 | 40g | 必要 |
 | [Kailh Saker mini](https://shop.talpkeyboard.com/products/kailh-saker-chocv2-linear) | 短ストローク | 37g | 必要 |
-| [Kailh Choc v2 Panda V1](https://ja.aliexpress.com/item/1005008329710988.html) | 軽量 | 30g | 必要 |
+| [Kailh Choc v2 Panda V1](https://ja.aliexpress.com/item/10050.329710988.html) | 軽量 | 30g | 必要 |
 | [Kailh Choc V1 Pink](https://shop.yushakobo.jp/products/pg1350?variant=44079245754599) | 最軽量 | 20g | 必要 |
 
 ## 2. 内容品の確認
@@ -58,22 +58,22 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 まずはファームウェアのファイルをダウンロードします。
 
-普通のQWERTY配列を使いたい場合は [こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_qwerty.uf2) をダウンロードしてください。
+普通のQWERTY配列を使いたい場合は [こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_qwerty.uf2) をダウンロードしてください。
 
 その他の代替配列を使いたい場合は以下のリンクからダウンロードしてください。
-- [QWERTY 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_qwerty.uf2)
-- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_dvorak.uf2)
-- [Boo 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_boo.uf2)
-- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_colemak.uf2)
-- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_colemak-dh.uf2)
-- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_workman.uf2)
-- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_graphite.uf2)
-- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_astarte.uf2)
-- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_eucalyn.uf2)
-- [Eucalyn 改](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_eucalyn.uf2)
-- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_tomisuke.uf2)
-- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_o24.uf2)
-- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/mejiro31_jp_merlin.uf2)
+- [QWERTY 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_qwerty.uf2)
+- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_dvorak.uf2)
+- [Boo 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_boo.uf2)
+- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_colemak.uf2)
+- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_colemak-dh.uf2)
+- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_workman.uf2)
+- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_graphite.uf2)
+- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_astarte.uf2)
+- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_eucalyn.uf2)
+- [Eucalyn 改](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_eucalyn.uf2)
+- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_tomisuke.uf2)
+- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_o24.uf2)
+- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.9/mejiro31_jp_merlin.uf2)
 
 ダウンロードしたら、基板のBOOTボタンを押しながら、PCと接続します。
 (二回目以降に書き込む場合は、キーボードの一番左上のキーを押しながら接続してください。)
