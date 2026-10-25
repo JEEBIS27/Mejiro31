@@ -2,50 +2,32 @@
 
 ![](docs/imgs/keyboard_white.jpg)
 
-## 組み立て方 / How to Build
-- [Mejiro31 の組み立て方](/docs/BUILD.md)
-- [How to Build Mejiro31](/docs/BUILD_EN.md)
+31キーで通常入力と速記を使えるキーボードです。二段圧縮・Tap/Hold・レイヤー・修飾キーを統一入力エンジンで処理します。内蔵メジロ式は共通のRustエンジン、外部Ploverとの接続はPlover HIDを使用します。
 
-## 使い方 / How to Use
-- [Mejiro31 の使い方](/docs/USAGE.md)
-- [How to Use Mejiro31](/docs/USAGE_EN.md)
+A 31-key keyboard for ordinary typing and stenography. A unified input engine handles two-row compression, Tap/Hold, layers and modifiers. Built-in Mejiro uses the shared Rust engine; external steno uses Plover HID.
 
-## ファームウェア一覧 / Firmware List
+## 組み立て方 / Assembly
 
-### 日本語配列用 / Firmware for Japanese Layout
-- [QWERTY 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_qwerty.uf2)
-- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_dvorak.uf2)
-- [Boo 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_boo.uf2)
-- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_colemak.uf2)
-- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_colemak-dh.uf2)
-- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_workman.uf2)
-- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_graphite.uf2)
-- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_astarte.uf2)
-- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_eucalyn.uf2)
-- [Eucalyn 改](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_eucalyn-biacco.uf2)
-- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_tomisuke.uf2)
-- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_o24.uf2)
-- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_merlin.uf2)
-### 英語配列用 / Firmware for English Layout
-- [QWERTY Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/jeeb1s_mejiro31_en_qwerty.uf2)
-- [Dvorak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_dvorak.uf2)
-- [Boo Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_boo.uf2)
-- [Colemak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_colemak.uf2)
-- [Colemak-DH Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_colemak-dh.uf2)
-- [Workman Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_workman.uf2)
-- [Graphite Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_graphite.uf2)
-- [Gallium Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_gallium.uf2)
-- [Handsdown-neu Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_handsdown-neu.uf2)
-- [Sturdy Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_sturdy.uf2)
-- [Canary Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_canary.uf2)
-- [Engram Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_engram.uf2)
+- [Mejiro31の組み立て方](docs/BUILD.md)
+- [How to Assemble Mejiro31](docs/BUILD_EN.md)
 
-## ビルド環境の構築 / How to Build Firmware
+## 使い方 / Usage
 
-ファームウェアのソースコード / Firmware Source Code
-- https://github.com/JEEBIS27/qmk_firmware/tree/master/keyboards/jeebis/mejiro31
+- [Mejiro31の使い方](docs/USAGE.md)
+- [Using Mejiro31](docs/USAGE_EN.md)
 
-ファームウェアをクローンする / Cloning the Repo for Firmware Build
-```
-git clone https://github.com/JEEBIS27/qmk_firmware.git
-```
+## ファームウェア / Firmware
+
+| ビルド / Build | 初期設定 / Defaults |
+| --- | --- |
+| `jp_default` | 内蔵メジロ式、日本語QWERTY・英語Graphite / Built-in Mejiro, Japanese QWERTY and English Graphite |
+| `en_default` | 外部Plover HID、QWERTY / External Plover HID, QWERTY |
+
+どちらもホストのJIS/USと、代替配列の有効・無効を切り替えられます。書き込み・初期化・配列の変更方法は[ファームウェアガイド](docs/FIRMWARE.md)を参照してください。
+
+Both builds support host JIS/US selection and alternate-layout toggling. See the [firmware guide](docs/FIRMWARE.md#english) for building, flashing, initialization and customization.
+
+## ソースコード / Source
+
+- [QMKファームウェア / QMK firmware](https://github.com/JEEBIS27/qmk_firmware/tree/master/keyboards/jeebis/mejiro31)
+- [共通メジロ式エンジン / Shared Mejiro engine](https://github.com/JEEBIS27/Mejiro_Engine)

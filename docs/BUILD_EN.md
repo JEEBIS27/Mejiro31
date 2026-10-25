@@ -56,32 +56,10 @@ Here are some recommended switches for your reference.
 
 ## 3. Assembly
 
-Download the firmware file first.
-
-If you want to use a standard QWERTY layout, download [this file](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_qwerty.uf2).
-
-For other layouts, download from the links below:
-- [QWERTY Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_qwerty.uf2)
-- [Dvorak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_dvorak.uf2)
-- [Boo Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_boo.uf2)
-- [Colemak Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_colemak.uf2)
-- [Colemak-DH Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_colemak-dh.uf2)
-- [Workman Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_workman.uf2)
-- [Graphite Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_graphite.uf2)
-- [Astarte Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_astarte.uf2)
-- [Eucalyn Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_eucalyn.uf2)
-- [Eucalyn Modified](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_eucalyn.uf2)
-- [Tomisuke Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_tomisuke.uf2)
-- [Onishi Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_o24.uf2)
-- [Merlin Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_merlin.uf2)
-- [Gallium Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_gallium.uf2)
-- [Handsdown-neu Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_handsdown-neu.uf2)
-- [Sturdy Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_sturdy.uf2)
-- [Canary Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_canary.uf2)
-- [Engram Layout](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_en_engram.uf2)
+Prepare a UF2 for your layout using the [firmware guide](FIRMWARE.md#english).
 
 After downloading, hold the BOOT button on the PCB while connecting it to your PC.
-(For updating the firmware later, hold the top-left key while connecting.)
+The PCB BOOT button is on the side away from the USB connector. Use this method to enter the bootloader.
 
 ![](./imgs/build_firmware.jpeg)
 
@@ -95,7 +73,7 @@ Use pliers to remove the extra tabs from the PCB.
 
 ![](./imgs/build_trimming_bottom_side.jpeg)
 
-![](./imgs/build_trimming_bottom_middle.jpeg)
+![](./imgs/build_trimming_bottom_middle.jpg)
 
 ![](./imgs/build_trimming_top_edge.jpeg)
 
