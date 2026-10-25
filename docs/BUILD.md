@@ -56,27 +56,10 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 ## 3. 組み立て
 
-まずはファームウェアのファイルをダウンロードします。
-
-普通のQWERTY配列を使いたい場合は [こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_qwerty.uf2) をダウンロードしてください。
-
-その他の代替配列を使いたい場合は以下のリンクからダウンロードしてください。
-- [QWERTY 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_qwerty.uf2)
-- [Dvorak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_dvorak.uf2)
-- [Boo 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_boo.uf2)
-- [Colemak 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_colemak.uf2)
-- [Colemak-DH 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_colemak-dh.uf2)
-- [Workman 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_workman.uf2)
-- [Graphite 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_graphite.uf2)
-- [Astarte 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_astarte.uf2)
-- [Eucalyn 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_eucalyn.uf2)
-- [Eucalyn 改](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_eucalyn.uf2)
-- [Tomisuke 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_tomisuke.uf2)
-- [大西配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_o24.uf2)
-- [Merlin 配列](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.4.2/mejiro31_jp_merlin.uf2)
+まず[ファームウェアの選択](../README.md#ファームウェアを選ぶ--choose-firmware)から、使う版を選びます。配布済みv0.4.2と新版では操作・保存形式が異なります。新版を使う場合は[ビルドと移行手順](FIRMWARE.md)に従ってUF2を用意してください。
 
 ダウンロードしたら、基板のBOOTボタンを押しながら、PCと接続します。
-(二回目以降に書き込む場合は、キーボードの一番左上のキーを押しながら接続してください。)
+基板のBOOTボタンはUSB端子から離れた側にあります。旧版・新版とも、この方法でブートローダーへ入れます。
 
 ![](./imgs/build_firmware.jpeg)
 
@@ -90,7 +73,7 @@ Kailh Choc V2 シリーズを利用したい方は、[Kailh Choc 専用のソケ
 
 ![](./imgs/build_trimming_bottom_side.jpeg)
 
-![](./imgs/build_trimming_bottom_middle.jpeg)
+![](./imgs/build_trimming_bottom_middle.jpg)
 
 ![](./imgs/build_trimming_top_edge.jpeg)
 

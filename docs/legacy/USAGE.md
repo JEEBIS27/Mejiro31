@@ -1,0 +1,410 @@
+> このページは配布済みの **v0.4.2（旧ファームウェア）** 向けです。統一入力エンジン版は[新版の使い方](../USAGE.md)をご覧ください。
+
+# Mejiro31 の使い方 ([スタートページに戻る](../../README.md))
+
+![](../imgs/layer_qwerty.png)
+
+## 目次
+  1. [キーレイアウト](#キーレイアウト)
+     - [KEYBOARD レイヤー](#keyboard-レイヤー)
+     - [STENO レイヤー](#steno-レイヤー)
+     - [NUMBER レイヤー](#number-レイヤー)
+     - [FUNCTION レイヤー](#function-レイヤー)
+  2. [キーの入れ替え方法](#キーの入れ替え方法)
+  3. [高度なカスタム](#高度なカスタム)
+  4. [お問い合わせ](#お問い合わせ)
+
+## キーレイアウト
+
+デフォルトではこのようなキー配置になっています。
+
+### KEYBOARD レイヤー
+![](../imgs/layer_qwerty.png)
+KEYBOARD レイヤーは標準のレイヤーです。
+
+Mejiro31 を接続したときは毎回このレイヤーでスタートします。
+
+[二段圧縮](https://note.com/jeebis_keyboard/n/ncbc327906050)を使用しており、キーの $1/3$ は同指の隣接キーの同時押しで入力します。
+
+![](../imgs/二段圧縮.png)
+
+もし QWERTY ではなく、Dvorakや大西配列のような代替レイアウトを使用したい場合は[スタートページ](../../README.md)のファームウェア一覧の章をご覧いただき、使いたいレイアウトのファームウェアをダウンロードして書き込むことができます。もし他のレイアウトを追加してほしい場合は GitHub の [Issues](https://github.com/JEEBIS27/Mejiro31/issues) からリクエストしてください。
+
+また、左右のスペースバーはそれぞれ Space と Enter ですが、長押しで Shift キーとして動作します。
+
+Shift キーを押したときの配列は以下のようになります。
+
+![](../imgs/layer_qwerty_shift.png)
+
+真ん中のレイヤーキーを短く押すと STENO レイヤーに切り替わり、長押しで NUMBER レイヤーに切り替わります。
+
+### STENO レイヤー
+![](../imgs/layer_mejiro.png)
+STENO レイヤーは、デフォルトでは QMK 版メジロ式が動作します。
+
+※ QMK 版では以下の記号を直接出力できないため、IME に対応する専用の割り当てをする必要があります。
+
+| 入力 |記号|
+|------|----|
+| z/   | ・ |
+| z.   | …  |
+| *    | ＊ |
+| z*   | ※  |
+| z\|  | ‖  |
+| zh   | ←  |
+| zj   | ↓  |
+| zk   | ↑  |
+| zl   | →  |
+| z[   | 『 |
+| z]   | 』 |
+| z(   | 【 |
+| z)   | 】 |
+| <    | 〈 |
+| >    | 〉 |
+| z<   | 《 |
+| z>   | 》 |
+
+GoogleIME のローマテーブル設定ファイルは[こちら](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.3.8/romantable.txt)からダウンロードして、インポートして使うことをおすすめします。
+
+STENO レイヤーでは、後述の QMK 版メジロ式切り替えキーを長押しすることで、 GEMINI レイヤーに切り替えることができます。
+
+![](../imgs/layer_gemini.png)
+GEMINI レイヤーは速記を使うために必要なレイヤーです。
+
+速記を動かす Plover というソフト専用の出力が割り当たっています。
+
+なので、基本的にこのキー配置を変更することはありません。
+
+急にキーボードが入力できなくなったときは GEMINI レイヤーになってしまっていないかご確認ください。
+
+真ん中のレイヤーキーを短く押すと KEYBOARD レイヤーに切り替わり、長押しで NUMBER レイヤーに切り替わります。
+
+### NUMBER レイヤー
+![](../imgs/layer_number.png)
+NUMBER レイヤーには数字キーや矢印キー、その他機能キーが割り当たっています。
+
+0 の上のキーは 00 キーで、二つの 0 を出力します。
+
+Shift キーを押したときの配列は以下のようになります。
+
+![](../imgs/layer_number_shift.png)
+
+一番左の、上段のキーは QMK 版メジロ式切り替えキーで、これを長押しするとメジロ式は無効化され、 GEMINI レイヤーが有効化されます。もう一度長押しすると元に戻ります。
+
+一番右の、上段のキーは長押しで代替レイアウトの有効・無効を切りかえるキーで、下段のキーは長押しで FUNCTION レイヤーに遷移するキーです。
+
+### FUNCTION レイヤー
+![](../imgs/layer_function.png)
+FUNCTION レイヤーには F1 ~ F12 キーやメディアキーが割り当たっています。
+
+一番左の、上段のキーは長押しで JIS モードと US モードを切り替えるキーです。
+
+デフォルトでは JIS モードになっていますから、 PC の設定が US になっている場合はこのキーを長押しして US モードに切り替える必要があります。
+
+一番右の、上段のキーは長押しで KEYBOARD レイヤーと NUMBER レイヤーの記号を普通のキーボード通りに変更するキーです。
+
+これをオンにすることで普段通りに、例えば NUMBER レイヤーで `Shift + 2` を押すと `@` が出力されるようになります。
+
+## キーの入れ替え方法
+
+まずはこちらのファイルをダウンロードします。
+- [via_keymap.json](https://github.com/JEEBIS27/Mejiro31/releases/download/v0.0.0/via_keymap.json)
+
+次に、お好きなブラウザーから`VIA`にアクセスして、 DESIGN を選びます。
+
+(以下のリンクからアクセスすると自動で DESIGN の画面に遷移します。)
+
+- [VIA/DESIGN](https://www.usevia.app/design)
+
+![](../imgs/via_design.png)
+
+DESIGN タブを開いたら`Load`ボタンを押します。
+
+![](../imgs/via_load.png)
+
+ここで先ほどダウンロードした JSON ファイルを選択し、正常に読み込まれると以下の画像のようにレイアウトが表示されます。
+
+![](../imgs/via_loaded.png)
+
+JSON ファイルの読み込みが完了後、 CONFIGURE タブに移動します。
+
+![](../imgs/via_configure.png)
+
+CONFIGURE タブの`Authorize device`ボタンを押し、ポップアップ画面で Mejiro31 を選択して接続します。
+
+![](../imgs/via_select_keyboard.png)
+
+するとキーマップ編集画面に遷移するので、キーボードのキーをクリックし変更したいキーを下から選んでクリックすることでキーを入れ替えることができます。
+
+![](../imgs/via_QWERTY.png)
+
+一度ここまでくれば、今後は VIA の CONFIGURE タブを開いて Mejiro31 を接続するだけでキーマップの変更が可能です。つまり、 JSON ファイルの読み込みは一度だけで大丈夫です。
+
+(VIA からだと上下キーの同時押しの再定義ができません。なので事実上変えることができるのは NUMBER レイヤーや FUNCTION レイヤーのキーだけです。もし Dvorak や大西配列のような代替レイアウトを使用したい場合は[高度なカスタム](#高度なカスタム)の章をご覧ください。)
+
+## 高度なカスタム
+
+### 目次
+  1. [高度なカスタムを行う方法](#高度なカスタムを行う方法)
+     - [ファームウェアリポジトリをフォークする](#ファームウェアリポジトリをフォークする)
+     - [ファームウェアのビルド環境構築方法](#ファームウェアのビルド環境構築方法)
+  2. [高度なカスタムの紹介](#高度なカスタムの紹介)
+     - [レイヤーごとの言語設定](#レイヤーごとの言語設定)
+     - [代替レイアウトの有効化](#代替レイアウト設定)
+     - [コンボの詳細設定](#コンボの詳細設定)
+     - [config.h の設定](#configh-の設定)
+
+Mejiro31 は高度なカスタムとして、 QMK ファームウェアの設定を変更することでより細かい需要にこたえることができます。
+
+### 高度なカスタムを行う方法
+
+高度なカスタムを行うためには Mejiro31 のファームウェアリポジトリをあなたのアカウントでフォークし、ビルド環境を構築していただく必要があります。
+
+そうやって書き換えたソースコードをビルドし、生成されたファームウェアを Mejiro31 に書き込むことで高度なカスタムが可能になります。
+
+### ファームウェアリポジトリをフォークする
+
+[github.com](https://github.com/) にアクセスします。
+
+![](../imgs/github_home.png)
+
+github アカウントを持っていない場合はここでサインアップして新しく作成してください。
+
+アカウントを作成したら、以下のリンクから Mejiro31 の QMK ファームウェアリポジトリにアクセスします。
+- [JEEBIS27/qmk_firmware](https://github.com/JEEBIS27/qmk_firmware)
+
+![](../imgs/mejiro31_firmware_repo.png)
+
+右上の`Fork`ボタンを押して、あなたのアカウントにリポジトリをフォークします。
+
+![](../imgs/github_forking.png)
+
+`Fork`ボタンを押すと次のような画面になります。`Create fork`ボタンを押してフォークを完了させましょう。
+
+![](../imgs/github_just_forking.png)
+
+フォークが完了すると、あなたのアカウントの下に Mejiro31 の QMK ファームウェアリポジトリが作成されます。
+
+フォークしたあなたのリポジトリにアクセスし、緑色の`Code`ボタンを押して URL をコピーします。
+
+![](../imgs/github_cloning_repo.png)
+
+次の[ファームウェアのビルド環境構築方法](#ファームウェアのビルド環境構築方法)の章でこの URL を使用します。
+
+### ファームウェアのビルド環境構築方法
+
+PC 環境によってやり方が異なるのでここでは詳しく紹介しませんが、以下の説明が参考になると思います。
+
+- [QMKファームウェアビルド構築手順(Windows QMK MSYS編)](https://gist.github.com/e3w2q/4bc86e531d1c893d3d13af3e9895a94a)
+- [MacでのQMKファームウェアビルド構築方法の参考記事](https://qiita.com/Nikk0r0/items/4089c194715185a124a5)
+
+説明の中で`git clone <repository_url>`というようなコマンドが出てきたら、先ほどコピーしたあなたのフォークしたリポジトリの URL を使用するようにしてください。
+
+### 高度なカスタムの紹介
+
+ファームウェアのソースコードを編集することで、高度なカスタムが可能です。
+
+#### レイヤーごとの言語設定
+
+Mejiro31 ではレイヤーが切り替わるごとに、設定した言語に対応して IME を自動で切り替えることができます。
+
+この機能によって、真ん中のレイヤーキーをキーボード・ステノモードの切り替えキーかつ IME 切り替えキーとして使用することができます。
+
+デフォルトでは、ステノモードはメジロ式で日本語入力、キーボードモードでは英語入力を行うように設定されています。
+
+高度なカスタムではこれを、例えば、日本語入力はローマ字、英語入力は速記で行うという場合、 QWERTY レイヤーで IME ON 、 STENO レイヤーでは IME OFF に自動で切り替えるようにすることができます。
+
+Mejiro31 の言語設定をするにはまず、あなたがフォークしたリポジトリの`keyboards/jeebis/mejiro31/keymaps/jp_default/keymap.c`を開きます。
+
+すると 76 行目あたりに以下のコードがあります。
+
+```
+<keymaps/jp_default/keymap.c>
+// ============================================================
+// 言語設定
+// ============================================================
+// 0:未使用, 1:英語, 2:日本語, 3:日英両方
+
+static int stn_lang = 2;  // ステノモード時の言語
+static int kbd_lang = 1;  // キーボードモード時の言語
+```
+
+ここでは、`stn_lang`が STENO レイヤー (ステノモード) の言語設定、`kbd_lang`が QWERTY レイヤー (キーボードモード) の言語設定を表しています。
+
+それぞれの変数に以下の数値を設定することで言語設定を変更できます。
+
+| 数値 | 言語設定 |
+| ---- | ------- |
+| 1    | 英語    |
+| 2    | 日本語  |
+| 3    | 日英両方 |
+
+キーボードで日本語入力、速記で英語入力を行いたい場合は以下のように設定します。
+
+```
+<keymaps/jp_default/keymap.c>
+static int stn_lang = 2;  // ステノモード時の言語
+static int kbd_lang = 1;  // キーボードモード時の言語
+```
+
+#### 代替レイアウト設定
+
+ここでは日本語入力で大西配列を、英語入力で graphite を使う際の設定を例として紹介します。
+
+まずは、`keyboards/jeebis/mejiro31/keymaps/jp_default/keymap.c`を開きます。
+
+73 行目あたりに以下のコードがあります。
+```
+<keymaps/jp_default/keymap.c>
+static alt_layout_def_t alt_en_layout = ALT_LAYOUT(qwerty);  // 英語モード時のレイアウト
+static alt_layout_def_t alt_jp_layout = ALT_LAYOUT(qwerty);  // 日本語モード時のレイアウト
+```
+
+ここの`alt_en_layout`と`alt_jp_layout`変数はデフォルトでは qwerty に設定されています。
+
+これを使いたい代替配列の名前に変更することで各言語時の代替レイアウトを設定できます。
+
+```
+<keymaps/jp_default/keymap.c>
+static alt_layout_def_t alt_en_layout = ALT_LAYOUT(graphite);  // 英語モード時のレイアウト
+static alt_layout_def_t alt_jp_layout = ALT_LAYOUT(o24);  // 日本語モード時のレイアウト
+```
+ここで言語を設定すると、NUMBER レイヤーの右親指下段にある英数・かなキーで IME を切り替えると自動でその言語の代替レイアウトに切り替わるようになります。
+
+#### 代替レイアウトの定義追加
+
+次に、自分で代替レイアウトのキーマップを定義する方法を紹介します。。
+
+まずは、`keyboards/jeebis/mejiro31/alt_layouts_definitions.h`を開きます。
+例えば、67 行目あたりに以下のコードがあります。
+
+```
+<keyboards/jeebis/mejiro31/alt_layouts_definitions.h>
+// ====== GRAPHITE ======
+static const alt_mapping_t graphite[] PROGMEM = {
+
+    {KC_Q,    KC_B,    KC_B},
+    {KC_W,    KC_L,    KC_L},
+    {KC_E,    KC_D,    KC_D},
+    {KC_R,    KC_W,    KC_W},
+    {KC_T,    KC_Z,    KC_Z},
+    {KC_Y,    KC_QUOT, KC_UNDS},
+    {KC_U,    KC_F,    KC_F},
+    {KC_I,    KC_O,    KC_O},
+    {KC_O,    KC_U,    KC_U},
+    {KC_P,    KC_J,    KC_J},
+    {KC_MINS, KC_SCLN, KC_COLN},
+
+    {KC_A,    KC_N,    KC_N},
+    {KC_S,    KC_R,    KC_R},
+    {KC_D,    KC_T,    KC_T},
+    {KC_F,    KC_S,    KC_S},
+    {KC_G,    KC_G,    KC_G},
+    {KC_H,    KC_Y,    KC_Y},
+    {KC_J,    KC_H,    KC_H},
+    {KC_K,    KC_A,    KC_A},
+    {KC_L,    KC_E,    KC_E},
+    {KC_SCLN, KC_I,    KC_I},
+    {KC_QUOT, KC_COMM, KC_QUES},
+
+    {KC_Z,    KC_Q,    KC_Q},
+    {KC_X,    KC_X,    KC_X},
+    {KC_C,    KC_M,    KC_M},
+    {KC_V,    KC_C,    KC_C},
+    {KC_B,    KC_V,    KC_V},
+    {KC_N,    KC_K,    KC_K},
+    {KC_M,    KC_P,    KC_P},
+    {KC_COMM, KC_DOT,  KC_RABK},
+    {KC_DOT,  KC_MINS, KC_DQUO},
+    {KC_SLSH, KC_SLSH, KC_LABK},
+    {KC_BSLS, KC_BSLS, KC_PIPE},
+
+};
+```
+
+ここで定義されている`alt_transform`関数が代替レイアウトのキーマップを定義しています。
+
+ここでは graphite が定義されていますが、このマップをコピーして、あたらしく代替レイアウトを定義することができます。
+
+定義方法は、左から、
+1. キーボードレイアウトのキーコード(QWERTY)
+2. 代替レイアウトでのキーコード
+3. 代替レイアウトでのキーコード (Shift 押下時)
+の順番でキーコードを定義していきます。
+
+### コンボの詳細設定
+
+Mejiro31 では QMK 標準のコンボ機能を使用しておらず、独自実装のコンボ機能を使用しています。
+
+そのため、コンボの定義を行うにはソースコードを書き換える必要があります。
+
+既存のコンボを変更したり、新しいコンボを追加したりするには 500 行目あたりの以下のコードを編集します。
+
+```
+<keymaps/jp_default/keymap.c>
+// コンボ定義（順不同）
+const combo_pair_t combo_pairs[] PROGMEM = {
+
+    {KC_Q,    KC_Z,    KC_A,    _QWERTY},
+    {KC_W,    KC_X,    KC_S,    _QWERTY},
+    {KC_E,    KC_C,    KC_D,    _QWERTY},
+    {KC_R,    KC_V,    KC_F,    _QWERTY},
+    {KC_T,    KC_B,    KC_G,    _QWERTY},
+    {KC_Y,    KC_N,    KC_H,    _QWERTY},
+    {KC_U,    KC_M,    KC_J,    _QWERTY},
+    {KC_I,    KC_COMM, KC_K,    _QWERTY},
+    {KC_O,    KC_DOT,  KC_L,    _QWERTY},
+    {KC_P,    KC_SLSH, KC_SCLN, _QWERTY},
+    {KC_MINS, KC_BSLS, KC_QUOT, _QWERTY},
+    {KC_LBRC, KC_RBRC, KC_EQL,  _QWERTY},
+    {KC_V,    KC_B,    KC_TAB,  _QWERTY},
+    {KC_R,    KC_T,    KC_ESC,  _QWERTY},
+    {KC_N,    KC_M,    KC_BSPC, _QWERTY},
+    {KC_Y,    KC_U,    KC_DEL,  _QWERTY},
+
+    {KC_1,    KC_7,    KC_4,     _NUMBER},
+    {KC_2,    KC_8,    KC_5,     _NUMBER},
+    {KC_3,    KC_9,    KC_6,     _NUMBER},
+    {KC_0,    KC_DZ,   KC_TZ,    _NUMBER},
+    {KC_DOT,  KC_MINS, KC_COMMA, _NUMBER},
+    {KC_9,    KC_DOT,  KC_TAB,   _NUMBER},
+    {KC_3,    KC_MINS, KC_ESC,   _NUMBER},
+    {KC_PGDN, KC_LEFT, KC_BSPC,  _NUMBER},
+    {KC_PGUP, KC_HOME, KC_DEL,   _NUMBER},
+};
+```
+
+例えば、 QWERTY レイヤーで V キーと M キーの同時押しで Enter キーを出力するコンボを追加したい場合は、以下のようなコードを追加します。
+
+```
+<keymaps/via/keymap.c>
+    {KC_V,    KC_M,    KC_ENT,  _QWERTY},
+```
+
+ただし、三キー同時押し以上のコンボは現在サポートされていないためご注意ください。
+
+また、コンボの出力キーコードをコンボの要素として使うこともできません。例えば、 QWERTY レイヤーで F キーと J キーの同時押しコンボは定義できません。
+
+### config.h の設定
+
+Mejiro31 のファームウェアは QMK ですので、標準で利用できる`config.h`という設定ファイルがあり、ここで様々な設定を行うことができます。
+
+例えば、キーの長押し時間を変更したい場合は`keyboards/jeebis/mejiro31/config.h`を開き、以下のコードを編集します。
+
+```
+<config.h>
+#define TAPPING_TERM 200
+```
+
+ここで設定されている数値はミリ秒単位で、キーが長押しとして認識されるまでの時間を表しています。
+
+例えば、`TAPPING_TERM`を 300 に設定すると、 300 ms 以上押された Mod-Tap のキーは長押しとして認識されるようになります。
+
+このような`config.h`の設定は、 QMK の公式ドキュメントをご覧ください。
+- [QMK Config Options](https://docs.qmk.fm/config_options)
+
+## お問い合わせ
+
+お問い合わせは`jeebis.iox@gmail.com`か、特に不具合等は Mejiro31 の GitHub リポジトリの [Issues](https://github.com/JEEBIS27/Mejiro31/issues) へお願いします。
+
+[スタートページに戻る](../../README.md)
