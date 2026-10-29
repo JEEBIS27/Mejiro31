@@ -1,0 +1,10 @@
+{
+  "name": "mejiro31-configurator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "dev": "python3 scripts/dev-server.py",
+    "generate": "python3 scripts/generate-data.py"
+  }
+}

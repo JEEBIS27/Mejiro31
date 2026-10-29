@@ -1,0 +1,96 @@
+name: Vial firmware
+on:
+  pull_request:
+    paths:
+      [
+        "firmware/**",
+        "scripts/**",
+        "tests/**",
+        "site/**",
+        ".github/workflows/firmware.yml",
+      ]
+  push:
+    branches: [main]
+    tags: ["vial-v*"]
+    paths:
+      [
+        "firmware/**",
+        "scripts/**",
+        "tests/**",
+        "site/**",
+        ".github/workflows/firmware.yml",
+      ]
+  workflow_dispatch:
+    inputs:
+      all_layouts:
+        description: Build every initial layout (otherwise QWERTY only)
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [jp, en]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install QMK toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi libnewlib-arm-none-eabi
+          python -m pip install qmk pillow
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: thumbv6m-none-eabi
+      - name: Prepare pinned Vial, Mejiro31 and Rust engine sources
+        run: |
+          python scripts/prepare-firmware.py
+          python -m pip install -r .build/vial/requirements.txt
+      - name: Check generated definitions and adapter behavior
+        run: |
+          python scripts/generate-data.py
+          git diff --exit-code -- site/data.json firmware/vial/web_layouts.h firmware/vial/vial.json
+          python scripts/test-firmware.py
+          npm test
+      - name: Build and verify UF2
+        env:
+          FULL_BUILD: ${{ startsWith(github.ref, 'refs/tags/vial-v') || inputs.all_layouts }}
+          PROFILE: ${{ matrix.profile }}
+        run: |
+          layout=qwerty
+          if [ "$FULL_BUILD" = true ]; then layout=all; fi
+          python scripts/build-firmware.py --profile "$PROFILE" --layout "$layout" --jobs 2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vial-${{ matrix.profile }}
+          path: .build/artifacts/
+          if-no-files-found: error
+  release:
+    if: startsWith(github.ref, 'refs/tags/vial-v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: vial-*
+          merge-multiple: true
+          path: artifacts
+      - name: Publish complete firmware release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "$RELEASE_TAG" artifacts/* --verify-tag --title "Mejiro31 Vial $RELEASE_TAG" --notes-file firmware/RELEASE_NOTES.md

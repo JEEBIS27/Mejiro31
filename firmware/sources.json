@@ -1,0 +1,14 @@
+{
+  "vial": {
+    "url": "https://github.com/vial-kb/vial-qmk.git",
+    "ref": "dd43959ae5c08d8a28d38a1acf7b04e86b14a344"
+  },
+  "keyboard": {
+    "url": "https://github.com/JEEBIS27/qmk_firmware.git",
+    "ref": "fcde96730c3bb09edbee9dfecc7369b6d367faa2"
+  },
+  "engine": {
+    "url": "https://github.com/JEEBIS27/Mejiro_Engine.git",
+    "ref": "4528859a881b92e2ae83e9c70c7fff45ebfe9962"
+  }
+}

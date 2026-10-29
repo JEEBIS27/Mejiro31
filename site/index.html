@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="Mejiro31のキーマップ・入力設定・ファームウェア。"
+    />
+    <title>Mejiro31</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./ui.js?v=20261029-keydiff1"></script>
+    <script type="module" src="./app.js?v=20261029-keydiff1"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#remap"
+        ><img
+          src="./assets/mejiro-logo.jpg"
+          alt="メジロ式"
+          width="36"
+          height="36"
+        /><strong>Mejiro31</strong></a
+      >
+      <div class="connection">
+        <button
+          id="theme-toggle"
+          class="button icon-button"
+          data-icon="moon"
+          data-tip="ダークモード"
+          aria-label="ダークモード"
+          aria-pressed="false"
+        ></button>
+        <span class="dot" id="connection-dot"></span
+        ><span id="connection-label">未接続</span
+        ><button
+          id="connect"
+          class="button icon-button primary"
+          data-icon="plug"
+          data-tip="キーボードを接続"
+          aria-label="キーボードを接続"
+        ></button>
+      </div>
+    </header>
+    <nav class="rail" aria-label="機能">
+      <a
+        href="#remap"
+        data-view="remap"
+        data-icon="keyboard"
+        data-tip="キーマップ"
+        aria-label="キーマップ"
+      ></a
+      ><a
+        href="#settings"
+        data-view="settings"
+        data-icon="sliders"
+        data-tip="入力設定"
+        aria-label="入力設定"
+      ></a
+      ><a
+        href="#firmware"
+        data-view="firmware"
+        data-icon="chip"
+        data-tip="ファームウェア"
+        aria-label="ファームウェア"
+      ></a
+      ><a
+        href="#tester"
+        data-view="tester"
+        data-icon="test"
+        data-tip="入力テスト"
+        aria-label="入力テスト"
+      ></a
+      ><a
+        href="#guide"
+        data-view="guide"
+        data-icon="help"
+        data-tip="ヘルプ"
+        aria-label="ヘルプ"
+      ></a
+      ><a
+        class="repo-link"
+        href="https://github.com/JEEBIS27/Mejiro31"
+        target="_blank"
+        rel="noopener"
+        data-icon="code"
+        data-tip="GitHub"
+        aria-label="GitHub"
+      ></a>
+    </nav>
+    <div class="workspace">
+      <main id="main-content">
+        <noscript>JavaScriptを有効にしてください。</noscript>
+        <div class="workspace-heading">
+          <h1 id="view-title">キーマップ</h1>
+          <span id="mode-badge" class="mode-badge">オフライン編集</span>
+        </div>
+        <div id="status" role="status" aria-live="polite" class="status">
+          読み込み中…
+        </div>
+        <section id="remap" data-panel="remap" aria-label="キーマップ">
+          <div class="editor-toolbar">
+            <label class="inline-label"
+              >プロファイル<select id="edit-profile">
+                <option value="jp">日本語</option>
+                <option value="en">英語</option>
+              </select></label
+            >
+            <div class="toolbar-actions">
+              <button
+                id="reset-settings"
+                class="button icon-button"
+                data-icon="reset"
+                data-tip="設定をリセット"
+                aria-label="設定をリセット"
+              ></button>
+              <button
+                id="import"
+                class="button icon-button"
+                data-icon="import"
+                data-tip="設定を読み込む"
+                aria-label="設定を読み込む"
+              ></button
+              ><button
+                id="export"
+                class="button icon-button"
+                data-icon="export"
+                data-tip="設定を書き出す"
+                aria-label="設定を書き出す"
+              ></button
+              ><input
+                type="file"
+                accept=".json,application/json"
+                id="import-file"
+                hidden
+              /><button
+                class="button icon-button"
+                data-icon="help"
+                data-tip="キーを選択してTap／Holdを編集。小さいキーは隣接2キーの同時押しです。表示は配列変換前の割り当てです。"
+                aria-label="キーマップの操作説明"
+              ></button>
+            </div>
+          </div>
+          <div class="editor-grid">
+            <div class="keymap-panel">
+              <div class="layer-toolbar">
+                <div
+                  class="layer-tabs"
+                  id="layers"
+                  role="tablist"
+                  aria-label="編集レイヤー"
+                ></div>
+                <button
+                  id="save-png"
+                  class="button icon-button"
+                  data-icon="image"
+                  data-tip="現在のレイヤーをPNGで保存"
+                  aria-label="現在のレイヤーをPNGで保存"
+                ></button>
+              </div>
+              <div class="board-heading">
+                <span id="layer-heading">KEYBOARD</span>
+                <fieldset class="keyboard-colors">
+                  <legend>キーの色</legend>
+                  <label
+                    ><input
+                      type="radio"
+                      name="keyboard-color"
+                      value="black"
+                      checked
+                    />黒</label
+                  >
+                  <label
+                    ><input
+                      type="radio"
+                      name="keyboard-color"
+                      value="white"
+                    />白</label
+                  >
+                </fieldset>
+              </div>
+              <div class="board-scroll">
+                <div
+                  class="board"
+                  id="board"
+                  aria-label="物理キーと同時押しキー"
+                ></div>
+              </div>
+            </div>
+            <aside class="binding-panel" aria-labelledby="binding-title">
+              <h3 id="binding-title">Q</h3>
+              <label
+                >短く押す<input
+                  id="tap-code"
+                  data-tip="短く押したときのキーを検索・選択"
+                  readonly
+                  aria-haspopup="dialog"
+                  aria-controls="key-picker"
+                  autocomplete="off"
+                  spellcheck="false"
+              /></label>
+              <label
+                >長押し<input
+                  id="hold-code"
+                  data-tip="長押し時の修飾キー・レイヤーを検索・選択"
+                  readonly
+                  aria-haspopup="dialog"
+                  aria-controls="key-picker"
+                  autocomplete="off"
+                  spellcheck="false"
+              /></label>
+
+              <button
+                id="apply-key"
+                class="button primary icon-button"
+                data-icon="check"
+                data-tip="選択したキーに割り当てる"
+                aria-label="選択したキーに割り当てる"
+              ></button>
+            </aside>
+          </div>
+        </section>
+        <section id="tester" data-panel="tester" aria-label="入力テスト" hidden>
+          <div class="settings-card tester-card">
+            <div class="card-heading">
+              <div id="test-held" aria-label="押しているキー"></div>
+              <div class="toolbar-actions">
+                <button
+                  id="test-export"
+                  class="button icon-button"
+                  data-icon="export"
+                  data-tip="入力ログを保存"
+                  aria-label="入力ログを保存"
+                ></button
+                ><button
+                  id="test-clear"
+                  class="button icon-button"
+                  data-icon="clear"
+                  data-tip="テスト結果を消去"
+                  aria-label="テスト結果を消去"
+                ></button>
+              </div>
+            </div>
+            <textarea
+              id="test-input"
+              placeholder="ここをクリックして入力"
+              aria-label="入力テスト"
+              spellcheck="false"
+            ></textarea>
+            <p class="fine">
+              ブラウザーに届いた入力を表示します。IMEの確定文字は入力欄で確認できます。OSが使うショートカットや物理スイッチ自体は検査できません。
+            </p>
+            <div class="input-log-heading">
+              <span>継続時間</span><span>キー入力</span
+              ><span id="test-log-count">0 件</span>
+            </div>
+            <ol id="test-events" aria-label="キー入力履歴"></ol>
+          </div>
+        </section>
+        <section
+          id="settings"
+          data-panel="settings"
+          aria-label="入力設定"
+          hidden
+        >
+          <div class="settings-card">
+            <h2>配列と出力</h2>
+            <div class="settings-fields">
+              <label>英数入力の配列<select id="english-layout"></select></label
+              ><label
+                >日本語入力の配列<select id="japanese-layout"></select></label
+              ><label
+                >PC側の配列<select id="host-layout">
+                  <option value="us">US</option>
+                  <option value="jis">JIS</option>
+                </select></label
+              ><label class="checkbox-label"
+                ><input
+                  id="alt-enabled"
+                  type="checkbox"
+                  checked
+                />代替配列を有効にする</label
+              ><label class="checkbox-label"
+                ><input
+                  id="mejiro-enabled"
+                  type="checkbox"
+                  checked
+                />速記モードでメジロ式を使用</label
+              >
+            </div>
+          </div>
+        </section>
+        <section
+          id="firmware"
+          data-panel="firmware"
+          aria-label="ファームウェア"
+          hidden
+        >
+          <div class="settings-card">
+            <div class="card-heading">
+              <h2>UF2 ダウンロード</h2>
+              <a
+                href="#guide"
+                class="button icon-button"
+                data-icon="help"
+                data-tip="書き込み方法"
+                aria-label="書き込み方法"
+              ></a>
+            </div>
+            <div class="download-options">
+              <label
+                >基本プロファイル<select id="download-profile">
+                  <option value="jp">日本語 — IME切り替えキーあり</option>
+                  <option value="en">英語 — 記号キーを優先</option>
+                </select></label
+              >
+              <label
+                >初期の代替配列<select id="download-layout"></select
+              ></label>
+              <div class="download-actions">
+                <button
+                  id="download"
+                  aria-label="UF2をダウンロード"
+                  data-tip="選択したプロファイルと配列のUF2をダウンロード"
+                  class="button dark"
+                >
+                  UF2をダウンロード <span>↓</span></button
+                ><a
+                  href="https://github.com/JEEBIS27/Mejiro31/releases"
+                  target="_blank"
+                  rel="noopener"
+                  >リリース ↗</a
+                >
+              </div>
+              <p class="fine" id="release-status">Vial対応リリースを確認中…</p>
+            </div>
+          </div>
+        </section>
+        <section id="guide" data-panel="guide" aria-label="ヘルプ" hidden>
+          <div class="settings-card help-card">
+            <h2>接続と保存</h2>
+            <ol>
+              <li>
+                <strong>UF2を書き込む</strong>
+                <p>BOOTSELを押しながら接続し、RPI-RP2へUF2をコピーします。</p>
+              </li>
+              <li>
+                <strong>キーボードを接続</strong>
+                <p>
+                  USBを再接続し、右上の接続アイコンを押します。WebHID対応のChrome／Edgeを使用してください。
+                </p>
+              </li>
+              <li>
+                <strong>編集して保存</strong>
+                <p>
+                  キーを選び、Tap／Holdを設定してチェックを押します。下部でロックを解除して本体へ保存します。
+                </p>
+              </li>
+            </ol>
+            <details>
+              <summary>コンボ・配列について</summary>
+              <p>
+                小さいキーは隣接2キーのコンボです。Stenoではコンボは使いません。表示されるキーは代替配列による変換前です。
+              </p>
+            </details>
+            <details>
+              <summary>接続できない場合</summary>
+              <p>
+                このサイトに対応した最新UF2を使用してください。Linuxでは<a
+                  href="https://get.vial.today/manual/linux-udev.html"
+                  target="_blank"
+                  rel="noopener"
+                  >USBアクセス設定</a
+                >も確認してください。
+              </p>
+            </details>
+          </div>
+        </section>
+      </main>
+      <footer class="save-bar">
+        <div>
+          <strong id="dirty-label">オフライン</strong
+          ><span id="save-hint" class="sr-only"></span>
+        </div>
+        <div class="save-actions">
+          <button
+            id="unlock"
+            class="button icon-button"
+            data-icon="unlock"
+            data-tip="本体のロックを解除"
+            aria-label="本体のロックを解除"
+          ></button
+          ><button
+            id="save"
+            class="button icon-button primary"
+            data-icon="save"
+            data-tip="キーボードに保存"
+            aria-label="キーボードに保存"
+          ></button>
+          <button
+            id="auto-save"
+            class="button icon-button toggle-button"
+            data-icon="autosave"
+            data-tip="オートセーブ：オフ"
+            aria-label="オートセーブ：オフ"
+            aria-pressed="false"
+          ></button>
+        </div>
+        <progress
+          id="progress"
+          max="1"
+          value="0"
+          hidden
+          aria-label="通信進行状況"
+        ></progress>
+      </footer>
+    </div>
+    <div id="tooltip" role="tooltip" hidden></div>
+    <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+      <form method="dialog">
+        <h2 id="confirm-title">編集中の設定があります</h2>
+        <p id="confirm-message"></p>
+        <div class="confirm-actions">
+          <button class="button subtle" value="cancel" autofocus>
+            キャンセル</button
+          ><button class="button dark" value="continue">続ける</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="unlock-dialog">
+      <form method="dialog">
+        <button class="dialog-close" aria-label="閉じる">×</button>
+
+        <h2>ロック解除</h2>
+        <p>
+          キーボード上段のいちばん左といちばん右を、<br />そのまま約7秒間押し続けてください。
+        </p>
+        <div class="unlock-illustration">
+          <span>●</span><span>□ □ □ □ □</span><span>□ □ □ □ □</span
+          ><span>●</span>
+        </div>
+        <p id="unlock-status" role="status">キーが押されるのを待っています…</p>
+        <button class="button subtle">キャンセル</button>
+      </form>
+    </dialog>
+    <dialog id="key-picker" aria-labelledby="key-picker-title">
+      <button
+        type="button"
+        class="dialog-close"
+        id="key-picker-close"
+        aria-label="キー選択を閉じる"
+      >
+        ×
+      </button>
+      <h2 id="key-picker-title">キーを選択</h2>
+      <label for="key-search">名前で検索</label>
+      <input
+        id="key-search"
+        type="search"
+        autocomplete="off"
+        placeholder="例: #、Hash、シャープ、Enter、左Alt"
+      />
+      <p id="key-count" role="status"></p>
+      <div id="key-options" aria-label="割り当て候補"></div>
+    </dialog>
+  </body>
+</html>
