@@ -3,13 +3,13 @@
   "assets": [
     {
       "filename": "mejiro31_vial_en_qwerty.uf2",
-      "size": 320000,
-      "sha256": "5629be78c68ce63d8c3816d35328695687038a4168bfc6cae09e0721223ac973"
+      "size": 656896,
+      "sha256": "9767d82b0a1aca54bd9df5d9bd8b4e3f1486f12fca5da90e8551dad6f2762b6b"
     },
     {
       "filename": "mejiro31_vial_jp_qwerty.uf2",
-      "size": 320000,
-      "sha256": "fa075b3c532b6a094c706d2c15f89ec3d45474981c985c798e5c17b35414aa9f"
+      "size": 657408,
+      "sha256": "aa9144dc969c366f47d8fc08bb897d69b4f9d7501019b0b5eb7c001f26b92219"
     }
   ]
 }

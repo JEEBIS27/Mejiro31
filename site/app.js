@@ -13,6 +13,7 @@ import {
   supportedCode,
 } from "./model.js";
 import { connectKeyboard } from "./hid.js";
+import { ruleId, validateRules } from "./rules.js";
 import {
   boardKeys,
   labelFontSize,
@@ -31,7 +32,8 @@ const data = await fetch("./data.json")
   });
 const state = {
   profile: "jp",
-  settings: { flags: 6, en: 0, jp: 0 },
+  settings: { flags: 6, en: 0, jp: 0, firstUp: true },
+  rules: [],
   keymap: clone(data.defaults.jp),
   baseline: null,
   layer: 0,
@@ -303,7 +305,8 @@ function isDirty() {
     state.modified ||
     (state.baseline &&
       (changes(state.baseline.keymap, state.keymap).length ||
-        ["flags", "en", "jp"].some(
+        JSON.stringify(state.baseline.rules) !== JSON.stringify(state.rules) ||
+        ["flags", "en", "jp", "firstUp"].some(
           (key) => state.baseline.settings[key] !== state.settings[key],
         )))
   );
@@ -320,14 +323,98 @@ $("board").parentElement.onclick = (event) => {
 $("reset-settings").onclick = async () => {
   if (
     !(await confirmAction(
-      "キーマップと入力設定を標準設定に戻します。よろしいですか？",
+      "キーマップ・入力設定・メジロ式の辞書を標準設定に戻します。よろしいですか？",
     ))
   )
     return;
   state.keymap = clone(data.defaults[state.profile]);
-  state.settings = { flags: state.profile === "en" ? 2 : 6, en: 0, jp: 0 };
+  state.settings = { flags: state.profile === "en" ? 2 : 6, en: 0, jp: 0, firstUp: true };
+  state.rules = [];
   touch();
 };
+let editingRule = null;
+const ruleNames = ["ユーザー略語", "一般略語（全体）", "一般略語（左）", "一般略語（右）", "動詞"];
+function renderRules() {
+  const list = $("rule-list");
+  list.replaceChildren();
+  if (!state.rules.length) {
+    const empty = document.createElement("p");
+    empty.className = "fine";
+    empty.textContent = "登録した辞書項目はありません。";
+    list.append(empty);
+  }
+  for (const rule of state.rules) {
+    const item = document.createElement("div");
+    item.className = "rule-item";
+    const title = document.createElement("strong");
+    title.textContent = `${ruleNames[rule.kind]} · ${rule.key || "（空）"}`;
+    const value = document.createElement("span");
+    value.textContent = rule.hidden ? "標準項目を無効化" : `${rule.value}${rule.row ? ` · ${rule.row}行` : ""}`;
+    const edit = document.createElement("button");
+    edit.type = "button"; edit.className = "button"; edit.textContent = "編集";
+    edit.disabled = state.busy;
+    edit.onclick = () => {
+      editingRule = ruleId(rule);
+      $("rule-kind").value = rule.kind;
+      $("rule-key").value = rule.key;
+      $("rule-value").value = rule.value;
+      $("rule-hidden").checked = rule.hidden;
+      $("rule-row").value = rule.row;
+      $("rule-context").value = rule.context;
+      $("rule-submit").textContent = "変更を反映";
+      $("rule-cancel").hidden = false;
+      updateRuleFields();
+      $("rule-key").focus();
+    };
+    const remove = document.createElement("button");
+    remove.type = "button"; remove.className = "button"; remove.textContent = "削除";
+    remove.disabled = state.busy;
+    remove.onclick = () => {
+      state.rules = state.rules.filter((entry) => ruleId(entry) !== ruleId(rule));
+      if (editingRule === ruleId(rule)) clearRuleForm();
+      touch();
+    };
+    item.append(title, value, edit, remove);
+    list.append(item);
+  }
+}
+function updateRuleFields() {
+  const kind = Number($("rule-kind").value);
+  $("rule-row-label").hidden = kind !== 4;
+  $("rule-context-label").hidden = kind !== 1;
+  $("rule-key").required = kind !== 2;
+  $("rule-value").disabled = $("rule-hidden").checked || state.busy;
+}
+function clearRuleForm() {
+  editingRule = null;
+  $("rule-form").reset();
+  $("rule-submit").textContent = "辞書に追加";
+  $("rule-cancel").hidden = true;
+  updateRuleFields();
+}
+$("rule-kind").onchange = updateRuleFields;
+$("rule-hidden").onchange = updateRuleFields;
+$("rule-cancel").onclick = clearRuleForm;
+$("rule-form").onsubmit = (event) => {
+  event.preventDefault();
+  const kind = Number($("rule-kind").value);
+  const rule = {
+    kind, key: $("rule-key").value.trim(),
+    value: $("rule-hidden").checked ? "" : $("rule-value").value,
+    row: !$("rule-hidden").checked && kind === 4 ? $("rule-row").value.trim() : "",
+    context: !$("rule-hidden").checked && kind === 1 ? Number($("rule-context").value) : 0,
+    hidden: $("rule-hidden").checked,
+  };
+  try {
+    const next = state.rules.filter((entry) => ruleId(entry) !== editingRule);
+    next.push(rule);
+    validateRules(next);
+    state.rules = next;
+    clearRuleForm();
+    touch();
+  } catch (error) { status(error.message, "error"); }
+};
+updateRuleFields();
 function render() {
   if (state.layer === 5 && data.pairs.some((p) => p.logical === state.selected))
     state.selected = 1;
@@ -438,6 +525,9 @@ function render() {
   $("host-layout").value = state.settings.flags & 1 ? "jis" : "us";
   $("alt-enabled").checked = !!(state.settings.flags & 2);
   $("mejiro-enabled").checked = !!(state.settings.flags & 4);
+  $("first-up").checked = state.settings.firstUp;
+  renderRules();
+  $("rule-value").disabled = state.busy || $("rule-hidden").checked;
   for (const id of [
     "tap-code",
     "hold-code",
@@ -449,6 +539,7 @@ function render() {
     "host-layout",
     "alt-enabled",
     "mejiro-enabled",
+    "first-up", "rule-kind", "rule-key", "rule-value", "rule-row", "rule-context", "rule-submit", "rule-cancel", "rule-hidden",
   ])
     $(id).disabled = state.busy;
   $("connect").disabled = state.busy;
@@ -605,8 +696,9 @@ $("edit-profile").onchange = async () => {
   }
   state.profile = $("edit-profile").value;
   state.keymap = clone(data.defaults[state.profile]);
-  state.settings = { flags: state.profile === "en" ? 2 : 6, en: 0, jp: 0 };
+  state.settings = { flags: state.profile === "en" ? 2 : 6, en: 0, jp: 0, firstUp: true };
   state.baseline = null;
+  state.rules = [];
   state.modified = false;
   render();
 };
@@ -616,9 +708,11 @@ for (const id of [
   "host-layout",
   "alt-enabled",
   "mejiro-enabled",
+  "first-up",
 ])
   $(id).onchange = () => {
     state.settings = {
+      firstUp: $("first-up").checked,
       en: Number($("english-layout").value),
       jp: Number($("japanese-layout").value),
       flags:
@@ -631,7 +725,7 @@ for (const id of [
 $("export").onclick = () =>
   downloadBlob(
     `mejiro31-${state.profile}-keymap.json`,
-    makeBackup(state.profile, state.settings, state.keymap),
+    makeBackup(state.profile, state.settings, state.keymap, state.rules),
   );
 $("import").onclick = () => $("import-file").click();
 $("import-file").onchange = async () => {
@@ -652,6 +746,7 @@ $("import-file").onchange = async () => {
     state.profile = parsed.profile;
     state.settings = parsed.settings;
     state.keymap = parsed.keymap;
+    state.rules = parsed.rules;
     touch();
     status(
       "設定を読み込みました。キーボードへの書き込みはまだ行っていません。",
@@ -691,12 +786,15 @@ $("connect").onclick = async () => {
     if (!result) return;
     client = result.client;
     const keymap = await client.readKeymap((p) => ($("progress").value = p));
+    const rules = await client.readRules((p) => ($("progress").value = p));
     state.client = client;
     state.unlocked = !!(await client.unlockStatus())[0];
     state.profile = client.profile;
     state.settings = result.settings;
     state.keymap = keymap;
+    state.rules = rules;
     state.baseline = {
+      rules: clone(rules),
       keymap: clone(keymap),
       settings: clone(result.settings),
     };
@@ -727,7 +825,8 @@ async function saveChanges() {
       state.settings,
       (p) => ($("progress").value = p),
     );
-    state.baseline = clone(result);
+    const rules = await client.saveRules(state.baseline.rules, state.rules, (p) => ($("progress").value = p));
+    state.baseline = { ...clone(result), rules: clone(rules) };
     state.modified = false;
     status("キーボードに保存し、読み戻して内容を確認しました。", "success");
   } catch (e) {

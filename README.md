@@ -8,7 +8,7 @@ A 31-key keyboard for ordinary typing and stenography. A unified input engine ha
 
 ## 設定スタジオ / Configurator
 
-Vial対応のファームウェアダウンローダーとリマッパーを `site/` に追加しています。物理キー・二段圧縮の出力・Tap/Hold・代替配列を編集できます。
+Vial対応のファームウェアダウンローダーとリマッパーを `site/` に追加しています。物理キー・二段圧縮の出力・Tap/Hold・代替配列に加え、メジロ式の辞書とFirst up chords sendを編集できます。
 
 - [設定スタジオの使い方・開発・自動配布](docs/CONFIGURATOR.md)
 - ローカルで試す: `npm run dev` → `http://127.0.0.1:4173`

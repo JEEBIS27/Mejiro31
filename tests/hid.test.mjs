@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { MejiroHID } from "../site/hid.js";
+import { encodeRule, decodeRule } from "../site/rules.js";
 import {
   UID,
   clone,
@@ -16,8 +17,10 @@ class Device extends EventTarget {
   opened = true;
   locked = true;
   profile = 0;
-  settings = { flags: 6, en: 0, jp: 0 };
+  settings = { flags: 6, en: 0, jp: 0, firstUp: true };
   keymap = clone(data.defaults.jp);
+  rules = [];
+  pendingRule = new Uint8Array(144);
   sent = [];
   corrupt = false;
   active = 0;
@@ -43,11 +46,30 @@ class Device extends EventTarget {
       b[2] = 9;
     } else if (b[0] === 0x11) b[1] = STORAGE_LAYERS;
     else if (b[0] === 0xfa) {
-      if (b[2] === 1) {
-        if (this.locked) b[3] = 1;
-        else this.settings = { flags: b[12], en: b[13], jp: b[14] };
+      if (b[1] === 2) {
+        if (b[2] === 0) b.set([this.rules.length, 24, 1, 32, 96, 8], 12);
+        else if (b[2] === 1) {
+          const entry = this.rules[b[12]];
+          if (!entry) b[3] = 2;
+          else b.set(encodeRule(entry).subarray(b[13] * 16, b[13] * 16 + 16), 16);
+        } else if (this.locked) b[3] = 1;
+        else if (b[2] === 2) this.pendingRule.fill(0);
+        else if (b[2] === 3) this.pendingRule.set(b.subarray(16, 32), b[12] * 16);
+        else if (b[2] === 4) {
+          const rule = decodeRule(this.pendingRule);
+          this.rules = this.rules.filter((r) => r.kind !== rule.kind || r.key !== rule.key);
+          if (b[12] !== 2) this.rules.push(b[12] === 1 ? {...rule, hidden: true, value: '', row: '', context: 0} : rule);
+        }
       }
-      b.set(
+      if (b[1] === 1 && b[2] === 2) {
+        if (this.locked) b[3] = 1;
+        else this.settings.firstUp = !!b[18];
+      }
+      if (b[1] === 1 && b[2] === 1) {
+        if (this.locked) b[3] = 1;
+        else this.settings = { ...this.settings, flags: b[12], en: b[13], jp: b[14] };
+      }
+      if (b[1] === 1) b.set(
         [
           this.settings.flags,
           this.settings.en,
@@ -55,6 +77,7 @@ class Device extends EventTarget {
           this.profile,
           STORAGE_LAYERS,
           18,
+          Number(this.settings.firstUp),
         ],
         12,
       );
@@ -85,7 +108,7 @@ class Device extends EventTarget {
 test("identify checks UID, layer count and dedicated settings before reading the map", async () => {
   const device = new Device(),
     client = new MejiroHID(device, data);
-  assert.deepEqual(await client.identify(), { flags: 6, en: 0, jp: 0 });
+  assert.deepEqual(await client.identify(), { flags: 6, en: 0, jp: 0, firstUp: true });
   assert.equal(client.profile, "jp");
   assert.deepEqual(await client.readKeymap(), data.defaults.jp);
   await client.close();
@@ -136,7 +159,7 @@ test("locked save sends no writes; unlocked save verifies physical and virtual H
     jp: 16,
   });
   assert.deepEqual(result.keymap, next);
-  assert.deepEqual(result.settings, { flags: 7, en: 1, jp: 16 });
+  assert.deepEqual(result.settings, { flags: 7, en: 1, jp: 16, firstUp: true });
   assert.equal(device.sent.filter((b) => b[0] === 5).length, 2);
   await client.close();
 });
@@ -235,9 +258,29 @@ test("saving settings ignores property order and keeps the device connected", as
     jp: 0,
     flags: 7,
   });
-  assert.deepEqual(result.settings, { flags: 7, en: 1, jp: 0 });
+  assert.deepEqual(result.settings, { flags: 7, en: 1, jp: 0, firstUp: true });
   assert.equal(device.opened, true);
   assert.equal(client.closed, false);
   assert.deepEqual(await client.settings(), result.settings);
+  await client.close();
+});
+
+test("dictionary rules require unlock, persist through HID reads, and can be removed", async () => {
+  const device = new Device(), client = new MejiroHID(device, data);
+  const rule = { kind: 0, key: "STK-", value: "こんにちは", row: "", context: 0, hidden: false };
+  assert.deepEqual(await client.readRules(), []);
+  await assert.rejects(client.saveRules([], [rule]), /ロック/);
+  device.locked = false;
+  assert.deepEqual(await client.saveRules([], [rule]), [rule]);
+  assert.deepEqual(await client.readRules(), [rule]);
+  assert.deepEqual(await client.saveRules([rule], []), []);
+  await client.close();
+});
+test("first-up setting is stored and read back", async () => {
+  const device = new Device(), client = new MejiroHID(device, data);
+  await assert.rejects(client.setFirstUp(false), /ロック/);
+  device.locked = false;
+  assert.equal(await client.setFirstUp(false), false);
+  assert.equal((await client.settings()).firstUp, false);
   await client.close();
 });

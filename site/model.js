@@ -1,3 +1,4 @@
+import { validateRules } from "./rules.js";
 export const ROWS = 4,
   COLS = 12,
   LAYERS = 12;
@@ -11,6 +12,7 @@ export function validateSettings(settings, data) {
     !Number.isInteger(settings.flags) ||
     settings.flags < 0 ||
     settings.flags > 7 ||
+    (settings.firstUp !== undefined && typeof settings.firstUp !== "boolean") ||
     !["en", "jp"].every(
       (k) =>
         Number.isInteger(settings[k]) &&
@@ -36,7 +38,7 @@ export function validateBackup(value, data) {
   if (
     !value ||
     value.format !== "mejiro31-web" ||
-    ![1, 2].includes(value.version) ||
+    ![1, 2, 3].includes(value.version) ||
     !Array.isArray(value.uid) ||
     value.uid.join() !== UID.join() ||
     !["jp", "en"].includes(value.profile)
@@ -62,16 +64,20 @@ export function validateBackup(value, data) {
     ]);
     result.version = 2;
   }
+  if (result.version < 3) { result.settings.firstUp ??= true; result.rules = []; result.version = 3; }
+  validateRules(result.rules);
+  if (typeof result.settings.firstUp !== "boolean") throw Error("First upの設定値が不正です。");
   return result;
 }
-export function makeBackup(profile, settings, keymap) {
+export function makeBackup(profile, settings, keymap, rules = []) {
   return {
     format: "mejiro31-web",
-    version: 2,
+    version: 3,
     uid: UID,
     profile,
-    settings: clone(settings),
+    settings: { ...clone(settings), firstUp: settings.firstUp ?? true },
     keymap: clone(keymap),
+    rules: clone(validateRules(rules)),
   };
 }
 export function changes(before, after) {

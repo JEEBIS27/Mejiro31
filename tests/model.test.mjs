@@ -149,7 +149,7 @@ test("legacy backups gain six unassigned combo slots without changing old assign
   );
   old.version = 1;
   const next = validateBackup(old, data);
-  assert.equal(next.version, 2);
+  assert.equal(next.version, 3);
   assert.deepEqual(
     next.keymap.map((l) => l.slice(0, 48)),
     old.keymap,

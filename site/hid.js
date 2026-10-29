@@ -8,7 +8,9 @@ import {
   validateSettings,
   changes,
 } from "./model.js";
+import { decodeRule, encodeRule, ruleId, validateRules, RULE_CAPACITY } from "./rules.js";
 const SIGNATURE = Array.from("M31WEB01", (c) => c.charCodeAt(0));
+const RULE_SIGNATURE = Array.from("M31RUL01", (c) => c.charCodeAt(0));
 const fail = (message) => {
   throw Error(message);
 };
@@ -96,6 +98,7 @@ export class MejiroHID {
   }
   async settings(next) {
     if (next) validateSettings(next, this.data);
+    const expectedFirstUp = next?.firstUp ?? true;
     const result = await this.request([
       0xfa,
       1,
@@ -126,10 +129,82 @@ export class MejiroHID {
       result[17] !== this.data.layouts.length
     )
       fail("サイトとファームウェアの設定定義が一致しません。");
-    const settings = { flags: result[12], en: result[13], jp: result[14] };
+    let settings = { flags: result[12], en: result[13], jp: result[14], firstUp: !!result[18] };
+    if (next && settings.firstUp !== expectedFirstUp) {
+      settings = { ...settings, firstUp: await this.setFirstUp(expectedFirstUp) };
+    }
     validateSettings(settings, this.data);
     this.profile = result[15] ? "en" : "jp";
     return settings;
+  }
+  async setFirstUp(enabled) {
+    if (typeof enabled !== "boolean") fail("First upの設定値が不正です。");
+    const packet = [0xfa, 1, 2, 0, ...SIGNATURE];
+    packet[18] = Number(enabled);
+    const result = await this.request(packet);
+    if (result[0] !== 0xfa || result[1] !== 1 || result[2] !== 2 ||
+        SIGNATURE.some((v, i) => result[i + 4] !== v))
+      fail("First up設定の応答が一致しません。");
+    if (result[3] === 1) fail("キーボードのロックを解除してください。");
+    if (result[3] !== 0 || result[18] !== Number(enabled))
+      fail("First up設定を保存できませんでした。");
+    return !!result[18];
+  }
+  async ruleRequest(op, { index = 0, chunk = 0, bytes = null, action = 0 } = {}) {
+    const packet = new Uint8Array(32);
+    packet.set([0xfa, 2, op, 0, ...RULE_SIGNATURE]);
+    if (op === 1) { packet[12] = index; packet[13] = chunk; }
+    if (op === 3) { packet[12] = chunk; packet.set(bytes, 16); }
+    if (op === 4) packet[12] = action;
+    const result = await this.request(packet);
+    if (result[0] !== 0xfa || result[1] !== 2 || result[2] !== op ||
+        RULE_SIGNATURE.some((v, i) => result[i + 4] !== v))
+      fail("辞書通信に対応したファームウェアを書き込んでください。");
+    if (result[3] !== 0)
+      fail(["", "キーボードのロックを解除してください。", "辞書項目が不正です。", "キーボードの準備が完了していません。", "辞書は24件まで登録できます。", "辞書を本体に保存できませんでした。"][result[3]] || "辞書通信に失敗しました。");
+    return result;
+  }
+  async readRules(progress = () => {}) {
+    const info = await this.ruleRequest(0);
+    if (info[13] !== RULE_CAPACITY || info[14] !== 1 || info[15] !== 32 || info[16] !== 96 || info[17] !== 8)
+      fail("サイトとファームウェアの辞書形式が一致しません。");
+    const rules = [];
+    for (let index = 0; index < info[12]; index++) {
+      const bytes = new Uint8Array(144);
+      for (let chunk = 0; chunk < 9; chunk++) {
+        const result = await this.ruleRequest(1, { index, chunk });
+        bytes.set(result.subarray(16, 32), chunk * 16);
+      }
+      rules.push(decodeRule(bytes));
+      progress((index + 1) / info[12]);
+    }
+    return validateRules(rules);
+  }
+  async writeRule(action, rule) {
+    const bytes = encodeRule(rule);
+    await this.ruleRequest(2);
+    for (let chunk = 0; chunk < 9; chunk++)
+      await this.ruleRequest(3, { chunk, bytes: bytes.subarray(chunk * 16, (chunk + 1) * 16) });
+    await this.ruleRequest(4, { action });
+  }
+  async saveRules(before, after, progress = () => {}) {
+    validateRules(before); validateRules(after);
+    if (!(await this.unlockStatus())[0]) fail("キーボードのロックを解除してください。");
+    const previous = new Map(before.map((rule) => [ruleId(rule), rule]));
+    const desired = new Map(after.map((rule) => [ruleId(rule), rule]));
+    const edits = [];
+    for (const [id, rule] of previous) if (!desired.has(id)) edits.push([2, rule]);
+    for (const [id, rule] of desired)
+      if (!previous.has(id) || String(encodeRule(previous.get(id))) !== String(encodeRule(rule))) edits.push([rule.hidden ? 1 : 0, rule]);
+    for (let i = 0; i < edits.length; i++) {
+      await this.writeRule(...edits[i]);
+      progress((i + 1) / edits.length);
+    }
+    const actual = await this.readRules();
+    const order = (a, b) => ruleId(a).localeCompare(ruleId(b));
+    if (JSON.stringify([...actual].sort(order).map((rule) => [...encodeRule(rule)])) !== JSON.stringify([...after].sort(order).map((rule) => [...encodeRule(rule)])))
+      fail("辞書の保存結果が一致しません。再接続して確認してください。");
+    return actual;
   }
   async readKeymap(progress = () => {}) {
     const bytes = new Uint8Array(STORAGE_LAYERS * ROWS * COLS * 2);
@@ -179,7 +254,7 @@ export class MejiroHID {
     const actual = await this.readKeymap((p) => progress(0.5 + p * 0.5));
     if (
       changes(after, actual).length ||
-      ["flags", "en", "jp"].some((key) => actualSettings[key] !== settings[key])
+      ["flags", "en", "jp", "firstUp"].some((key) => actualSettings[key] !== (key === "firstUp" ? settings.firstUp ?? true : settings[key]))
     )
       fail(
         "保存結果が一致しません。設定をエクスポートし、再接続して確認してください。",
