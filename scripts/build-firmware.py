@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build selected variants; release builds enumerate all profiles and layouts."""
+"""Build QWERTY JP/EN firmware for site downloads."""
 import argparse
 import hashlib
 import json
@@ -37,7 +37,7 @@ def main():
     p.add_argument('--source-dir', type=Path, default=ROOT / '.build/vial')
     p.add_argument('--output-dir', type=Path, default=ROOT / '.build/artifacts')
     p.add_argument('--profile', choices=['jp','en','all'], default='all')
-    p.add_argument('--layout', default='qwerty', help='Layout ID, or all')
+    p.add_argument('--layout', choices=['qwerty'], default='qwerty')
     p.add_argument('--jobs', type=int, default=4)
     a = p.parse_args()
     source = a.source_dir.resolve()

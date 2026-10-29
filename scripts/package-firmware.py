@@ -14,7 +14,7 @@ p.add_argument('artifact_dirs', nargs='+', type=Path)
 a = p.parse_args()
 sources = json.loads((ROOT / 'firmware/sources.json').read_text())
 data = json.loads((ROOT / 'site/data.json').read_text())
-allowed = {f'mejiro31_vial_{profile}_{layout["id"].replace("_", "-")}.uf2' for profile in ['jp','en'] for layout in data['layouts']}
+allowed = {f'mejiro31_vial_{profile}_qwerty.uf2' for profile in ['jp','en']}
 output = ROOT / 'site/firmware'
 output.mkdir(exist_ok=True)
 assets = []

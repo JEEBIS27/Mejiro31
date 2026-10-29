@@ -21,11 +21,6 @@ on:
         ".github/workflows/firmware.yml",
       ]
   workflow_dispatch:
-    inputs:
-      all_layouts:
-        description: Build every initial layout (otherwise QWERTY only)
-        type: boolean
-        default: false
 permissions:
   contents: read
 jobs:
@@ -61,14 +56,12 @@ jobs:
           git diff --exit-code -- site/data.json firmware/vial/web_layouts.h firmware/vial/vial.json
           python scripts/test-firmware.py
           npm test
+          python scripts/test-sync-firmware.py
       - name: Build and verify UF2
         env:
-          FULL_BUILD: ${{ startsWith(github.ref, 'refs/tags/vial-v') || inputs.all_layouts }}
           PROFILE: ${{ matrix.profile }}
         run: |
-          layout=qwerty
-          if [ "$FULL_BUILD" = true ]; then layout=all; fi
-          python scripts/build-firmware.py --profile "$PROFILE" --layout "$layout" --jobs 2
+          python scripts/build-firmware.py --profile "$PROFILE" --layout qwerty --jobs 2
       - uses: actions/upload-artifact@v4
         with:
           name: vial-${{ matrix.profile }}

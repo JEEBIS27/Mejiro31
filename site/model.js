@@ -87,7 +87,8 @@ export function changes(before, after) {
         });
   return result;
 }
-export function selectRelease(releases, profile, layout) {
+export function selectRelease(releases, profile, layout = "qwerty") {
+  if (!["jp", "en"].includes(profile) || layout !== "qwerty") return null;
   if (!Array.isArray(releases))
     throw Error("リリース情報を取得できませんでした。");
   const filename = `mejiro31_vial_${profile}_${layout.replaceAll("_", "-")}.uf2`;
@@ -104,14 +105,14 @@ export function selectRelease(releases, profile, layout) {
   return { url: expected, filename, tag: release.tag_name, size: asset.size };
 }
 
-export function selectBundledFirmware(manifest, profile, layout) {
+export function selectBundledFirmware(manifest, profile, layout = "qwerty") {
   if (
     !manifest ||
     manifest.format !== "mejiro31-firmware-v1" ||
     !Array.isArray(manifest.assets)
   )
     return null;
-  if (!["jp", "en"].includes(profile) || !/^[a-z0-9_-]+$/.test(layout))
+  if (!["jp", "en"].includes(profile) || layout !== "qwerty")
     return null;
   const filename = `mejiro31_vial_${profile}_${layout.replaceAll("_", "-")}.uf2`;
   const asset = manifest.assets.find((a) => a.filename === filename);

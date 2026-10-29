@@ -39,3 +39,14 @@ Both builds support host JIS/US selection and alternate-layout toggling. See the
 
 - [QMKファームウェア / QMK firmware](https://github.com/JEEBIS27/qmk_firmware/tree/master/keyboards/jeebis/mejiro31)
 - [共通メジロ式エンジン / Shared Mejiro engine](https://github.com/JEEBIS27/Mejiro_Engine)
+
+## サイト配布ファームウェアの更新
+
+配布UF2はQWERTYのJP/ENのみです。代替配列はUF2書き込み後、サイト内の設定から選択して保存します。
+
+- QMK側で `just build-site`: JP/ENをビルドしてサイトへ取り込みます。
+- QMK側で `just sync-site`: ビルド済みのJP/ENを取り込みます。
+- このリポジトリで `just sync`: 隣の `qmk_firmware/.build` から取り込みます。
+- `just sync /path/to/artifacts`: 取り込み元を指定します。
+
+取り込み先は `site/firmware/` です。JP/EN両方のUF2、チェックサム、ビルドメタデータを検証し、配布一覧とソース情報を更新します。ビルド条件が異なるJP/ENは取り込みません。`firmware/sources.json` のCI用固定バージョンは変更しません。

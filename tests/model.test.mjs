@@ -88,7 +88,8 @@ test("diffs preserve exact Tap/Hold layers and virtual coordinates", () => {
   ]);
 });
 test("downloads use the newest full Vial release, never old firmware or a foreign host", () => {
-  const filename = "mejiro31_vial_jp_colemak-dh.uf2";
+  assert.equal(selectRelease([], "jp", "graphite"), null);
+  const filename = "mejiro31_vial_jp_qwerty.uf2";
   const asset = {
     name: filename,
     size: 1000,
@@ -99,7 +100,7 @@ test("downloads use the newest full Vial release, never old firmware or a foreig
     selectRelease(
       [{ tag_name: "v0.4.2", assets: [] }, release],
       "jp",
-      "colemak_dh",
+      "qwerty",
     ).filename,
     filename,
   );
@@ -107,12 +108,12 @@ test("downloads use the newest full Vial release, never old firmware or a foreig
     selectRelease(
       [{ tag_name: "vial-v2.0.0", assets: [] }, release],
       "jp",
-      "colemak_dh",
+      "qwerty",
     ),
     null,
   );
   assert.equal(
-    selectRelease([{ ...release, prerelease: true }], "jp", "colemak_dh"),
+    selectRelease([{ ...release, prerelease: true }], "jp", "qwerty"),
     null,
   );
   assert.throws(() =>
@@ -126,7 +127,7 @@ test("downloads use the newest full Vial release, never old firmware or a foreig
         },
       ],
       "jp",
-      "colemak_dh",
+      "qwerty",
     ),
   );
 });

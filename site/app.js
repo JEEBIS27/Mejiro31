@@ -230,7 +230,7 @@ function fillLayouts(id) {
     }),
   );
 }
-for (const id of ["download-layout", "english-layout", "japanese-layout"])
+for (const id of ["english-layout", "japanese-layout"])
   fillLayouts(id);
 $("layers").replaceChildren(
   ...layerLabels.map((name, i) => {
@@ -831,7 +831,7 @@ window.addEventListener("beforeunload", (e) => {
 });
 function selectedFirmware() {
   const profile = $("download-profile").value;
-  const layout = data.layouts[Number($("download-layout").value)].id;
+  const layout = "qwerty";
   return (
     selectRelease(state.releases, profile, layout) ||
     selectBundledFirmware(state.firmwareManifest, profile, layout)
@@ -843,14 +843,13 @@ function updateDownload() {
     $("download").disabled = !asset;
     $("release-status").textContent = asset
       ? `${asset.tag} · ${asset.filename} · ${Math.round(asset.size / 1024)} KB`
-      : "この組み合わせのUF2はまだ用意されていません。日本語／英語のQWERTY・Graphite版を選べます。書き込み後はサイトで配列を変更できます。";
+      : "このプロファイルのUF2はまだ用意されていません。配布UF2はQWERTYです。代替配列は書き込み後、このサイトの設定から変更できます。";
   } catch (e) {
     $("download").disabled = true;
     $("release-status").textContent = e.message;
   }
 }
-for (const id of ["download-profile", "download-layout"])
-  $(id).onchange = updateDownload;
+$("download-profile").onchange = updateDownload;
 $("download").onclick = async () => {
   $("download").disabled = true;
   try {
