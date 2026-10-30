@@ -1195,3 +1195,18 @@ dialog::backdrop {
 .rule-form label { display: grid; gap: 5px; }
 .rule-actions { display: flex; gap: 8px; align-items: end; }
 @media (max-width: 700px) { .rule-form { grid-template-columns: 1fr; } }
+
+.rule-form label.checkbox-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: end;
+  gap: 8px;
+  min-height: 42px;
+}
+.rule-form .checkbox-label input {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
