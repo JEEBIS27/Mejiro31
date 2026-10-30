@@ -1,3 +1,4 @@
+import { ruleNames, searchDictionary } from "./dictionary.js";
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName } from "./key-names.js?v=20261030-names3";
@@ -337,14 +338,78 @@ $("reset-settings").onclick = async () => {
   touch();
 };
 let editingRule = null;
-const ruleNames = [
-  "ユーザー略語",
-  "一般略語（全体）",
-  "一般略語（左）",
-  "一般略語（右）",
-  "動詞",
-];
+let dictionary = [];
+let dictionaryError = "";
+let dictionaryLimit = 100;
+function editRule(rule) {
+  editingRule = state.rules.some((entry) => ruleId(entry) === ruleId(rule))
+    ? ruleId(rule)
+    : null;
+  $("rule-kind").value = rule.kind;
+  $("rule-key").value = rule.key;
+  $("rule-value").value = rule.value;
+  $("rule-hidden").checked = rule.hidden;
+  $("rule-row").value = rule.row;
+  $("rule-context").value = rule.context;
+  $("rule-submit").textContent = editingRule ? "変更を反映" : "辞書に追加";
+  $("rule-cancel").hidden = false;
+  updateRuleFields();
+  $("rule-key").focus();
+}
+function renderDictionary() {
+  const results = searchDictionary(
+    dictionary,
+    state.rules,
+    $("dictionary-search").value,
+    $("dictionary-kind").value,
+  );
+  $("dictionary-count").textContent =
+    dictionaryError ||
+    `${results.length} 件（${Math.min(dictionaryLimit, results.length)} 件表示）`;
+  $("dictionary-results").replaceChildren(
+    ...results.slice(0, dictionaryLimit).map((rule) => {
+      const row = document.createElement("div");
+      row.className = "rule-item dictionary-result";
+      const title = document.createElement("strong");
+      title.textContent = `${ruleNames[rule.kind]} · ${rule.key || "（空）"}`;
+      const value = document.createElement("span");
+      value.textContent = `${rule.hidden ? "無効" : rule.value || "（空文字）"}${rule.row ? ` · ${rule.row}行（語幹）` : ""} · ${rule.custom ? "ユーザー設定" : "標準"}`;
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "button";
+      edit.textContent = "編集";
+      edit.disabled = state.busy;
+      edit.onclick = () => editRule(rule);
+      row.append(title, value, edit);
+      return row;
+    }),
+  );
+  $("dictionary-more").hidden = results.length <= dictionaryLimit;
+}
+for (const id of ["dictionary-search", "dictionary-kind"])
+  $(id).addEventListener("input", () => {
+    dictionaryLimit = 100;
+    renderDictionary();
+  });
+$("dictionary-more").onclick = () => {
+  dictionaryLimit += 100;
+  renderDictionary();
+};
+fetch("./dictionary.json")
+  .then((response) => {
+    if (!response.ok) throw Error("辞書の読み込みに失敗しました。");
+    return response.json();
+  })
+  .then((data) => {
+    dictionary = data.entries;
+    renderDictionary();
+  })
+  .catch((error) => {
+    dictionaryError = error.message;
+    renderDictionary();
+  });
 function renderRules() {
+  renderDictionary();
   const list = $("rule-list");
   list.replaceChildren();
   if (!state.rules.length) {
@@ -367,19 +432,7 @@ function renderRules() {
     edit.className = "button";
     edit.textContent = "編集";
     edit.disabled = state.busy;
-    edit.onclick = () => {
-      editingRule = ruleId(rule);
-      $("rule-kind").value = rule.kind;
-      $("rule-key").value = rule.key;
-      $("rule-value").value = rule.value;
-      $("rule-hidden").checked = rule.hidden;
-      $("rule-row").value = rule.row;
-      $("rule-context").value = rule.context;
-      $("rule-submit").textContent = "変更を反映";
-      $("rule-cancel").hidden = false;
-      updateRuleFields();
-      $("rule-key").focus();
-    };
+    edit.onclick = () => editRule(rule);
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "button";

@@ -53,7 +53,8 @@ jobs:
       - name: Check generated definitions and adapter behavior
         run: |
           python scripts/generate-data.py
-          git diff --exit-code -- site/data.json firmware/vial/web_layouts.h firmware/vial/vial.json
+          python scripts/generate-dictionary.py
+          git diff --exit-code -- site/dictionary.json site/data.json firmware/vial/web_layouts.h firmware/vial/vial.json
           python scripts/test-firmware.py
           npm test
           python scripts/test-sync-firmware.py

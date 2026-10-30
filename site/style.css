@@ -1210,3 +1210,11 @@ dialog::backdrop {
   height: 16px;
   margin: 0;
 }
+
+.dictionary-search-controls { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+.dictionary-search-controls label { display: grid; gap: 5px; }
+.dictionary-results { max-height: 420px; overflow: auto; display: grid; gap: 6px; margin-bottom: 12px; }
+.dictionary-result { flex-wrap: wrap; }
+.dictionary-result strong { font-size: 13px; }
+.dictionary-result span { font-size: 13px; }
+@media (max-width: 700px) { .dictionary-search-controls { grid-template-columns: 1fr; } }

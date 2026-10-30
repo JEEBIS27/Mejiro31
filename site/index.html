@@ -9,9 +9,9 @@
       content="Mejiro31のキーマップ・入力設定・ファームウェア。"
     />
     <title>Mejiro31</title>
-    <link rel="stylesheet" href="./style.css?v=20261030-checkbox1" />
+    <link rel="stylesheet" href="./style.css?v=20261030-dictionary1" />
     <script type="module" src="./ui.js?v=20261029-keydiff1"></script>
-    <script type="module" src="./app.js?v=20261030-ruleexamples1"></script>
+    <script type="module" src="./app.js?v=20261030-dictionary1"></script>
   </head>
   <body>
     <header class="topbar">
@@ -293,6 +293,14 @@
           <div class="settings-card rule-card">
             <h2>メジロ式の辞書</h2>
             <p class="fine">動詞・一般略語・ユーザー略語を編集します。本体に保存すると、電源を抜いても保持されます。最大24件です。</p>
+            <div class="dictionary-search-controls">
+              <label>辞書を検索<input id="dictionary-search" type="search" placeholder="ストローク・出力文字・種類で検索" /></label>
+              <label>種類<select id="dictionary-kind"><option value="">すべて</option><option value="4">動詞</option><option value="2">一般略語（左）</option><option value="3">一般略語（右）</option><option value="1">一般略語（全体）</option><option value="0">ユーザー略語</option></select></label>
+            </div>
+            <p id="dictionary-count" class="fine" role="status">辞書を読み込み中…</p>
+            <div id="dictionary-results" class="dictionary-results"></div>
+            <button id="dictionary-more" type="button" class="button" hidden>さらに表示</button>
+            <h3>登録した設定</h3>
             <div id="rule-list" class="rule-list"></div>
             <form id="rule-form" class="rule-form">
               <label>種類<select id="rule-kind"><option value="4">動詞</option><option value="2">一般略語（左）</option><option value="3">一般略語（右）</option><option value="1">一般略語（全体）</option><option value="0">ユーザー略語</option></select></label>
