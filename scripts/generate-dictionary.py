@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export the pinned engine's built-in dictionary for the configurator search."""
+"""Export the search dictionary from firmware/dictionary-source.json."""
 import argparse
 import json
 from pathlib import Path
@@ -9,7 +9,9 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 
 def generate(source):
-    revision = json.loads((ROOT / 'firmware/sources.json').read_text())['engine']['ref']
+    revision = json.loads((ROOT / 'firmware/dictionary-source.json').read_text())['ref']
+    if subprocess.run(['git', 'cat-file', '-e', f'{revision}:src/tables.rs'], cwd=source, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        subprocess.run(['git', 'fetch', '--depth', '1', 'origin', revision], cwd=source, check=True)
     text = subprocess.check_output(['git', 'show', f'{revision}:src/tables.rs'], cwd=source, text=True)
     entries = []
     for kind, name in enumerate(['USERS_MAP', 'ABSTRACT_MAP', 'ABSTRACT_MAP_LEFT', 'ABSTRACT_MAP_RIGHT', 'VERB_MAP']):

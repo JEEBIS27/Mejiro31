@@ -401,7 +401,7 @@ $("dictionary-more").onclick = () => {
   dictionaryLimit += 100;
   renderDictionary();
 };
-fetch("./dictionary.json")
+fetch("./dictionary.json?v=004a3fb")
   .then((response) => {
     if (!response.ok) throw Error("辞書の読み込みに失敗しました。");
     return response.json();
@@ -463,7 +463,7 @@ function updateRuleFields() {
     { key: "K-KAU", value: "ここ" },
     { key: "K", value: "この" },
     { key: "KAU", value: "こと" },
-    { key: "A-KNA", value: "あが", row: "r" },
+    { key: "A-", value: "あ", row: "ge" },
   ];
   const example = examples[kind];
   $("rule-key").placeholder = `例：${example.key}`;

@@ -3,12 +3,12 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { searchDictionary } from "../site/dictionary.js";
 const { entries, engine } = JSON.parse(readFileSync(new URL("../site/dictionary.json", import.meta.url)));
-const pins = JSON.parse(readFileSync(new URL("../firmware/sources.json", import.meta.url)));
+const pins = JSON.parse(readFileSync(new URL("../firmware/dictionary-source.json", import.meta.url)));
 test("built-in dictionary is complete, pinned and searchable by kind, stroke and text", () => {
-  assert.equal(engine, pins.engine.ref);
-  assert.equal(entries.length, 3502);
+  assert.equal(engine, pins.ref);
+  assert.equal(entries.length, 3730);
   assert.equal(new Set(entries.map(r => `${r.kind}:${r.key}`)).size, entries.length);
-  assert.ok(searchDictionary(entries, [], "A-KNA", "4").some(r => r.value === "あが" && r.row === "r"));
+  assert.ok(searchDictionary(entries, [], "A-", "4").some(r => r.key === "A-" && r.value === "あ" && r.row === "ge"));
   assert.ok(searchDictionary(entries, [], "この", "2").some(r => r.key === "K"));
   assert.ok(searchDictionary(entries, [], "KAU", "3").some(r => r.value === "こと"));
 });

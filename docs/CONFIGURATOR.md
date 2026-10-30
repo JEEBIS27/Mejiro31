@@ -125,4 +125,4 @@ CIの固定ソースから作ったビルド成果物を更新する場合は `p
 
 辞書画面の検索では、内蔵の動詞・一般略語と、現在編集中（接続時は本体から読み込んだ）のユーザー設定をまとめて確認できます。同じ種類・ストロークはユーザー設定を優先し、無効化項目は「無効」と表示します。動詞の出力文字は語幹と活用行です。検索結果の「編集」で登録フォームへ取り込めます。
 
-内蔵辞書の索引 `site/dictionary.json` は、`firmware/sources.json` に固定したエンジンから `python scripts/generate-dictionary.py` で生成します。別のチェックアウトを使う場合は `--source-dir /path/to/Mejiro_Engine` を指定してください。
+内蔵辞書の索引 `site/dictionary.json` は、`firmware/dictionary-source.json` に固定した検索用エンジンから `python scripts/generate-dictionary.py` で生成します。別のチェックアウトを使う場合は `--source-dir /path/to/Mejiro_Engine` を指定してください。
