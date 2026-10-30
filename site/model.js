@@ -97,7 +97,7 @@ export function selectRelease(releases, profile, layout = "qwerty") {
   if (!["jp", "en"].includes(profile) || layout !== "qwerty") return null;
   if (!Array.isArray(releases))
     throw Error("リリース情報を取得できませんでした。");
-  const filename = `mejiro31_vial_${profile}_${layout.replaceAll("_", "-")}.uf2`;
+  const filename = `mejiro31_${profile}.uf2`;
   // A latest release without the selected asset must never silently fall back
   // to an older binary. All variants are published together by our workflow.
   const release = releases.find(
@@ -120,7 +120,7 @@ export function selectBundledFirmware(manifest, profile, layout = "qwerty") {
     return null;
   if (!["jp", "en"].includes(profile) || layout !== "qwerty")
     return null;
-  const filename = `mejiro31_vial_${profile}_${layout.replaceAll("_", "-")}.uf2`;
+  const filename = `mejiro31_${profile}.uf2`;
   const asset = manifest.assets.find((a) => a.filename === filename);
   if (!asset) return null;
   if (

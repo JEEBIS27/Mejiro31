@@ -21,6 +21,7 @@ test('all bundled variants select real UF2 files with matching checksums',()=>{
 });
 test('invalid bundled metadata never becomes a download link',()=>{
  const copy=structuredClone(manifest);copy.assets[0].sha256='invalid';
- const [,profile,layout]=/mejiro31_vial_(jp|en)_(.+)\.uf2/.exec(copy.assets[0].filename);
+ const [,profile]=/mejiro31_(jp|en)\.uf2/.exec(copy.assets[0].filename);
+ const layout="qwerty";
  assert.throws(()=>selectBundledFirmware(copy,profile,layout));
 });

@@ -19,7 +19,7 @@ def sync(source, output):
     assets, payloads, common_sources = [], {}, None
     # Validate the entire pair before changing any site files.
     for profile in ['jp', 'en']:
-        name = f'mejiro31_vial_{profile}_qwerty.uf2'
+        name = f'mejiro31_{profile}.uf2'
         uf2 = source / name
         digest = builder.verify_uf2(uf2)
         checksum = uf2.with_suffix('.uf2.sha256').read_text().split()
@@ -29,9 +29,10 @@ def sync(source, output):
         if (metadata.get('format') != 'mejiro31-build-v1'
                 or metadata.get('filename') != name
                 or metadata.get('sha256') != digest
-                or metadata.get('profile') != profile
-                or metadata.get('layout') != 'qwerty'
-                or metadata.get('keymap') != 'vial'):
+                or not (metadata.get('keymap') == f'{profile}_default'
+                        or (metadata.get('profile') == profile
+                            and metadata.get('layout') == 'qwerty'
+                            and metadata.get('keymap') == 'vial'))):
             raise ValueError(f'Invalid build metadata: {uf2}')
         sources = metadata.get('sources')
         if not isinstance(sources, dict) or not all(sources.get(k) for k in ['engine', 'vial', 'keyboard_head']):

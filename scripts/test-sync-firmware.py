@@ -14,7 +14,7 @@ spec.loader.exec_module(syncer)
 class SyncTests(unittest.TestCase):
     def pair(self, source):
         for profile in ['jp', 'en']:
-            name = f'mejiro31_vial_{profile}_qwerty.uf2'
+            name = f'mejiro31_{profile}.uf2'
             path = source / name
             raw = bytearray(512)
             struct.pack_into('<8I', raw, 0, 0x0a324655, 0x9e5d5157, 0x2000, 0x10000000, 256, 0, 1, 0xe48bff56)
@@ -49,7 +49,7 @@ class SyncTests(unittest.TestCase):
                 output = root / 'site'; output.mkdir()
                 sentinel = output / 'manifest.json'; sentinel.write_text('original')
                 self.pair(source)
-                en = source / 'mejiro31_vial_en_qwerty.uf2'
+                en = source / 'mejiro31_en.uf2'
                 if error == 'missing-en': en.unlink()
                 elif error == 'checksum': en.with_suffix('.uf2.sha256').write_text('bad')
                 elif error == 'uf2': en.write_bytes(b'bad')

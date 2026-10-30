@@ -57,7 +57,7 @@ def main():
             for ext in ['elf','uf2','hex','bin','map']:
                 (source / f'.build/jeebis_mejiro31_vial.{ext}').unlink(missing_ok=True)
             subprocess.run(['make', 'jeebis/mejiro31:vial', f'-j{a.jobs}', f'MEJIRO_PROFILE={int(profile == "en")}', f'MEJIRO_LAYOUT={layout_id}'], cwd=source, check=True)
-            dest = output / f'mejiro31_vial_{profile}_{layout["id"].replace("_", "-")}.uf2'
+            dest = output / f'mejiro31_{profile}.uf2'
             shutil.copyfile(source / '.build/jeebis_mejiro31_vial.uf2', dest)
             digest = verify_uf2(dest)
             dest.with_suffix('.uf2.sha256').write_text(f'{digest}  {dest.name}\n')

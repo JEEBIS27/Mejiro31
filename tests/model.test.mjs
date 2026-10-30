@@ -89,7 +89,7 @@ test("diffs preserve exact Tap/Hold layers and virtual coordinates", () => {
 });
 test("downloads use the newest full Vial release, never old firmware or a foreign host", () => {
   assert.equal(selectRelease([], "jp", "graphite"), null);
-  const filename = "mejiro31_vial_jp_qwerty.uf2";
+  const filename = "mejiro31_jp.uf2";
   const asset = {
     name: filename,
     size: 1000,

@@ -23,8 +23,8 @@ qmk compile -kb jeebis/mejiro31 -km en_default
 
 生成物はQMKルートの次の2ファイルです。
 
-- `jeebis_mejiro31_jp_default.uf2`
-- `jeebis_mejiro31_en_default.uf2`
+- `mejiro31_jp.uf2`
+- `mejiro31_en.uf2`
 
 JP/ENは初期配列・親指の記号・速記の初期選択が異なります。どちらも同じ入力エンジンを使い、ホストのJIS/US設定は独立しています。既に保存した設定はビルドの初期値より優先されます。
 
@@ -108,7 +108,7 @@ QMKの標準Tap-Holdは無効にしており、`MT` / `LT` を直接置く設定
 
 Use `jp_default` or `en_default` from the [QMK firmware source](https://github.com/JEEBIS27/qmk_firmware/tree/master/keyboards/jeebis/mejiro31). Normal typing uses the unified input engine, built-in Mejiro uses the shared Rust engine, and external steno uses Plover HID.
 
-Use a working [QMK build environment](https://docs.qmk.fm/newbs_getting_started), Rust/Cargo, and the `thumbv6m-none-eabi` target. Clone `qmk_firmware` with its submodules and `Mejiro_Engine` as sibling directories, then run the build commands above. The QMK root will contain `jeebis_mejiro31_jp_default.uf2` and `jeebis_mejiro31_en_default.uf2`.
+Use a working [QMK build environment](https://docs.qmk.fm/newbs_getting_started), Rust/Cargo, and the `thumbv6m-none-eabi` target. Clone `qmk_firmware` with its submodules and `Mejiro_Engine` as sibling directories, then run the build commands above. The QMK root will contain `mejiro31_jp.uf2` and `mejiro31_en.uf2`.
 
 Back up saved keymaps before initialization. Hold the PCB BOOT button while connecting USB and copy the UF2 to `RPI-RP2`. Reflashing alone does not erase saved keymaps. Initialize the dynamic keymap using a suitable tool or a temporary initialization build calling `eeconfig_init();` at the start of `keyboard_post_init_user()` as shown above. After running it once, remove that line and reflash a normal build; leaving it in would erase settings on every boot. Initialization removes saved keymaps, macros and settings. Verify host JIS/US, language and steno selection afterward. Select **Plover HID** in Plover for external steno.
 

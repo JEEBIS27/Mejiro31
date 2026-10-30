@@ -1,17 +1,15 @@
 {
   "format": "mejiro31-build-v1",
-  "filename": "mejiro31_vial_jp_qwerty.uf2",
-  "sha256": "c96a4c11d5e1bf888d0b4e5e66de4f110f423606f4210cef774ab7530d03193b",
+  "filename": "mejiro31_en.uf2",
+  "sha256": "6b9e9af25deb87a447dd3ea55e4c063128877bb9635b6d411206b57af5036931",
   "sources": {
     "vial": "dd43959ae5c08d8a28d38a1acf7b04e86b14a344",
     "engine": "1e678d3f743023e4fca5be02b706a9feabf5ac58",
-    "engine_source": "/tmp/mejiro-engine-clean",
+    "engine_source": "/home/jeebis/Git/Mejiro_Engine",
     "engine_ref": "local",
-    "engine_dirty": false,
+    "engine_dirty": true,
     "engine_source_sha256": "c182b073f881c93fa016659d7c2ee808ae6c82ac3fb81887f0be1fbf611eda06",
     "keyboard_head": "c786dd376d535a3096f299006f279db244b2eb1e"
   },
-  "keymap": "vial",
-  "profile": "jp",
-  "layout": "qwerty"
+  "keymap": "en_default"
 }
