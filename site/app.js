@@ -1,8 +1,8 @@
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
-import { keyName } from "./key-names.js?v=20261029-names2";
+import { keyName } from "./key-names.js?v=20261030-names3";
 import { setIcon } from "./ui.js?v=20261029-keydiff1";
-import { keyChoices, searchChoices } from "./key-choices.js?v=20261029-names2";
+import { keyChoices, searchChoices } from "./key-choices.js?v=20261030-names3";
 import {
   clone,
   makeBackup,
@@ -21,7 +21,7 @@ import {
   BOARD_HEIGHT,
 } from "./board-layout.js";
 const $ = (id) => document.getElementById(id);
-const data = await fetch("./data.json")
+const data = await fetch("./data.json?v=20261030-defaults1")
   .then((r) => {
     if (!r.ok) throw Error("設定データを読み込めません。");
     return r.json();
@@ -167,7 +167,7 @@ function shortName(code) {
     KC_LNG2: "英数",
     MJI_MODE: "Layer",
     MJI_JIS: "JIS/US",
-    MJI_ALT: "Alt ↔",
+    MJI_ALT: "Layout ↔",
     MJI_MEJIRO: "Steno ↔",
     MJI_STICKY: "Sticky ⇧",
     MJI_00: "00",
@@ -232,8 +232,7 @@ function fillLayouts(id) {
     }),
   );
 }
-for (const id of ["english-layout", "japanese-layout"])
-  fillLayouts(id);
+for (const id of ["english-layout", "japanese-layout"]) fillLayouts(id);
 $("layers").replaceChildren(
   ...layerLabels.map((name, i) => {
     const b = document.createElement("button");
@@ -328,12 +327,23 @@ $("reset-settings").onclick = async () => {
   )
     return;
   state.keymap = clone(data.defaults[state.profile]);
-  state.settings = { flags: state.profile === "en" ? 2 : 6, en: 0, jp: 0, firstUp: true };
+  state.settings = {
+    flags: state.profile === "en" ? 2 : 6,
+    en: 0,
+    jp: 0,
+    firstUp: true,
+  };
   state.rules = [];
   touch();
 };
 let editingRule = null;
-const ruleNames = ["ユーザー略語", "一般略語（全体）", "一般略語（左）", "一般略語（右）", "動詞"];
+const ruleNames = [
+  "ユーザー略語",
+  "一般略語（全体）",
+  "一般略語（左）",
+  "一般略語（右）",
+  "動詞",
+];
 function renderRules() {
   const list = $("rule-list");
   list.replaceChildren();
@@ -349,9 +359,13 @@ function renderRules() {
     const title = document.createElement("strong");
     title.textContent = `${ruleNames[rule.kind]} · ${rule.key || "（空）"}`;
     const value = document.createElement("span");
-    value.textContent = rule.hidden ? "標準項目を無効化" : `${rule.value}${rule.row ? ` · ${rule.row}行` : ""}`;
+    value.textContent = rule.hidden
+      ? "標準項目を無効化"
+      : `${rule.value}${rule.row ? ` · ${rule.row}行` : ""}`;
     const edit = document.createElement("button");
-    edit.type = "button"; edit.className = "button"; edit.textContent = "編集";
+    edit.type = "button";
+    edit.className = "button";
+    edit.textContent = "編集";
     edit.disabled = state.busy;
     edit.onclick = () => {
       editingRule = ruleId(rule);
@@ -367,10 +381,14 @@ function renderRules() {
       $("rule-key").focus();
     };
     const remove = document.createElement("button");
-    remove.type = "button"; remove.className = "button"; remove.textContent = "削除";
+    remove.type = "button";
+    remove.className = "button";
+    remove.textContent = "削除";
     remove.disabled = state.busy;
     remove.onclick = () => {
-      state.rules = state.rules.filter((entry) => ruleId(entry) !== ruleId(rule));
+      state.rules = state.rules.filter(
+        (entry) => ruleId(entry) !== ruleId(rule),
+      );
       if (editingRule === ruleId(rule)) clearRuleForm();
       touch();
     };
@@ -399,10 +417,15 @@ $("rule-form").onsubmit = (event) => {
   event.preventDefault();
   const kind = Number($("rule-kind").value);
   const rule = {
-    kind, key: $("rule-key").value.trim(),
+    kind,
+    key: $("rule-key").value.trim(),
     value: $("rule-hidden").checked ? "" : $("rule-value").value,
-    row: !$("rule-hidden").checked && kind === 4 ? $("rule-row").value.trim() : "",
-    context: !$("rule-hidden").checked && kind === 1 ? Number($("rule-context").value) : 0,
+    row:
+      !$("rule-hidden").checked && kind === 4 ? $("rule-row").value.trim() : "",
+    context:
+      !$("rule-hidden").checked && kind === 1
+        ? Number($("rule-context").value)
+        : 0,
     hidden: $("rule-hidden").checked,
   };
   try {
@@ -412,7 +435,9 @@ $("rule-form").onsubmit = (event) => {
     state.rules = next;
     clearRuleForm();
     touch();
-  } catch (error) { status(error.message, "error"); }
+  } catch (error) {
+    status(error.message, "error");
+  }
 };
 updateRuleFields();
 function render() {
@@ -539,7 +564,15 @@ function render() {
     "host-layout",
     "alt-enabled",
     "mejiro-enabled",
-    "first-up", "rule-kind", "rule-key", "rule-value", "rule-row", "rule-context", "rule-submit", "rule-cancel", "rule-hidden",
+    "first-up",
+    "rule-kind",
+    "rule-key",
+    "rule-value",
+    "rule-row",
+    "rule-context",
+    "rule-submit",
+    "rule-cancel",
+    "rule-hidden",
   ])
     $(id).disabled = state.busy;
   $("connect").disabled = state.busy;
@@ -696,7 +729,12 @@ $("edit-profile").onchange = async () => {
   }
   state.profile = $("edit-profile").value;
   state.keymap = clone(data.defaults[state.profile]);
-  state.settings = { flags: state.profile === "en" ? 2 : 6, en: 0, jp: 0, firstUp: true };
+  state.settings = {
+    flags: state.profile === "en" ? 2 : 6,
+    en: 0,
+    jp: 0,
+    firstUp: true,
+  };
   state.baseline = null;
   state.rules = [];
   state.modified = false;
@@ -825,7 +863,11 @@ async function saveChanges() {
       state.settings,
       (p) => ($("progress").value = p),
     );
-    const rules = await client.saveRules(state.baseline.rules, state.rules, (p) => ($("progress").value = p));
+    const rules = await client.saveRules(
+      state.baseline.rules,
+      state.rules,
+      (p) => ($("progress").value = p),
+    );
     state.baseline = { ...clone(result), rules: clone(rules) };
     state.modified = false;
     status("キーボードに保存し、読み戻して内容を確認しました。", "success");

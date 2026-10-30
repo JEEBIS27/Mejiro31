@@ -102,6 +102,14 @@ const mods = {
   20: "Right Alt",
   24: "Right Win / Command",
 };
+export const layerNames = [
+  "Keyboard",
+  "⇧ Keyboard",
+  "Number",
+  "⇧ Number",
+  "Function",
+  "Steno",
+];
 export function keyName(code, fallback) {
   if (code === 0x52a2)
     return {
@@ -118,9 +126,20 @@ export function keyName(code, fallback) {
   }
   if (code >= 0x5220 && code <= 0x5225)
     return {
-      label: `Layer ${code - 0x5220} (長押し)`,
-      search: `レイヤー 層 momentary ${code - 0x5220}`,
+      label: `${layerNames[code - 0x5220]}（Layer${code - 0x5220}）`,
+      search: `レイヤー 層 momentary 長押し Layer ${code - 0x5220}`,
     };
+  if (code > 0xff && code <= 0x1fff && (code & 255) === 0) {
+    const bits = (code >> 8) & 15;
+    const right = !!(code & 0x1000);
+    const parts = [0, 1, 2, 3]
+      .filter((bit) => bits & (1 << bit))
+      .map((bit) => keyName(0xe0 + (right ? 4 : 0) + bit, ""));
+    return {
+      label: parts.map((p) => p.label).join(" + "),
+      search: parts.map((p) => p.search).join(" "),
+    };
+  }
   if (code > 0xff && code <= 0x1fff && mods[code >> 8]) {
     const base = code & 255,
       mod = code >> 8;

@@ -106,3 +106,22 @@ test("internal code aliases remain searchable while all result labels stay human
     assert.ok(found.every((c) => !c.label.includes("KC_")));
   }
 });
+
+test("Hold includes modifier combinations and names each layer", () => {
+  const choices = keyChoices(data, nameFor, { hold: true });
+  const altCtrl = choices.find((c) => c.value === 0x0500);
+  assert.equal(altCtrl.label, "Left Ctrl + Left Alt");
+  assert.ok(searchChoices(choices, "Alt Ctrl").includes(altCtrl));
+  assert.equal(
+    choices.find((c) => c.value === 0x1f00).label,
+    "Right Ctrl + Right Shift + Right Alt + Right Win / Command",
+  );
+  assert.equal(
+    choices.find((c) => c.value === 0x5220).label,
+    "Keyboard（Layer0）",
+  );
+  assert.equal(
+    choices.find((c) => c.value === 0x5224).label,
+    "Function（Layer4）",
+  );
+});
