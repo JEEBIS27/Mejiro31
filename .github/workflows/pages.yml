@@ -2,7 +2,7 @@ name: Configurator site
 on:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/pages.yml"]
+    paths: ["site/**", "tests/**", "package.json", ".github/workflows/pages.yml"]
   workflow_dispatch:
 permissions:
   contents: read
