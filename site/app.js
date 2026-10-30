@@ -357,6 +357,12 @@ function editRule(rule) {
   $("rule-key").focus();
 }
 function renderDictionary() {
+  if (!$("dictionary-search").value.trim()) {
+    $("dictionary-results").replaceChildren();
+    $("dictionary-count").textContent = "";
+    $("dictionary-more").hidden = true;
+    return;
+  }
   const results = searchDictionary(
     dictionary,
     state.rules,
