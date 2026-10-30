@@ -2,14 +2,14 @@
   "format": "mejiro31-firmware-v1",
   "assets": [
     {
-      "filename": "mejiro31_vial_en_qwerty.uf2",
-      "size": 656896,
-      "sha256": "9767d82b0a1aca54bd9df5d9bd8b4e3f1486f12fca5da90e8551dad6f2762b6b"
+      "filename": "mejiro31_vial_jp_qwerty.uf2",
+      "size": 666112,
+      "sha256": "c96a4c11d5e1bf888d0b4e5e66de4f110f423606f4210cef774ab7530d03193b"
     },
     {
-      "filename": "mejiro31_vial_jp_qwerty.uf2",
-      "size": 657408,
-      "sha256": "aa9144dc969c366f47d8fc08bb897d69b4f9d7501019b0b5eb7c001f26b92219"
+      "filename": "mejiro31_vial_en_qwerty.uf2",
+      "size": 666112,
+      "sha256": "55f6e0298bdb2bbd43188ed8c5687d09f65751bbce24244e670a424ff966974c"
     }
   ]
 }
