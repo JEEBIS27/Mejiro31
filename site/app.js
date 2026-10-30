@@ -398,6 +398,18 @@ function renderRules() {
 }
 function updateRuleFields() {
   const kind = Number($("rule-kind").value);
+  // Built-in examples match Mejiro Engine's USERS/ABSTRACT/VERB rule formats.
+  const examples = [
+    { key: "STK-", value: "こんにちは" },
+    { key: "K-KAU", value: "ここ" },
+    { key: "K", value: "この" },
+    { key: "KAU", value: "こと" },
+    { key: "A-KNA", value: "あが", row: "r" },
+  ];
+  const example = examples[kind];
+  $("rule-key").placeholder = `例：${example.key}`;
+  $("rule-value").placeholder = `例：${example.value}`;
+  $("rule-row").placeholder = `例：${example.row || "r"}`;
   $("rule-row-label").hidden = kind !== 4;
   $("rule-context-label").hidden = kind !== 1;
   $("rule-key").required = kind !== 2;
