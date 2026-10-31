@@ -1218,3 +1218,22 @@ dialog::backdrop {
 .dictionary-result strong { font-size: 13px; }
 .dictionary-result span { font-size: 13px; }
 @media (max-width: 700px) { .dictionary-search-controls { grid-template-columns: 1fr; } }
+
+.timing-input {
+  position: relative;
+  display: block;
+}
+.timing-input input {
+  width: 100%;
+  padding-right: 112px;
+}
+.timing-default {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 11px;
+  pointer-events: none;
+  white-space: nowrap;
+}

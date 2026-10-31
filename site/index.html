@@ -9,7 +9,7 @@
       content="Mejiro31のキーマップ・入力設定・ファームウェア。"
     />
     <title>Mejiro31</title>
-    <link rel="stylesheet" href="./style.css?v=20261030-dictionary1" />
+    <link rel="stylesheet" href="./style.css?v=20261031-timingdefault1" />
     <script type="module" src="./ui.js?v=20261031-timing1"></script>
     <script type="module" src="./app.js?v=20261031-timing1"></script>
   </head>
@@ -295,38 +295,55 @@
             <h2>入力の判定時間</h2>
             <div class="settings-fields">
               <label
-                >コンボ受付時間（ms）<input
-                  id="timing-combo"
-                  type="number"
-                  min="1"
-                  max="1000"
-                  step="1"
-                  value="150"
-                /><small class="fine"
+                >コンボ受付時間（ms）<span class="timing-input"
+                  ><input
+                    id="timing-combo"
+                    aria-describedby="timing-combo-default"
+                    type="number"
+                    min="1"
+                    max="1000"
+                    step="1"
+                    value="150"
+                  /><span class="timing-default" id="timing-combo-default"
+                    >標準 150ms</span
+                  ></span
+                ><small class="fine"
                   >2つのキーを同時押しとみなす時間。</small
                 ></label
               >
               <label
-                >連続入力の猶予時間（ms）<input
-                  id="timing-continuation"
-                  type="number"
-                  min="1"
-                  max="1000"
-                  step="1"
-                  value="50"
-                /><small class="fine"
+                >連続入力の猶予時間（ms）<span class="timing-input"
+                  ><input
+                    id="timing-continuation"
+                    aria-describedby="timing-continuation-default"
+                    type="number"
+                    min="1"
+                    max="1000"
+                    step="1"
+                    value="50"
+                  /><span
+                    class="timing-default"
+                    id="timing-continuation-default"
+                    >標準 50ms</span
+                  ></span
+                ><small class="fine"
                   >前のキーが残った連続入力を判定する時間。</small
                 ></label
               >
               <label
-                >長押し判定時間（ms）<input
-                  id="timing-hold"
-                  type="number"
-                  min="2"
-                  max="2000"
-                  step="1"
-                  value="300"
-                /><small class="fine"
+                >長押し判定時間（ms）<span class="timing-input"
+                  ><input
+                    id="timing-hold"
+                    aria-describedby="timing-hold-default"
+                    type="number"
+                    min="2"
+                    max="2000"
+                    step="1"
+                    value="300"
+                  /><span class="timing-default" id="timing-hold-default"
+                    >標準 300ms</span
+                  ></span
+                ><small class="fine"
                   >TapからHoldに切り替わる時間。連続入力の猶予時間より長くします。</small
                 ></label
               >
