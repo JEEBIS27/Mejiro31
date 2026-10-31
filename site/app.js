@@ -545,6 +545,12 @@ $("rule-form").onsubmit = (event) => {
   }
 };
 updateRuleFields();
+function updateTimingAppearance(name) {
+  const field = $("timing-" + name);
+  const changed = Number(field.value) !== DEFAULT_TIMING[name];
+  field.classList.toggle("customized", changed);
+  $("timing-" + name + "-default").hidden = !changed;
+}
 function render() {
   if (state.layer === 5 && data.pairs.some((p) => p.logical === state.selected))
     state.selected = 1;
@@ -658,6 +664,7 @@ function render() {
   $("first-up").checked = state.settings.firstUp;
   for (const name of ["combo", "continuation", "hold"]) {
     $("timing-" + name).value = (state.settings.timing || DEFAULT_TIMING)[name];
+    updateTimingAppearance(name);
     $("timing-" + name).disabled =
       state.busy || (!!state.client && !state.client.timingSupported);
   }
@@ -877,6 +884,8 @@ for (const id of [
     };
     touch();
   };
+for (const name of ["combo", "continuation", "hold"])
+  $("timing-" + name).oninput = () => updateTimingAppearance(name);
 for (const name of ["combo", "continuation", "hold"])
   $("timing-" + name).onchange = () => {
     try {

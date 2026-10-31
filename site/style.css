@@ -1237,3 +1237,8 @@ dialog::backdrop {
   pointer-events: none;
   white-space: nowrap;
 }
+
+.timing-input input.customized {
+  border-color: #629edb;
+  outline-color: #629edb;
+}

@@ -9,9 +9,9 @@
       content="Mejiro31のキーマップ・入力設定・ファームウェア。"
     />
     <title>Mejiro31</title>
-    <link rel="stylesheet" href="./style.css?v=20261031-timingdefault1" />
+    <link rel="stylesheet" href="./style.css?v=20261031-timingdefault2" />
     <script type="module" src="./ui.js?v=20261031-timing1"></script>
-    <script type="module" src="./app.js?v=20261031-timing1"></script>
+    <script type="module" src="./app.js?v=20261031-timingdefault2"></script>
   </head>
   <body>
     <header class="topbar">
@@ -304,8 +304,8 @@
                     max="1000"
                     step="1"
                     value="150"
-                  /><span class="timing-default" id="timing-combo-default"
-                    >標準 150ms</span
+                  /><span class="timing-default" id="timing-combo-default" hidden
+                    >標準：150ms</span
                   ></span
                 ><small class="fine"
                   >2つのキーを同時押しとみなす時間。</small
@@ -323,8 +323,8 @@
                     value="50"
                   /><span
                     class="timing-default"
-                    id="timing-continuation-default"
-                    >標準 50ms</span
+                    id="timing-continuation-default" hidden
+                    >標準：50ms</span
                   ></span
                 ><small class="fine"
                   >前のキーが残った連続入力を判定する時間。</small
@@ -340,8 +340,8 @@
                     max="2000"
                     step="1"
                     value="300"
-                  /><span class="timing-default" id="timing-hold-default"
-                    >標準 300ms</span
+                  /><span class="timing-default" id="timing-hold-default" hidden
+                    >標準：300ms</span
                   ></span
                 ><small class="fine"
                   >TapからHoldに切り替わる時間。連続入力の猶予時間より長くします。</small
