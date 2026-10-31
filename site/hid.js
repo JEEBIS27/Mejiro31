@@ -1,5 +1,6 @@
 import {
   UID,
+  validateTiming,
   COLS,
   ROWS,
   STORAGE_LAYERS,
@@ -7,8 +8,14 @@ import {
   decodeKeymap,
   validateSettings,
   changes,
-} from "./model.js";
-import { decodeRule, encodeRule, ruleId, validateRules, RULE_CAPACITY } from "./rules.js";
+} from "./model.js?v=20261031-timing1";
+import {
+  decodeRule,
+  encodeRule,
+  ruleId,
+  validateRules,
+  RULE_CAPACITY,
+} from "./rules.js";
 const SIGNATURE = Array.from("M31WEB01", (c) => c.charCodeAt(0));
 const RULE_SIGNATURE = Array.from("M31RUL01", (c) => c.charCodeAt(0));
 const fail = (message) => {
@@ -129,44 +136,126 @@ export class MejiroHID {
       result[17] !== this.data.layouts.length
     )
       fail("サイトとファームウェアの設定定義が一致しません。");
-    let settings = { flags: result[12], en: result[13], jp: result[14], firstUp: !!result[18] };
+    let settings = {
+      flags: result[12],
+      en: result[13],
+      jp: result[14],
+      firstUp: !!result[18],
+    };
     if (next && settings.firstUp !== expectedFirstUp) {
-      settings = { ...settings, firstUp: await this.setFirstUp(expectedFirstUp) };
+      settings = {
+        ...settings,
+        firstUp: await this.setFirstUp(expectedFirstUp),
+      };
+    }
+    this.timingSupported = result[19] === 1;
+    if (this.timingSupported)
+      settings.timing = {
+        combo: result[20] | (result[21] << 8),
+        continuation: result[22] | (result[23] << 8),
+        hold: result[24] | (result[25] << 8),
+      };
+    if (next?.timing) {
+      if (!this.timingSupported)
+        fail("判定時間の変更には最新のUF2を書き込んでください。");
+      if (
+        ["combo", "continuation", "hold"].some(
+          (key) => settings.timing[key] !== next.timing[key],
+        )
+      )
+        settings.timing = await this.setTiming(next.timing);
     }
     validateSettings(settings, this.data);
     this.profile = result[15] ? "en" : "jp";
     return settings;
+  }
+  async setTiming(timing) {
+    validateTiming(timing);
+    const packet = Array(26).fill(0);
+    packet.splice(0, 12, 0xfa, 1, 3, 0, ...SIGNATURE);
+    [timing.combo, timing.continuation, timing.hold].forEach((value, i) => {
+      packet[20 + i * 2] = value & 255;
+      packet[21 + i * 2] = value >> 8;
+    });
+    const result = await this.request(packet);
+    if (
+      result[0] !== 0xfa ||
+      result[1] !== 1 ||
+      result[2] !== 3 ||
+      SIGNATURE.some((v, i) => result[i + 4] !== v)
+    )
+      fail("判定時間の応答が一致しません。");
+    if (result[3] === 1) fail("キーボードのロックを解除してください。");
+    if (
+      result[3] !== 0 ||
+      result[19] !== 1 ||
+      packet.slice(20, 26).some((v, i) => result[20 + i] !== v)
+    )
+      fail("判定時間を保存できませんでした。");
+    return { ...timing };
   }
   async setFirstUp(enabled) {
     if (typeof enabled !== "boolean") fail("First upの設定値が不正です。");
     const packet = [0xfa, 1, 2, 0, ...SIGNATURE];
     packet[18] = Number(enabled);
     const result = await this.request(packet);
-    if (result[0] !== 0xfa || result[1] !== 1 || result[2] !== 2 ||
-        SIGNATURE.some((v, i) => result[i + 4] !== v))
+    if (
+      result[0] !== 0xfa ||
+      result[1] !== 1 ||
+      result[2] !== 2 ||
+      SIGNATURE.some((v, i) => result[i + 4] !== v)
+    )
       fail("First up設定の応答が一致しません。");
     if (result[3] === 1) fail("キーボードのロックを解除してください。");
     if (result[3] !== 0 || result[18] !== Number(enabled))
       fail("First up設定を保存できませんでした。");
     return !!result[18];
   }
-  async ruleRequest(op, { index = 0, chunk = 0, bytes = null, action = 0 } = {}) {
+  async ruleRequest(
+    op,
+    { index = 0, chunk = 0, bytes = null, action = 0 } = {},
+  ) {
     const packet = new Uint8Array(32);
     packet.set([0xfa, 2, op, 0, ...RULE_SIGNATURE]);
-    if (op === 1) { packet[12] = index; packet[13] = chunk; }
-    if (op === 3) { packet[12] = chunk; packet.set(bytes, 16); }
+    if (op === 1) {
+      packet[12] = index;
+      packet[13] = chunk;
+    }
+    if (op === 3) {
+      packet[12] = chunk;
+      packet.set(bytes, 16);
+    }
     if (op === 4) packet[12] = action;
     const result = await this.request(packet);
-    if (result[0] !== 0xfa || result[1] !== 2 || result[2] !== op ||
-        RULE_SIGNATURE.some((v, i) => result[i + 4] !== v))
+    if (
+      result[0] !== 0xfa ||
+      result[1] !== 2 ||
+      result[2] !== op ||
+      RULE_SIGNATURE.some((v, i) => result[i + 4] !== v)
+    )
       fail("辞書通信に対応したファームウェアを書き込んでください。");
     if (result[3] !== 0)
-      fail(["", "キーボードのロックを解除してください。", "辞書項目が不正です。", "キーボードの準備が完了していません。", "辞書は24件まで登録できます。", "辞書を本体に保存できませんでした。"][result[3]] || "辞書通信に失敗しました。");
+      fail(
+        [
+          "",
+          "キーボードのロックを解除してください。",
+          "辞書項目が不正です。",
+          "キーボードの準備が完了していません。",
+          "辞書は24件まで登録できます。",
+          "辞書を本体に保存できませんでした。",
+        ][result[3]] || "辞書通信に失敗しました。",
+      );
     return result;
   }
   async readRules(progress = () => {}) {
     const info = await this.ruleRequest(0);
-    if (info[13] !== RULE_CAPACITY || info[14] !== 1 || info[15] !== 32 || info[16] !== 96 || info[17] !== 8)
+    if (
+      info[13] !== RULE_CAPACITY ||
+      info[14] !== 1 ||
+      info[15] !== 32 ||
+      info[16] !== 96 ||
+      info[17] !== 8
+    )
       fail("サイトとファームウェアの辞書形式が一致しません。");
     const rules = [];
     for (let index = 0; index < info[12]; index++) {
@@ -184,25 +273,42 @@ export class MejiroHID {
     const bytes = encodeRule(rule);
     await this.ruleRequest(2);
     for (let chunk = 0; chunk < 9; chunk++)
-      await this.ruleRequest(3, { chunk, bytes: bytes.subarray(chunk * 16, (chunk + 1) * 16) });
+      await this.ruleRequest(3, {
+        chunk,
+        bytes: bytes.subarray(chunk * 16, (chunk + 1) * 16),
+      });
     await this.ruleRequest(4, { action });
   }
   async saveRules(before, after, progress = () => {}) {
-    validateRules(before); validateRules(after);
-    if (!(await this.unlockStatus())[0]) fail("キーボードのロックを解除してください。");
+    validateRules(before);
+    validateRules(after);
+    if (!(await this.unlockStatus())[0])
+      fail("キーボードのロックを解除してください。");
     const previous = new Map(before.map((rule) => [ruleId(rule), rule]));
     const desired = new Map(after.map((rule) => [ruleId(rule), rule]));
     const edits = [];
-    for (const [id, rule] of previous) if (!desired.has(id)) edits.push([2, rule]);
+    for (const [id, rule] of previous)
+      if (!desired.has(id)) edits.push([2, rule]);
     for (const [id, rule] of desired)
-      if (!previous.has(id) || String(encodeRule(previous.get(id))) !== String(encodeRule(rule))) edits.push([rule.hidden ? 1 : 0, rule]);
+      if (
+        !previous.has(id) ||
+        String(encodeRule(previous.get(id))) !== String(encodeRule(rule))
+      )
+        edits.push([rule.hidden ? 1 : 0, rule]);
     for (let i = 0; i < edits.length; i++) {
       await this.writeRule(...edits[i]);
       progress((i + 1) / edits.length);
     }
     const actual = await this.readRules();
     const order = (a, b) => ruleId(a).localeCompare(ruleId(b));
-    if (JSON.stringify([...actual].sort(order).map((rule) => [...encodeRule(rule)])) !== JSON.stringify([...after].sort(order).map((rule) => [...encodeRule(rule)])))
+    if (
+      JSON.stringify(
+        [...actual].sort(order).map((rule) => [...encodeRule(rule)]),
+      ) !==
+      JSON.stringify(
+        [...after].sort(order).map((rule) => [...encodeRule(rule)]),
+      )
+    )
       fail("辞書の保存結果が一致しません。再接続して確認してください。");
     return actual;
   }
@@ -231,6 +337,12 @@ export class MejiroHID {
   async save(before, after, settings, progress = () => {}) {
     if (!(await this.unlockStatus())[0])
       fail("キーボードのロックを解除してください。");
+    if (settings.timing) {
+      validateTiming(settings.timing);
+      if (this.timingSupported === undefined) await this.settings();
+      if (!this.timingSupported)
+        fail("判定時間の変更には最新のUF2を書き込んでください。");
+    }
     const edits = changes(before, after);
     for (let i = 0; i < edits.length; i++) {
       const { code } = edits[i];
@@ -254,7 +366,15 @@ export class MejiroHID {
     const actual = await this.readKeymap((p) => progress(0.5 + p * 0.5));
     if (
       changes(after, actual).length ||
-      ["flags", "en", "jp", "firstUp"].some((key) => actualSettings[key] !== (key === "firstUp" ? settings.firstUp ?? true : settings[key]))
+      (settings.timing &&
+        ["combo", "continuation", "hold"].some(
+          (key) => actualSettings.timing?.[key] !== settings.timing[key],
+        )) ||
+      ["flags", "en", "jp", "firstUp"].some(
+        (key) =>
+          actualSettings[key] !==
+          (key === "firstUp" ? (settings.firstUp ?? true) : settings[key]),
+      )
     )
       fail(
         "保存結果が一致しません。設定をエクスポートし、再接続して確認してください。",

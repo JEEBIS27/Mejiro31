@@ -1,6 +1,7 @@
 import { initInputTest } from "./input-test.js?v=20261029-inputlog3";
 // View navigation and accessible icon controls, independent of device state.
 const paths = {
+  book: '<path d="M12 5v16M3 3h5a4 4 0 0 1 4 2 4 4 0 0 1 4-2h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z"/>',
   reset: '<path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/>',
   image:
     '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/>',
@@ -47,7 +48,8 @@ for (const element of document.querySelectorAll("[data-icon]")) {
 const titles = {
   remap: "キーマップ",
   tester: "入力テスト",
-  settings: "入力設定",
+  settings: "キーボード設定",
+  mejiro: "メジロ式設定",
   firmware: "ファームウェア",
   guide: "ヘルプ",
 };
@@ -63,9 +65,11 @@ function showView() {
   document.getElementById("view-title").textContent = titles[view];
   document.title = `${titles[view]} · Mejiro31`;
   document.querySelector("main").scrollTop = 0;
-  document.querySelector(".save-bar").hidden = !["remap", "settings"].includes(
-    view,
-  );
+  document.querySelector(".save-bar").hidden = ![
+    "remap",
+    "settings",
+    "mejiro",
+  ].includes(view);
 }
 window.addEventListener("hashchange", showView);
 showView();

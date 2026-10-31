@@ -6,7 +6,31 @@ export const KEY_COUNT = 54,
   STORAGE_LAYERS = 14;
 export const UID = [77, 51, 49, 87, 69, 66, 48, 49];
 export const clone = (value) => structuredClone(value);
+export const DEFAULT_TIMING = Object.freeze({
+  combo: 150,
+  continuation: 50,
+  hold: 300,
+});
+export function validateTiming(timing) {
+  if (
+    !timing ||
+    !Number.isInteger(timing.combo) ||
+    timing.combo < 1 ||
+    timing.combo > 1000 ||
+    !Number.isInteger(timing.continuation) ||
+    timing.continuation < 1 ||
+    timing.continuation > 1000 ||
+    !Number.isInteger(timing.hold) ||
+    timing.hold <= timing.continuation ||
+    timing.hold > 2000
+  )
+    throw Error(
+      "判定時間はコンボ・連続入力が1〜1000ms、長押しが連続入力より長く2000ms以下になるよう指定してください。",
+    );
+  return timing;
+}
 export function validateSettings(settings, data) {
+  if (settings?.timing !== undefined) validateTiming(settings.timing);
   if (
     !settings ||
     !Number.isInteger(settings.flags) ||
@@ -64,9 +88,14 @@ export function validateBackup(value, data) {
     ]);
     result.version = 2;
   }
-  if (result.version < 3) { result.settings.firstUp ??= true; result.rules = []; result.version = 3; }
+  if (result.version < 3) {
+    result.settings.firstUp ??= true;
+    result.rules = [];
+    result.version = 3;
+  }
   validateRules(result.rules);
-  if (typeof result.settings.firstUp !== "boolean") throw Error("First upの設定値が不正です。");
+  if (typeof result.settings.firstUp !== "boolean")
+    throw Error("First upの設定値が不正です。");
   return result;
 }
 export function makeBackup(profile, settings, keymap, rules = []) {
@@ -118,8 +147,7 @@ export function selectBundledFirmware(manifest, profile, layout = "qwerty") {
     !Array.isArray(manifest.assets)
   )
     return null;
-  if (!["jp", "en"].includes(profile) || layout !== "qwerty")
-    return null;
+  if (!["jp", "en"].includes(profile) || layout !== "qwerty") return null;
   const filename = `mejiro31_${profile}.uf2`;
   const asset = manifest.assets.find((a) => a.filename === filename);
   if (!asset) return null;

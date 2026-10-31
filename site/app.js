@@ -1,19 +1,24 @@
-import { ruleNames, searchDictionary } from "./dictionary.js?v=20261031-rulekind1";
+import {
+  ruleNames,
+  searchDictionary,
+} from "./dictionary.js?v=20261031-rulekind1";
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName } from "./key-names.js?v=20261030-names3";
-import { setIcon } from "./ui.js?v=20261029-keydiff1";
+import { setIcon } from "./ui.js?v=20261031-timing1";
 import { keyChoices, searchChoices } from "./key-choices.js?v=20261030-names3";
 import {
   clone,
+  DEFAULT_TIMING,
+  validateTiming,
   makeBackup,
   validateBackup,
   changes,
   selectRelease,
   selectBundledFirmware,
   supportedCode,
-} from "./model.js";
-import { connectKeyboard } from "./hid.js";
+} from "./model.js?v=20261031-timing1";
+import { connectKeyboard } from "./hid.js?v=20261031-timing1";
 import { ruleId, validateRules } from "./rules.js";
 import {
   boardKeys,
@@ -33,7 +38,13 @@ const data = await fetch("./data.json?v=20261030-defaults1")
   });
 const state = {
   profile: "jp",
-  settings: { flags: 6, en: 0, jp: 0, firstUp: true },
+  settings: {
+    flags: 6,
+    en: 0,
+    jp: 0,
+    firstUp: true,
+    timing: { ...DEFAULT_TIMING },
+  },
   rules: [],
   keymap: clone(data.defaults.jp),
   baseline: null,
@@ -305,6 +316,11 @@ function isDirty() {
     state.modified ||
     (state.baseline &&
       (changes(state.baseline.keymap, state.keymap).length ||
+        ["combo", "continuation", "hold"].some(
+          (key) =>
+            (state.baseline.settings.timing || DEFAULT_TIMING)[key] !==
+            (state.settings.timing || DEFAULT_TIMING)[key],
+        ) ||
         JSON.stringify(state.baseline.rules) !== JSON.stringify(state.rules) ||
         ["flags", "en", "jp", "firstUp"].some(
           (key) => state.baseline.settings[key] !== state.settings[key],
@@ -333,8 +349,11 @@ $("reset-settings").onclick = async () => {
     en: 0,
     jp: 0,
     firstUp: true,
+    timing: { ...DEFAULT_TIMING },
   };
   state.rules = [];
+  if (state.client && !state.client.timingSupported)
+    delete state.settings.timing;
   touch();
 };
 let editingRule = null;
@@ -346,7 +365,9 @@ function editRule(rule) {
     ? ruleId(rule)
     : null;
   $("rule-kind").value = rule.kind;
-  try { localStorage.setItem("mejiro31-rule-kind", String(rule.kind)); } catch {}
+  try {
+    localStorage.setItem("mejiro31-rule-kind", String(rule.kind));
+  } catch {}
   $("rule-key").value = rule.key;
   $("rule-value").value = rule.value;
   $("rule-hidden").checked = rule.hidden;
@@ -490,7 +511,9 @@ try {
   if (["0", "1", "2", "3", "4"].includes(saved)) $("rule-kind").value = saved;
 } catch {}
 $("rule-kind").onchange = () => {
-  try { localStorage.setItem(ruleKindStorageKey, $("rule-kind").value); } catch {}
+  try {
+    localStorage.setItem(ruleKindStorageKey, $("rule-kind").value);
+  } catch {}
   updateRuleFields();
 };
 $("rule-hidden").onchange = updateRuleFields;
@@ -633,6 +656,12 @@ function render() {
   $("alt-enabled").checked = !!(state.settings.flags & 2);
   $("mejiro-enabled").checked = !!(state.settings.flags & 4);
   $("first-up").checked = state.settings.firstUp;
+  for (const name of ["combo", "continuation", "hold"]) {
+    $("timing-" + name).value = (state.settings.timing || DEFAULT_TIMING)[name];
+    $("timing-" + name).disabled =
+      state.busy || (!!state.client && !state.client.timingSupported);
+  }
+  $("timing-support").hidden = !state.client || !!state.client.timingSupported;
   renderRules();
   $("rule-value").disabled = state.busy || $("rule-hidden").checked;
   for (const id of [
@@ -681,7 +710,10 @@ function render() {
     : "設定の保存にはキーボードを接続してください。";
   $("save").disabled = !state.client || !state.unlocked || state.busy || !dirty;
   $("unlock").disabled = !state.client || state.busy;
-  $("unlock").setAttribute("aria-pressed", String(!!state.client && !state.unlocked));
+  $("unlock").setAttribute(
+    "aria-pressed",
+    String(!!state.client && !state.unlocked),
+  );
   $("auto-save").disabled = state.busy;
   $("auto-save").setAttribute("aria-pressed", String(state.autoSave));
   setIcon(
@@ -692,7 +724,7 @@ function render() {
   setIcon(
     $("unlock"),
     state.unlocked ? "unlock" : "lock",
-    !state.client ? "未接続" : state.unlocked ? "本体のロックは解除済み（クリックでロック）" : "本体をロック中（クリックで解除）",
+    !state.client ? "未接続" : state.unlocked ? "本体をロック" : "ロックを解除",
   );
 }
 function busy(value) {
@@ -817,6 +849,7 @@ $("edit-profile").onchange = async () => {
     en: 0,
     jp: 0,
     firstUp: true,
+    timing: { ...DEFAULT_TIMING },
   };
   state.baseline = null;
   state.rules = [];
@@ -833,6 +866,7 @@ for (const id of [
 ])
   $(id).onchange = () => {
     state.settings = {
+      ...state.settings,
       firstUp: $("first-up").checked,
       en: Number($("english-layout").value),
       jp: Number($("japanese-layout").value),
@@ -842,6 +876,23 @@ for (const id of [
         ($("mejiro-enabled").checked ? 4 : 0),
     };
     touch();
+  };
+for (const name of ["combo", "continuation", "hold"])
+  $("timing-" + name).onchange = () => {
+    try {
+      const timing = Object.fromEntries(
+        ["combo", "continuation", "hold"].map((key) => [
+          key,
+          Number($("timing-" + key).value),
+        ]),
+      );
+      validateTiming(timing);
+      state.settings.timing = timing;
+      touch();
+    } catch (error) {
+      status(error.message, "error");
+      render();
+    }
   };
 $("export").onclick = () =>
   downloadBlob(

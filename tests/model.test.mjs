@@ -97,11 +97,8 @@ test("downloads use the newest full Vial release, never old firmware or a foreig
   };
   const release = { tag_name: "vial-v1.0.0", assets: [asset] };
   assert.equal(
-    selectRelease(
-      [{ tag_name: "v0.4.2", assets: [] }, release],
-      "jp",
-      "qwerty",
-    ).filename,
+    selectRelease([{ tag_name: "v0.4.2", assets: [] }, release], "jp", "qwerty")
+      .filename,
     filename,
   );
   assert.equal(
@@ -159,4 +156,18 @@ test("legacy backups gain six unassigned combo slots without changing old assign
       (l) => l.length === 54 && l.slice(48).every((c) => c === 0),
     ),
   );
+});
+
+test("timing settings round-trip in backups and reject invalid hold thresholds", () => {
+  const timing = { combo: 120, continuation: 45, hold: 280 };
+  const backup = makeBackup(
+    "jp",
+    { flags: 6, en: 0, jp: 0, firstUp: true, timing },
+    data.defaults.jp,
+  );
+  assert.deepEqual(validateBackup(backup, data).settings.timing, timing);
+  backup.settings.timing.hold = 40;
+  assert.throws(() => validateBackup(backup, data), /判定時間/);
+  backup.settings.timing = { ...timing, combo: 1001 };
+  assert.throws(() => validateBackup(backup, data), /判定時間/);
 });

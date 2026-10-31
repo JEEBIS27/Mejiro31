@@ -10,8 +10,8 @@
     />
     <title>Mejiro31</title>
     <link rel="stylesheet" href="./style.css?v=20261030-dictionary1" />
-    <script type="module" src="./ui.js?v=20261029-keydiff1"></script>
-    <script type="module" src="./app.js?v=20261031-lock1"></script>
+    <script type="module" src="./ui.js?v=20261031-timing1"></script>
+    <script type="module" src="./app.js?v=20261031-timing1"></script>
   </head>
   <body>
     <header class="topbar">
@@ -55,8 +55,15 @@
         href="#settings"
         data-view="settings"
         data-icon="sliders"
-        data-tip="入力設定"
-        aria-label="入力設定"
+        data-tip="キーボード設定"
+        aria-label="キーボード設定"
+      ></a
+      ><a
+        href="#mejiro"
+        data-view="mejiro"
+        data-icon="book"
+        data-tip="メジロ式設定"
+        aria-label="メジロ式設定"
       ></a
       ><a
         href="#firmware"
@@ -261,7 +268,7 @@
         <section
           id="settings"
           data-panel="settings"
-          aria-label="入力設定"
+          aria-label="キーボード設定"
           hidden
         >
           <div class="settings-card">
@@ -281,34 +288,153 @@
                   type="checkbox"
                   checked
                 />代替配列を有効にする</label
-              ><label class="checkbox-label"
+              >
+            </div>
+          </div>
+          <div class="settings-card rule-card">
+            <h2>入力の判定時間</h2>
+            <div class="settings-fields">
+              <label
+                >コンボ受付時間（ms）<input
+                  id="timing-combo"
+                  type="number"
+                  min="1"
+                  max="1000"
+                  step="1"
+                  value="150"
+                /><small class="fine"
+                  >2つのキーを同時押しとみなす時間。</small
+                ></label
+              >
+              <label
+                >連続入力の猶予時間（ms）<input
+                  id="timing-continuation"
+                  type="number"
+                  min="1"
+                  max="1000"
+                  step="1"
+                  value="50"
+                /><small class="fine"
+                  >前のキーが残った連続入力を判定する時間。</small
+                ></label
+              >
+              <label
+                >長押し判定時間（ms）<input
+                  id="timing-hold"
+                  type="number"
+                  min="2"
+                  max="2000"
+                  step="1"
+                  value="300"
+                /><small class="fine"
+                  >TapからHoldに切り替わる時間。連続入力の猶予時間より長くします。</small
+                ></label
+              >
+            </div>
+            <p id="timing-support" class="fine" hidden>
+              判定時間の変更には最新のUF2を書き込んでください。
+            </p>
+          </div>
+        </section>
+        <section
+          id="mejiro"
+          data-panel="mejiro"
+          aria-label="メジロ式設定"
+          hidden
+        >
+          <div class="settings-card">
+            <h2>メジロ式の入力</h2>
+            <div class="settings-fields">
+              <label class="checkbox-label"
                 ><input
                   id="mejiro-enabled"
                   type="checkbox"
                   checked
                 />速記モードでメジロ式を使用</label
-              ><label class="checkbox-label"><input id="first-up" type="checkbox" checked />First up chords send（最初のキーを離した時点で送信）</label>
+              ><label class="checkbox-label"
+                ><input id="first-up" type="checkbox" checked />First up chords
+                send（最初のキーを離した時点で送信）</label
+              >
             </div>
           </div>
           <div class="settings-card rule-card">
             <h2>メジロ式の辞書</h2>
-            <p class="fine">動詞・一般略語・ユーザー辞書を編集します。本体に保存すると、電源を抜いても保持されます。最大24件です。</p>
+            <p class="fine">
+              動詞・一般略語・ユーザー辞書を編集します。本体に保存すると、電源を抜いても保持されます。最大24件です。
+            </p>
             <div class="dictionary-search-controls">
-              <label>辞書を検索<input id="dictionary-search" type="search" placeholder="ストローク・出力文字・種類で検索" /></label>
-              <label>種類<select id="dictionary-kind"><option value="">すべて</option><option value="4">動詞</option><option value="2">一般略語（左）</option><option value="3">一般略語（右）</option><option value="1">一般略語（全体）</option><option value="0">ユーザー辞書</option></select></label>
+              <label
+                >辞書を検索<input
+                  id="dictionary-search"
+                  type="search"
+                  placeholder="ストローク・出力文字・種類で検索"
+              /></label>
+              <label
+                >種類<select id="dictionary-kind">
+                  <option value="">すべて</option>
+                  <option value="4">動詞</option>
+                  <option value="2">一般略語（左）</option>
+                  <option value="3">一般略語（右）</option>
+                  <option value="1">一般略語（全体）</option>
+                  <option value="0">ユーザー辞書</option>
+                </select></label
+              >
             </div>
-            <p id="dictionary-count" class="fine" role="status">辞書を読み込み中…</p>
+            <p id="dictionary-count" class="fine" role="status">
+              辞書を読み込み中…
+            </p>
             <div id="dictionary-results" class="dictionary-results"></div>
-            <button id="dictionary-more" type="button" class="button" hidden>さらに表示</button>
+            <button id="dictionary-more" type="button" class="button" hidden>
+              さらに表示
+            </button>
             <h3>登録した設定</h3>
             <div id="rule-list" class="rule-list"></div>
             <form id="rule-form" class="rule-form">
-              <label>種類<select id="rule-kind"><option value="4">動詞</option><option value="2">一般略語（左）</option><option value="3">一般略語（右）</option><option value="1">一般略語（全体）</option><option value="0" selected>ユーザー辞書</option></select></label>
-              <label>ストローク<input id="rule-key" placeholder="例：A-" required /></label>
-              <label>出力する文字<input id="rule-value" placeholder="例：あ" /></label>
-              <label class="checkbox-label" data-tip="この種類・ストロークの内蔵辞書項目を無効にします。登録した無効化項目を削除すると元に戻ります。"><input id="rule-hidden" type="checkbox" />標準項目を無効化</label><label id="rule-row-label">活用行<input id="rule-row" placeholder="例：ge" /></label>
-              <label id="rule-context-label">文脈<select id="rule-context"><option value="0">指定なし</option><option value="1">名詞化</option><option value="2">未完結</option><option value="3">ナ形容詞連体</option><option value="4">疑問述語</option><option value="5">名詞</option><option value="6">場所</option><option value="7">不定名詞</option><option value="8">疑問助詞</option></select></label>
-              <div class="rule-actions"><button type="submit" class="button dark" id="rule-submit">辞書に追加</button><button type="button" class="button" id="rule-cancel" hidden>編集をやめる</button></div>
+              <label
+                >種類<select id="rule-kind">
+                  <option value="4">動詞</option>
+                  <option value="2">一般略語（左）</option>
+                  <option value="3">一般略語（右）</option>
+                  <option value="1">一般略語（全体）</option>
+                  <option value="0" selected>ユーザー辞書</option>
+                </select></label
+              >
+              <label
+                >ストローク<input id="rule-key" placeholder="例：A-" required
+              /></label>
+              <label
+                >出力する文字<input id="rule-value" placeholder="例：あ"
+              /></label>
+              <label
+                class="checkbox-label"
+                data-tip="この種類・ストロークの内蔵辞書項目を無効にします。登録した無効化項目を削除すると元に戻ります。"
+                ><input
+                  id="rule-hidden"
+                  type="checkbox"
+                />標準項目を無効化</label
+              ><label id="rule-row-label"
+                >活用行<input id="rule-row" placeholder="例：ge"
+              /></label>
+              <label id="rule-context-label"
+                >文脈<select id="rule-context">
+                  <option value="0">指定なし</option>
+                  <option value="1">名詞化</option>
+                  <option value="2">未完結</option>
+                  <option value="3">ナ形容詞連体</option>
+                  <option value="4">疑問述語</option>
+                  <option value="5">名詞</option>
+                  <option value="6">場所</option>
+                  <option value="7">不定名詞</option>
+                  <option value="8">疑問助詞</option>
+                </select></label
+              >
+              <div class="rule-actions">
+                <button type="submit" class="button dark" id="rule-submit">
+                  辞書に追加</button
+                ><button type="button" class="button" id="rule-cancel" hidden>
+                  編集をやめる
+                </button>
+              </div>
             </form>
           </div>
         </section>
@@ -351,7 +477,9 @@
                   >リリース ↗</a
                 >
               </div>
-              <p class="fine">配布UF2の初期配列はQWERTYです。代替配列は書き込み後、このサイトの設定から選択して保存できます。</p>
+              <p class="fine">
+                配布UF2の初期配列はQWERTYです。代替配列は書き込み後、このサイトの設定から選択して保存できます。
+              </p>
               <p class="fine" id="release-status">Vial対応リリースを確認中…</p>
             </div>
           </div>

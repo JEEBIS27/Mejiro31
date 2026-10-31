@@ -51,15 +51,42 @@ class Device extends EventTarget {
         else if (b[2] === 1) {
           const entry = this.rules[b[12]];
           if (!entry) b[3] = 2;
-          else b.set(encodeRule(entry).subarray(b[13] * 16, b[13] * 16 + 16), 16);
+          else
+            b.set(encodeRule(entry).subarray(b[13] * 16, b[13] * 16 + 16), 16);
         } else if (this.locked) b[3] = 1;
         else if (b[2] === 2) this.pendingRule.fill(0);
-        else if (b[2] === 3) this.pendingRule.set(b.subarray(16, 32), b[12] * 16);
+        else if (b[2] === 3)
+          this.pendingRule.set(b.subarray(16, 32), b[12] * 16);
         else if (b[2] === 4) {
           const rule = decodeRule(this.pendingRule);
-          this.rules = this.rules.filter((r) => r.kind !== rule.kind || r.key !== rule.key);
-          if (b[12] !== 2) this.rules.push(b[12] === 1 ? {...rule, hidden: true, value: '', row: '', context: 0} : rule);
+          this.rules = this.rules.filter(
+            (r) => r.kind !== rule.kind || r.key !== rule.key,
+          );
+          if (b[12] !== 2)
+            this.rules.push(
+              b[12] === 1
+                ? { ...rule, hidden: true, value: "", row: "", context: 0 }
+                : rule,
+            );
         }
+      }
+      if (b[1] === 1 && b[2] === 3 && this.timing) {
+        if (this.locked) b[3] = 1;
+        else
+          this.timing = {
+            combo: b[20] | (b[21] << 8),
+            continuation: b[22] | (b[23] << 8),
+            hold: b[24] | (b[25] << 8),
+          };
+      }
+      if (b[1] === 1 && this.timing) {
+        b[19] = 1;
+        [this.timing.combo, this.timing.continuation, this.timing.hold].forEach(
+          (value, i) => {
+            b[20 + i * 2] = value & 255;
+            b[21 + i * 2] = value >> 8;
+          },
+        );
       }
       if (b[1] === 1 && b[2] === 2) {
         if (this.locked) b[3] = 1;
@@ -67,20 +94,27 @@ class Device extends EventTarget {
       }
       if (b[1] === 1 && b[2] === 1) {
         if (this.locked) b[3] = 1;
-        else this.settings = { ...this.settings, flags: b[12], en: b[13], jp: b[14] };
+        else
+          this.settings = {
+            ...this.settings,
+            flags: b[12],
+            en: b[13],
+            jp: b[14],
+          };
       }
-      if (b[1] === 1) b.set(
-        [
-          this.settings.flags,
-          this.settings.en,
-          this.settings.jp,
-          this.profile,
-          STORAGE_LAYERS,
-          18,
-          Number(this.settings.firstUp),
-        ],
-        12,
-      );
+      if (b[1] === 1)
+        b.set(
+          [
+            this.settings.flags,
+            this.settings.en,
+            this.settings.jp,
+            this.profile,
+            STORAGE_LAYERS,
+            18,
+            Number(this.settings.firstUp),
+          ],
+          12,
+        );
     } else if (b[0] === 0x12) {
       const offset = b[1] * 256 + b[2];
       const all = encodeKeymap(this.keymap);
@@ -108,7 +142,12 @@ class Device extends EventTarget {
 test("identify checks UID, layer count and dedicated settings before reading the map", async () => {
   const device = new Device(),
     client = new MejiroHID(device, data);
-  assert.deepEqual(await client.identify(), { flags: 6, en: 0, jp: 0, firstUp: true });
+  assert.deepEqual(await client.identify(), {
+    flags: 6,
+    en: 0,
+    jp: 0,
+    firstUp: true,
+  });
   assert.equal(client.profile, "jp");
   assert.deepEqual(await client.readKeymap(), data.defaults.jp);
   await client.close();
@@ -266,8 +305,16 @@ test("saving settings ignores property order and keeps the device connected", as
 });
 
 test("dictionary rules require unlock, persist through HID reads, and can be removed", async () => {
-  const device = new Device(), client = new MejiroHID(device, data);
-  const rule = { kind: 0, key: "STK-", value: "こんにちは", row: "", context: 0, hidden: false };
+  const device = new Device(),
+    client = new MejiroHID(device, data);
+  const rule = {
+    kind: 0,
+    key: "STK-",
+    value: "こんにちは",
+    row: "",
+    context: 0,
+    hidden: false,
+  };
   assert.deepEqual(await client.readRules(), []);
   await assert.rejects(client.saveRules([], [rule]), /ロック/);
   device.locked = false;
@@ -277,10 +324,44 @@ test("dictionary rules require unlock, persist through HID reads, and can be rem
   await client.close();
 });
 test("first-up setting is stored and read back", async () => {
-  const device = new Device(), client = new MejiroHID(device, data);
+  const device = new Device(),
+    client = new MejiroHID(device, data);
   await assert.rejects(client.setFirstUp(false), /ロック/);
   device.locked = false;
   assert.equal(await client.setFirstUp(false), false);
   assert.equal((await client.settings()).firstUp, false);
   await client.close();
+});
+
+test("timings are saved and read back; unsupported firmware refuses before keymap writes", async () => {
+  const device = new Device(),
+    client = new MejiroHID(device, data);
+  device.locked = false;
+  device.timing = { combo: 150, continuation: 50, hold: 300 };
+  const initial = await client.identify();
+  const wanted = {
+    ...initial,
+    timing: { combo: 100, continuation: 40, hold: 250 },
+  };
+  const saved = await client.save(data.defaults.jp, data.defaults.jp, wanted);
+  assert.deepEqual(saved.settings.timing, wanted.timing);
+  assert.deepEqual((await client.settings()).timing, wanted.timing);
+  await assert.rejects(
+    client.setTiming({ combo: 100, continuation: 200, hold: 150 }),
+    /判定時間/,
+  );
+  await client.close();
+  const old = new Device(),
+    legacy = new MejiroHID(old, data);
+  old.locked = false;
+  await legacy.identify();
+  await assert.rejects(
+    legacy.save(data.defaults.jp, data.defaults.jp, wanted),
+    /最新のUF2/,
+  );
+  assert.equal(
+    old.sent.some((b) => b[0] === 5),
+    false,
+  );
+  await legacy.close();
 });
