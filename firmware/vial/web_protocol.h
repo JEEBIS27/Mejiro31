@@ -8,6 +8,8 @@
 #include "via.h"
 // A different firmware build resets both its keymap and initial layout choices.
 void via_init_kb(void) {
+    // Start writable; an explicit Vial lock remains effective until unlocked or rebooted.
+    vial_unlocked = 1;
     if (!via_eeprom_is_valid()) eeconfig_init_user();
 }
 // The unified engine consumes raw positions before Vial's normal keycode

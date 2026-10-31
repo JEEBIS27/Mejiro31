@@ -5,10 +5,10 @@
   },
   "keyboard": {
     "url": "https://github.com/JEEBIS27/qmk_firmware.git",
-    "ref": "c786dd376d535a3096f299006f279db244b2eb1e"
+    "ref": "22c5c79eedf34922044d6e8a3d88b30b3ed3f574"
   },
   "engine": {
     "url": "https://github.com/JEEBIS27/Mejiro_Engine.git",
-    "ref": "1e678d3f743023e4fca5be02b706a9feabf5ac58"
+    "ref": "004a3fb508112f412f69a3ada90b6bbd05e680b3"
   }
 }

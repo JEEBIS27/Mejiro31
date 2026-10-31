@@ -1,15 +1,17 @@
 {
   "format": "mejiro31-build-v1",
   "filename": "mejiro31_jp.uf2",
-  "sha256": "169e309db56f050fe67d3755397ce82fb01e1df4b4c2abe682f68a8de6918031",
+  "sha256": "1407103151dcf4c1c97e04febba5bb2ef0d4539dfb50aa819ae5228eeec0696c",
   "sources": {
     "vial": "dd43959ae5c08d8a28d38a1acf7b04e86b14a344",
-    "engine": "1e678d3f743023e4fca5be02b706a9feabf5ac58",
+    "engine": "004a3fb508112f412f69a3ada90b6bbd05e680b3",
     "engine_source": "/home/jeebis/Git/Mejiro_Engine",
     "engine_ref": "local",
-    "engine_dirty": true,
-    "engine_source_sha256": "c182b073f881c93fa016659d7c2ee808ae6c82ac3fb81887f0be1fbf611eda06",
-    "keyboard_head": "c786dd376d535a3096f299006f279db244b2eb1e"
+    "engine_dirty": false,
+    "engine_source_sha256": "c504ed7160ba553461232f98e4352f55baecf947931fda70f8ce779dec7faf22",
+    "keyboard_head": "22c5c79eedf34922044d6e8a3d88b30b3ed3f574"
   },
-  "keymap": "jp_default"
+  "keymap": "vial",
+  "profile": "jp",
+  "layout": "qwerty"
 }

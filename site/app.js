@@ -681,6 +681,7 @@ function render() {
     : "設定の保存にはキーボードを接続してください。";
   $("save").disabled = !state.client || !state.unlocked || state.busy || !dirty;
   $("unlock").disabled = !state.client || state.busy;
+  $("unlock").setAttribute("aria-pressed", String(!!state.client && !state.unlocked));
   $("auto-save").disabled = state.busy;
   $("auto-save").setAttribute("aria-pressed", String(state.autoSave));
   setIcon(
@@ -690,8 +691,8 @@ function render() {
   );
   setIcon(
     $("unlock"),
-    state.unlocked ? "lock" : "unlock",
-    state.unlocked ? "本体をロック" : "本体のロックを解除",
+    state.unlocked ? "unlock" : "lock",
+    !state.client ? "未接続" : state.unlocked ? "本体のロックは解除済み（クリックでロック）" : "本体をロック中（クリックで解除）",
   );
 }
 function busy(value) {
@@ -1056,8 +1057,8 @@ function selectedFirmware() {
   const profile = $("download-profile").value;
   const layout = "qwerty";
   return (
-    selectRelease(state.releases, profile, layout) ||
-    selectBundledFirmware(state.firmwareManifest, profile, layout)
+    selectBundledFirmware(state.firmwareManifest, profile, layout) ||
+    selectRelease(state.releases, profile, layout)
   );
 }
 function updateDownload() {
