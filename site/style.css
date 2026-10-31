@@ -360,9 +360,30 @@ progress {
   border-radius: 6px;
   background: white;
   padding: 10px 14px;
-  margin-bottom: 16px;
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  z-index: 100;
+  width: max-content;
+  max-width: min(420px, calc(100vw - 32px));
+  max-height: calc(100dvh - 100px);
+  overflow: auto;
+  overflow-wrap: anywhere;
+  margin: 0;
+  box-shadow: 0 8px 28px #0003;
   font-size: 12px;
   line-height: 1.6;
+  animation: notification-enter 180ms ease-out;
+}
+@keyframes notification-enter {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@media (max-width: 640px) {
+  .status { top: 68px; right: 12px; max-width: calc(100vw - 24px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .status { animation: none; }
 }
 .status:empty {
   display: none;
