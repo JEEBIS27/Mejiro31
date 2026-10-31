@@ -11,7 +11,7 @@
     <title>Mejiro31</title>
     <link rel="stylesheet" href="./style.css?v=20261030-dictionary1" />
     <script type="module" src="./ui.js?v=20261029-keydiff1"></script>
-    <script type="module" src="./app.js?v=20261030-verbs1"></script>
+    <script type="module" src="./app.js?v=20261031-rulekind1"></script>
   </head>
   <body>
     <header class="topbar">
@@ -292,10 +292,10 @@
           </div>
           <div class="settings-card rule-card">
             <h2>メジロ式の辞書</h2>
-            <p class="fine">動詞・一般略語・ユーザー略語を編集します。本体に保存すると、電源を抜いても保持されます。最大24件です。</p>
+            <p class="fine">動詞・一般略語・ユーザー辞書を編集します。本体に保存すると、電源を抜いても保持されます。最大24件です。</p>
             <div class="dictionary-search-controls">
               <label>辞書を検索<input id="dictionary-search" type="search" placeholder="ストローク・出力文字・種類で検索" /></label>
-              <label>種類<select id="dictionary-kind"><option value="">すべて</option><option value="4">動詞</option><option value="2">一般略語（左）</option><option value="3">一般略語（右）</option><option value="1">一般略語（全体）</option><option value="0">ユーザー略語</option></select></label>
+              <label>種類<select id="dictionary-kind"><option value="">すべて</option><option value="4">動詞</option><option value="2">一般略語（左）</option><option value="3">一般略語（右）</option><option value="1">一般略語（全体）</option><option value="0">ユーザー辞書</option></select></label>
             </div>
             <p id="dictionary-count" class="fine" role="status">辞書を読み込み中…</p>
             <div id="dictionary-results" class="dictionary-results"></div>
@@ -303,7 +303,7 @@
             <h3>登録した設定</h3>
             <div id="rule-list" class="rule-list"></div>
             <form id="rule-form" class="rule-form">
-              <label>種類<select id="rule-kind"><option value="4">動詞</option><option value="2">一般略語（左）</option><option value="3">一般略語（右）</option><option value="1">一般略語（全体）</option><option value="0">ユーザー略語</option></select></label>
+              <label>種類<select id="rule-kind"><option value="4">動詞</option><option value="2">一般略語（左）</option><option value="3">一般略語（右）</option><option value="1">一般略語（全体）</option><option value="0" selected>ユーザー辞書</option></select></label>
               <label>ストローク<input id="rule-key" placeholder="例：A-" required /></label>
               <label>出力する文字<input id="rule-value" placeholder="例：あ" /></label>
               <label class="checkbox-label" data-tip="この種類・ストロークの内蔵辞書項目を無効にします。登録した無効化項目を削除すると元に戻ります。"><input id="rule-hidden" type="checkbox" />標準項目を無効化</label><label id="rule-row-label">活用行<input id="rule-row" placeholder="例：ge" /></label>

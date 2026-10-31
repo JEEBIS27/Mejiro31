@@ -1,4 +1,4 @@
-import { ruleNames, searchDictionary } from "./dictionary.js";
+import { ruleNames, searchDictionary } from "./dictionary.js?v=20261031-rulekind1";
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName } from "./key-names.js?v=20261030-names3";
@@ -346,6 +346,7 @@ function editRule(rule) {
     ? ruleId(rule)
     : null;
   $("rule-kind").value = rule.kind;
+  try { localStorage.setItem("mejiro31-rule-kind", String(rule.kind)); } catch {}
   $("rule-key").value = rule.key;
   $("rule-value").value = rule.value;
   $("rule-hidden").checked = rule.hidden;
@@ -476,12 +477,22 @@ function updateRuleFields() {
 }
 function clearRuleForm() {
   editingRule = null;
+  const kind = $("rule-kind").value;
   $("rule-form").reset();
+  $("rule-kind").value = kind;
   $("rule-submit").textContent = "辞書に追加";
   $("rule-cancel").hidden = true;
   updateRuleFields();
 }
-$("rule-kind").onchange = updateRuleFields;
+const ruleKindStorageKey = "mejiro31-rule-kind";
+try {
+  const saved = localStorage.getItem(ruleKindStorageKey);
+  if (["0", "1", "2", "3", "4"].includes(saved)) $("rule-kind").value = saved;
+} catch {}
+$("rule-kind").onchange = () => {
+  try { localStorage.setItem(ruleKindStorageKey, $("rule-kind").value); } catch {}
+  updateRuleFields();
+};
 $("rule-hidden").onchange = updateRuleFields;
 $("rule-cancel").onclick = clearRuleForm;
 $("rule-form").onsubmit = (event) => {

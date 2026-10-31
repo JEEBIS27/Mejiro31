@@ -1,6 +1,6 @@
 import { ruleId } from "./rules.js";
 export const ruleNames = [
-  "ユーザー略語",
+  "ユーザー辞書",
   "一般略語（全体）",
   "一般略語（左）",
   "一般略語（右）",
