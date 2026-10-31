@@ -67,11 +67,11 @@ test("the adapter action palette matches all shipped assignments", () => {
 });
 test("physical and virtual positions are unique and map to the firmware matrix", () => {
   assert.equal(data.physical.length, 31);
-  assert.equal(data.pairs.length, 22);
+  assert.equal(data.pairs.length, 26);
   const physical = new Set(data.physical.map((p) => p.row * 12 + p.col));
   const virtual = new Set(data.pairs.map((p) => p.logical));
   assert.equal(physical.size, 31);
-  assert.equal(virtual.size, 22);
+  assert.equal(virtual.size, 26);
   for (const p of data.pairs) {
     assert.ok(physical.has(p.a) && physical.has(p.b));
     assert.ok(!physical.has(p.logical));
@@ -146,14 +146,14 @@ test("legacy backups gain six unassigned combo slots without changing old assign
   );
   old.version = 1;
   const next = validateBackup(old, data);
-  assert.equal(next.version, 3);
+  assert.equal(next.version, 4);
   assert.deepEqual(
     next.keymap.map((l) => l.slice(0, 48)),
     old.keymap,
   );
   assert.ok(
     next.keymap.every(
-      (l) => l.length === 54 && l.slice(48).every((c) => c === 0),
+      (l) => l.length === 58 && l.slice(48).every((c) => c === 0),
     ),
   );
 });
@@ -170,4 +170,18 @@ test("timing settings round-trip in backups and reject invalid hold thresholds",
   assert.throws(() => validateBackup(backup, data), /判定時間/);
   backup.settings.timing = { ...timing, combo: 1001 };
   assert.throws(() => validateBackup(backup, data), /判定時間/);
+});
+
+test("thumb combos use new storage without changing old extension addresses", () => {
+  const map = clone(data.defaults.jp);
+  map[0][54] = 0x29; map[6][54] = 0xe2;
+  map[4][57] = 0x28;
+  assert.deepEqual(storageAddress(0,54), {layer:14,row:0,col:0});
+  assert.deepEqual(storageAddress(6,54), {layer:15,row:0,col:0});
+  assert.deepEqual(decodeKeymap(encodeKeymap(map)), map);
+  const backup = makeBackup('jp',{flags:6,en:0,jp:0},map);
+  backup.version=3; backup.keymap=backup.keymap.map(layer=>layer.slice(0,54));
+  const migrated=validateBackup(backup,data);
+  assert.equal(migrated.version,4);
+  assert.ok(migrated.keymap.every(layer=>layer.length===58 && layer.slice(54).every(code=>code===0)));
 });

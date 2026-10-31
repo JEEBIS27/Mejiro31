@@ -1,9 +1,9 @@
-import { validateRules } from "./rules.js";
+import { validateRules } from "./rules.js?v=20261031-cap28";
 export const ROWS = 4,
   COLS = 12,
   LAYERS = 12;
-export const KEY_COUNT = 54,
-  STORAGE_LAYERS = 14;
+export const KEY_COUNT = 58,
+  STORAGE_LAYERS = 16;
 export const UID = [77, 51, 49, 87, 69, 66, 48, 49];
 export const clone = (value) => structuredClone(value);
 export const DEFAULT_TIMING = Object.freeze({
@@ -62,7 +62,7 @@ export function validateBackup(value, data) {
   if (
     !value ||
     value.format !== "mejiro31-web" ||
-    ![1, 2, 3].includes(value.version) ||
+    ![1, 2, 3, 4].includes(value.version) ||
     !Array.isArray(value.uid) ||
     value.uid.join() !== UID.join() ||
     !["jp", "en"].includes(value.profile)
@@ -75,7 +75,12 @@ export function validateBackup(value, data) {
     !value.keymap.every(
       (layer) =>
         Array.isArray(layer) &&
-        layer.length === (value.version === 1 ? ROWS * COLS : KEY_COUNT) &&
+        layer.length ===
+          (value.version === 1
+            ? ROWS * COLS
+            : value.version < 4
+              ? 54
+              : KEY_COUNT) &&
         layer.every((code) => supportedCode(code)),
     )
   )
@@ -93,6 +98,10 @@ export function validateBackup(value, data) {
     result.rules = [];
     result.version = 3;
   }
+  if (result.version < 4) {
+    result.keymap = result.keymap.map((layer) => [...layer, 0, 0, 0, 0]);
+    result.version = 4;
+  }
   validateRules(result.rules);
   if (typeof result.settings.firstUp !== "boolean")
     throw Error("First upの設定値が不正です。");
@@ -101,7 +110,7 @@ export function validateBackup(value, data) {
 export function makeBackup(profile, settings, keymap, rules = []) {
   return {
     format: "mejiro31-web",
-    version: 3,
+    version: 4,
     uid: UID,
     profile,
     settings: { ...clone(settings), firstUp: settings.firstUp ?? true },
@@ -179,6 +188,14 @@ export function storageAddress(layer, logical) {
     throw Error("不正なキー位置です。");
   if (logical < 48)
     return { layer, row: Math.floor(logical / COLS), col: logical % COLS };
+  if (logical >= 54) {
+    const index = (layer % 6) * 4 + logical - 54;
+    return {
+      layer: layer < 6 ? 14 : 15,
+      row: Math.floor(index / COLS),
+      col: index % COLS,
+    };
+  }
   const index = (layer % 6) * 6 + logical - 48;
   return {
     layer: layer < 6 ? 12 : 13,

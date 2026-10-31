@@ -9,9 +9,9 @@
       content="Mejiro31のキーマップ・入力設定・ファームウェア。"
     />
     <title>Mejiro31</title>
-    <link rel="stylesheet" href="./style.css?v=20261031-toast2" />
+    <link rel="stylesheet" href="./style.css?v=20261031-cap28" />
     <script type="module" src="./ui.js?v=20261031-timing1"></script>
-    <script type="module" src="./app.js?v=20261031-toast2"></script>
+    <script type="module" src="./app.js?v=20261031-cap28"></script>
   </head>
   <body>
     <header class="topbar">
@@ -304,7 +304,10 @@
                     max="1000"
                     step="1"
                     value="150"
-                  /><span class="timing-default" id="timing-combo-default" hidden
+                  /><span
+                    class="timing-default"
+                    id="timing-combo-default"
+                    hidden
                     >標準：150ms</span
                   ></span
                 ><small class="fine"
@@ -323,7 +326,8 @@
                     value="50"
                   /><span
                     class="timing-default"
-                    id="timing-continuation-default" hidden
+                    id="timing-continuation-default"
+                    hidden
                     >標準：50ms</span
                   ></span
                 ><small class="fine"
@@ -377,7 +381,7 @@
           <div class="settings-card rule-card">
             <h2>メジロ式の辞書</h2>
             <p class="fine">
-              動詞・一般略語・ユーザー辞書を編集します。本体に保存すると、電源を抜いても保持されます。最大24件です。
+              動詞・一般略語・ユーザー辞書を編集します。本体に保存すると、電源を抜いても保持されます。最大28件です。
             </p>
             <div class="dictionary-search-controls">
               <label
@@ -618,6 +622,25 @@
         ×
       </button>
       <h2 id="key-picker-title">キーを選択</h2>
+      <div class="key-capture-controls">
+        <button
+          id="key-capture"
+          type="button"
+          class="button toggle-button"
+          aria-pressed="false"
+        >
+          キーを入力
+        </button>
+        <button
+          id="key-capture-use"
+          type="button"
+          class="button primary"
+          disabled
+        >
+          入力したキーを使う
+        </button>
+      </div>
+      <p id="key-capture-status" class="fine" role="status"></p>
       <label for="key-search">名前で検索</label>
       <input
         id="key-search"

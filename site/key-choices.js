@@ -1,4 +1,4 @@
-import { keyName } from "./key-names.js?v=20261030-names3";
+import { keyName } from "./key-names.js?v=20261031-capture1";
 import { supportedCode } from "./model.js";
 export function keyChoices(
   data,

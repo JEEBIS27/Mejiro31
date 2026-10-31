@@ -22,18 +22,25 @@ export function boardKeys(data, layer = 0) {
     const a = positions.get(pair.a);
     const b = positions.get(pair.b);
     if (!a || !b) throw Error("Combo references an unknown physical key.");
-    const vertical = a.x === b.x;
+    const thumb = a.row !== b.row && (a.width === 2 || b.width === 2);
+    const vertical = a.x === b.x || thumb;
     const width = vertical ? 0.54 : 0.48;
     const height = 0.48;
-    const centerX = (a.x + a.width / 2 + b.x + b.width / 2) / 2;
+    const centerX = thumb
+      ? a.width === 1
+        ? a.x + 0.5
+        : b.x + 0.5
+      : (a.x + a.width / 2 + b.x + b.width / 2) / 2;
     // Keep horizontal badges over the shared edges of their source keys.
-    const centerY = vertical
-      ? (a.y + b.y + 1) / 2
-      : a.row === 0
-        ? 0.3
-        : a.row === 1
-          ? 2.09
-          : 4.595;
+    const centerY = thumb
+      ? Math.max(a.y, b.y)
+      : vertical
+        ? (a.y + b.y + 1) / 2
+        : a.row === 0
+          ? 0.3
+          : a.row === 1
+            ? 2.09
+            : 4.595;
     return {
       ...pair,
       x: centerX - width / 2,

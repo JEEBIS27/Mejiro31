@@ -92,16 +92,6 @@ const names = {
   230: ["Right Alt", "右Alt 右 オルト Option AltGr"],
   231: ["Right Win / Command", "右 Windows GUI Super コマンド"],
 };
-const mods = {
-  1: "Left Ctrl",
-  2: "Left Shift",
-  4: "Left Alt",
-  8: "Left Win / Command",
-  17: "Right Ctrl",
-  18: "Right Shift",
-  20: "Right Alt",
-  24: "Right Win / Command",
-};
 export const layerNames = [
   "Keyboard",
   "⇧ Keyboard",
@@ -111,6 +101,18 @@ export const layerNames = [
   "Steno",
 ];
 export function keyName(code, fallback) {
+  if (code >= 4 && code <= 29)
+    return {
+      label: String.fromCharCode(65 + code - 4),
+      search: String.fromCharCode(65 + code - 4),
+    };
+  if (code >= 30 && code <= 39)
+    return { label: "1234567890"[code - 30], search: "1234567890"[code - 30] };
+  if ((code >= 58 && code <= 69) || (code >= 104 && code <= 115)) {
+    const label = `F${code <= 69 ? code - 57 : code - 91}`;
+    return {label, search: label};
+  }
+  if (code >= 89 && code <= 98) return {label: `テンキー ${code === 98 ? 0 : code - 88}`, search: `Keypad Numpad ${code === 98 ? 0 : code - 88}`};
   if (code === 0x52a2)
     return {
       label: "Shift（次の1回）",
@@ -140,7 +142,7 @@ export function keyName(code, fallback) {
       search: parts.map((p) => p.search).join(" "),
     };
   }
-  if (code > 0xff && code <= 0x1fff && mods[code >> 8]) {
+  if (code > 0xff && code <= 0x1fff) {
     const base = code & 255,
       mod = code >> 8;
     if (mod === 2 && shifted[base]) {
@@ -148,9 +150,10 @@ export function keyName(code, fallback) {
       return { label: `${char} (${name})`, search: `${search} Shift シフト` };
     }
     const plain = keyName(base, fallback.replace(/^\w+\((.*)\)$/, "$1"));
+    const modifier = keyName(code & 0x1f00, "");
     return {
-      label: `${mods[mod]} + ${plain.label}`,
-      search: `${plain.search} ${keyName(0xe0 + { 1: 0, 2: 1, 4: 2, 8: 3, 17: 4, 18: 5, 20: 6, 24: 7 }[mod], "").search}`,
+      label: `${modifier.label} + ${plain.label}`,
+      search: `${plain.search} ${modifier.search}`,
     };
   }
   const actions = {

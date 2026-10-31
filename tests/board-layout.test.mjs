@@ -14,9 +14,9 @@ const keys = boardKeys(data);
 const at = (logical) => keys.find((key) => key.logical === logical);
 const center = (key) => [key.x + key.width / 2, key.y + key.height / 2];
 
-test("one board preserves all 31 physical and 22 firmware combo positions", () => {
-  assert.equal(keys.length, 53);
-  assert.equal(new Set(keys.map((key) => key.logical)).size, 53);
+test("one board preserves all 31 physical and 26 firmware combo positions", () => {
+  assert.equal(keys.length, 57);
+  assert.equal(new Set(keys.map((key) => key.logical)).size, 57);
   assert.deepEqual(
     keys.filter((key) => key.kind === "combo").map((key) => key.logical),
     data.pairs.map((pair) => pair.logical),
@@ -85,7 +85,7 @@ test("Steno hides all combo buttons while other layers retain empty slots", () =
   for (const layer of [0, 1, 2, 3, 4])
     assert.equal(
       boardKeys(data, layer).filter((k) => k.kind === "combo").length,
-      22,
+      26,
     );
   for (const [a, b] of [
     [0, 12],
@@ -96,4 +96,12 @@ test("Steno hides all combo buttons while other layers retain empty slots", () =
     [10, 11],
   ])
     assert.ok(data.pairs.some((p) => p.a === a && p.b === b));
+});
+
+test("thumb combos sit on the shared edge of each 2u and 1u key", () => {
+  for (const [logical, lower] of [[54,40],[55,41],[56,42],[57,43]]) {
+    const combo = at(logical), key = at(lower);
+    assert.equal(combo.x + combo.width/2, key.x + 0.5);
+    assert.equal(combo.y + combo.height/2, key.y);
+  }
 });

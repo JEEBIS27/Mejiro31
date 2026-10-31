@@ -8,14 +8,14 @@ import {
   decodeKeymap,
   validateSettings,
   changes,
-} from "./model.js?v=20261031-timing1";
+} from "./model.js?v=20261031-thumb1";
 import {
   decodeRule,
   encodeRule,
   ruleId,
   validateRules,
   RULE_CAPACITY,
-} from "./rules.js";
+} from "./rules.js?v=20261031-cap28";
 const SIGNATURE = Array.from("M31WEB01", (c) => c.charCodeAt(0));
 const RULE_SIGNATURE = Array.from("M31RUL01", (c) => c.charCodeAt(0));
 const fail = (message) => {
@@ -241,7 +241,7 @@ export class MejiroHID {
           "キーボードのロックを解除してください。",
           "辞書項目が不正です。",
           "キーボードの準備が完了していません。",
-          "辞書は24件まで登録できます。",
+          `辞書は${this.ruleCapacity || 24}件まで登録できます。`,
           "辞書を本体に保存できませんでした。",
         ][result[3]] || "辞書通信に失敗しました。",
       );
@@ -250,13 +250,14 @@ export class MejiroHID {
   async readRules(progress = () => {}) {
     const info = await this.ruleRequest(0);
     if (
-      info[13] !== RULE_CAPACITY ||
+      (info[13] < 24 || info[13] > RULE_CAPACITY) ||
       info[14] !== 1 ||
       info[15] !== 32 ||
       info[16] !== 96 ||
       info[17] !== 8
     )
       fail("サイトとファームウェアの辞書形式が一致しません。");
+    this.ruleCapacity = info[13];
     const rules = [];
     for (let index = 0; index < info[12]; index++) {
       const bytes = new Uint8Array(144);
@@ -282,6 +283,8 @@ export class MejiroHID {
   async saveRules(before, after, progress = () => {}) {
     validateRules(before);
     validateRules(after);
+    if (after.length > (this.ruleCapacity || 24))
+      fail(`このファームウェアでは辞書は${this.ruleCapacity || 24}件まで登録できます。最新のUF2に更新してください。`);
     if (!(await this.unlockStatus())[0])
       fail("キーボードのロックを解除してください。");
     const previous = new Map(before.map((rule) => [ruleId(rule), rule]));

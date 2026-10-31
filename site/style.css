@@ -1270,3 +1270,6 @@ dialog::backdrop {
   border-color: #629edb;
   outline-color: #629edb;
 }
+
+.key-capture-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+#key-capture-status { min-height: 1.6em; }

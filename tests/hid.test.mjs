@@ -20,6 +20,7 @@ class Device extends EventTarget {
   settings = { flags: 6, en: 0, jp: 0, firstUp: true };
   keymap = clone(data.defaults.jp);
   rules = [];
+  ruleCapacity = 28;
   pendingRule = new Uint8Array(144);
   sent = [];
   corrupt = false;
@@ -47,7 +48,7 @@ class Device extends EventTarget {
     } else if (b[0] === 0x11) b[1] = STORAGE_LAYERS;
     else if (b[0] === 0xfa) {
       if (b[1] === 2) {
-        if (b[2] === 0) b.set([this.rules.length, 24, 1, 32, 96, 8], 12);
+        if (b[2] === 0) b.set([this.rules.length, this.ruleCapacity, 1, 32, 96, 8], 12);
         else if (b[2] === 1) {
           const entry = this.rules[b[12]];
           if (!entry) b[3] = 2;
@@ -122,7 +123,7 @@ class Device extends EventTarget {
       if (this.corrupt) b[4] ^= 1;
     } else if (b[0] === 5) {
       for (let l = 0; l < 12; l++)
-        for (let i = 0; i < 54; i++) {
+        for (let i = 0; i < 58; i++) {
           const a = storageAddress(l, i);
           if (a.layer === b[1] && a.row === b[2] && a.col === b[3])
             this.keymap[l][i] = b[4] * 256 + b[5];
@@ -364,4 +365,19 @@ test("timings are saved and read back; unsupported firmware refuses before keyma
     false,
   );
   await legacy.close();
+});
+
+test("dictionary capacity follows firmware while preserving older 24-entry devices", async () => {
+  const device = new Device(), client = new MejiroHID(device, data);
+  device.locked = false;
+  const keys = Array.from({length: 32}, (_, n) => ["S", "T", "K", "N", "Y"].filter((_, i) => n & (1 << i)).join("") + "-").slice(1, 29);
+  const rules = keys.map(key => ({kind: 0, key, value: "あ", row: "", context: 0, hidden: false}));
+  await client.readRules();
+  assert.equal((await client.saveRules([], rules)).length, 28);
+  device.ruleCapacity = 24;
+  device.rules = [];
+  await client.readRules();
+  await assert.rejects(client.saveRules([], rules), /24件/);
+  assert.equal(device.rules.length, 0);
+  await client.close();
 });

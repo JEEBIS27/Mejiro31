@@ -1,5 +1,5 @@
 // Mejiro Engine's fixed-size runtime rule format (native/mejiro.h).
-export const RULE_CAPACITY = 24;
+export const RULE_CAPACITY = 28;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder('utf-8', { fatal: true });
 const patterns = [
@@ -29,7 +29,7 @@ export function validateRule(rule) {
 }
 export function validateRules(rules) {
   if (!Array.isArray(rules) || rules.length > RULE_CAPACITY)
-    throw Error('辞書は24件まで登録できます。');
+    throw Error('辞書は28件まで登録できます。');
   const ids = new Set();
   for (const rule of rules) {
     validateRule(rule);

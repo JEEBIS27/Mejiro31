@@ -1,12 +1,16 @@
+import { captureKey, isModifierEvent } from "./key-capture.js";
 import {
   ruleNames,
   searchDictionary,
 } from "./dictionary.js?v=20261031-rulekind1";
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
-import { keyName } from "./key-names.js?v=20261030-names3";
+import { keyName } from "./key-names.js?v=20261031-capture1";
 import { setIcon } from "./ui.js?v=20261031-timing1";
-import { keyChoices, searchChoices } from "./key-choices.js?v=20261030-names3";
+import {
+  keyChoices,
+  searchChoices,
+} from "./key-choices.js?v=20261031-capture1";
 import {
   clone,
   DEFAULT_TIMING,
@@ -17,17 +21,17 @@ import {
   selectRelease,
   selectBundledFirmware,
   supportedCode,
-} from "./model.js?v=20261031-timing1";
-import { connectKeyboard } from "./hid.js?v=20261031-timing1";
-import { ruleId, validateRules } from "./rules.js";
+} from "./model.js?v=20261031-thumb1";
+import { connectKeyboard } from "./hid.js?v=20261031-thumb1";
+import { ruleId, validateRules } from "./rules.js?v=20261031-cap28";
 import {
   boardKeys,
   labelFontSize,
   BOARD_WIDTH,
   BOARD_HEIGHT,
-} from "./board-layout.js";
+} from "./board-layout.js?v=20261031-thumb1";
 const $ = (id) => document.getElementById(id);
-const data = await fetch("./data.json?v=20261030-defaults1")
+const data = await fetch("./data.json?v=20261031-thumb1")
   .then((r) => {
     if (!r.ok) throw Error("設定データを読み込めません。");
     return r.json();
@@ -113,13 +117,14 @@ function status(message, type = "") {
   clearTimeout(statusExitTimer);
   $("status").textContent = message;
   $("status").className = `status ${type}`;
-  if (message) statusTimer = setTimeout(() => {
-    $("status").classList.add("leaving");
-    statusExitTimer = setTimeout(() => {
-      $("status").textContent = "";
-      $("status").className = "status";
-    }, 220);
-  }, 5000);
+  if (message)
+    statusTimer = setTimeout(() => {
+      $("status").classList.add("leaving");
+      statusExitTimer = setTimeout(() => {
+        $("status").textContent = "";
+        $("status").className = "status";
+      }, 220);
+    }, 5000);
 }
 function codeName(code) {
   return (
@@ -796,6 +801,88 @@ function choiceName(code) {
 }
 let pickerTarget = null;
 let pickerChoices = [];
+let captureActive = false;
+let capturedCode = null;
+let pendingModifier = null;
+const capturedModifiers = new Set();
+function stopCapture() {
+  captureActive = false;
+  capturedModifiers.clear();
+  pendingModifier = null;
+  $("key-capture").setAttribute("aria-pressed", "false");
+}
+function showCaptured(code) {
+  capturedCode = code;
+  $("key-capture-status").textContent = keyName(code, codeName(code)).label;
+  $("key-capture-use").disabled = false;
+}
+$("key-capture").onclick = () => {
+  if (captureActive) {
+    stopCapture();
+    return;
+  }
+  captureActive = true;
+  capturedCode = null;
+  capturedModifiers.clear();
+  pendingModifier = null;
+  $("key-capture").setAttribute("aria-pressed", "true");
+  $("key-capture-status").textContent =
+    "割り当てたいキーやショートカットを押してください。";
+  $("key-capture-use").disabled = true;
+  $("key-capture").focus();
+};
+$("key-capture").onblur = stopCapture;
+$("key-capture").onkeydown = (event) => {
+  if (!captureActive) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (event.repeat) return;
+  if (isModifierEvent(event)) capturedModifiers.add(event.code);
+  try {
+    const code = captureKey(event, {
+      hold: pickerTarget === "hold-code",
+      modifierCodes: [...capturedModifiers],
+      mac: /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || ""),
+    });
+    if (isModifierEvent(event)) pendingModifier = code;
+    else {
+      pendingModifier = null;
+      showCaptured(code);
+    }
+  } catch (error) {
+    capturedCode = null;
+    pendingModifier = null;
+    $("key-capture-status").textContent = error.message;
+    $("key-capture-use").disabled = true;
+  }
+};
+$("key-capture").onkeyup = (event) => {
+  if (!captureActive) return;
+  event.preventDefault();
+  event.stopPropagation();
+  capturedModifiers.delete(event.code);
+  if (
+    isModifierEvent(event) &&
+    !event.ctrlKey &&
+    !event.altKey &&
+    !event.shiftKey &&
+    !event.metaKey &&
+    pendingModifier !== null
+  ) {
+    showCaptured(pendingModifier);
+    pendingModifier = null;
+  }
+};
+$("key-capture-use").onclick = () => {
+  if (capturedCode === null || !pickerTarget) return;
+  $(pickerTarget).dataset.code = `0x${capturedCode.toString(16).toUpperCase()}`;
+  $(pickerTarget).value = keyName(capturedCode, codeName(capturedCode)).label;
+  stopCapture();
+  $("key-picker").close();
+  $(pickerTarget).focus();
+};
+$("key-picker").addEventListener("close", stopCapture);
+
 function renderChoices() {
   const choices = searchChoices(pickerChoices, $("key-search").value);
   $("key-count").textContent = choices.length
@@ -823,6 +910,10 @@ function renderChoices() {
 }
 function openPicker(id) {
   if ($(id).disabled) return;
+  stopCapture();
+  capturedCode = null;
+  $("key-capture-status").textContent = "";
+  $("key-capture-use").disabled = true;
   pickerTarget = id;
   const hold = id === "hold-code";
   pickerChoices = keyChoices(data, choiceName, {
