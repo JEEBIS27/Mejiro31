@@ -106,9 +106,15 @@ const layerLabels = [
   "Function",
   "Steno",
 ];
+let statusTimer;
 function status(message, type = "") {
+  clearTimeout(statusTimer);
   $("status").textContent = message;
   $("status").className = `status ${type}`;
+  if (message) statusTimer = setTimeout(() => {
+    $("status").textContent = "";
+    $("status").className = "status";
+  }, 5000);
 }
 function codeName(code) {
   return (
