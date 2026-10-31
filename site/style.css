@@ -1182,7 +1182,7 @@ dialog::backdrop {
   border-radius: 50%;
   background: #ed9b45;
 }
-.board-scroll .board .key.customized {
+.board-scroll .board .key.customized:is(.selected, :focus-visible) {
   border-color: #629edb;
 }
 
