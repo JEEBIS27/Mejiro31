@@ -3,13 +3,13 @@
   "assets": [
     {
       "filename": "mejiro31_jp.uf2",
-      "size": 697856,
-      "sha256": "d73b1a13d14f64113743627a3d9881c23ba358fc5f4574c19c771c49595253c7"
+      "size": 739328,
+      "sha256": "2430efc80c97502b7257936dd64b78d14be2376a226d053ec7428e5707c333ed"
     },
     {
       "filename": "mejiro31_en.uf2",
-      "size": 697856,
-      "sha256": "c7d73c74bc0dd94059146d77594ed09ef3abd1ba360df406ac5eb6e5c44397e1"
+      "size": 739328,
+      "sha256": "473d7679a844d9decd551da543ca7be11fc5c60fb69a1b2d37d65a7276d7acda"
     }
   ]
 }

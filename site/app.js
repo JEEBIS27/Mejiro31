@@ -21,17 +21,17 @@ import {
   selectRelease,
   selectBundledFirmware,
   supportedCode,
-} from "./model.js?v=20261031-thumb1";
-import { connectKeyboard } from "./hid.js?v=20261031-thumb1";
-import { ruleId, validateRules } from "./rules.js?v=20261031-cap28";
+} from "./model.js?v=20261031-cap96";
+import { connectKeyboard } from "./hid.js?v=20261031-cap96";
+import { ruleId, validateRules } from "./rules.js?v=20261031-cap96";
 import {
   boardKeys,
   labelFontSize,
   BOARD_WIDTH,
   BOARD_HEIGHT,
-} from "./board-layout.js?v=20261031-thumb1";
+} from "./board-layout.js?v=20261031-cap96";
 const $ = (id) => document.getElementById(id);
-const data = await fetch("./data.json?v=20261031-thumb1")
+const data = await fetch("./data.json?v=20261031-cap96")
   .then((r) => {
     if (!r.ok) throw Error("設定データを読み込めません。");
     return r.json();

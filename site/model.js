@@ -1,4 +1,4 @@
-import { validateRules } from "./rules.js?v=20261031-cap28";
+import { validateRules } from "./rules.js?v=20261031-cap96";
 export const ROWS = 4,
   COLS = 12,
   LAYERS = 12;

@@ -20,7 +20,7 @@ class Device extends EventTarget {
   settings = { flags: 6, en: 0, jp: 0, firstUp: true };
   keymap = clone(data.defaults.jp);
   rules = [];
-  ruleCapacity = 28;
+  ruleCapacity = 96;
   pendingRule = new Uint8Array(144);
   sent = [];
   corrupt = false;
@@ -370,10 +370,10 @@ test("timings are saved and read back; unsupported firmware refuses before keyma
 test("dictionary capacity follows firmware while preserving older 24-entry devices", async () => {
   const device = new Device(), client = new MejiroHID(device, data);
   device.locked = false;
-  const keys = Array.from({length: 32}, (_, n) => ["S", "T", "K", "N", "Y"].filter((_, i) => n & (1 << i)).join("") + "-").slice(1, 29);
+  const keys = Array.from({length: 128}, (_, n) => ["S", "T", "K", "N", "Y", "I", "A"].filter((_, i) => n & (1 << i)).join("") + "-").slice(1, 97);
   const rules = keys.map(key => ({kind: 0, key, value: "あ", row: "", context: 0, hidden: false}));
   await client.readRules();
-  assert.equal((await client.saveRules([], rules)).length, 28);
+  assert.equal((await client.saveRules([], rules)).length, 96);
   device.ruleCapacity = 24;
   device.rules = [];
   await client.readRules();

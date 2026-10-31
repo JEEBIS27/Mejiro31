@@ -8,14 +8,14 @@ import {
   decodeKeymap,
   validateSettings,
   changes,
-} from "./model.js?v=20261031-thumb1";
+} from "./model.js?v=20261031-cap96";
 import {
   decodeRule,
   encodeRule,
   ruleId,
   validateRules,
   RULE_CAPACITY,
-} from "./rules.js?v=20261031-cap28";
+} from "./rules.js?v=20261031-cap96";
 const SIGNATURE = Array.from("M31WEB01", (c) => c.charCodeAt(0));
 const RULE_SIGNATURE = Array.from("M31RUL01", (c) => c.charCodeAt(0));
 const fail = (message) => {

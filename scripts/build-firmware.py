@@ -23,8 +23,8 @@ def verify_uf2(path):
             raise ValueError('Invalid UF2 magic')
         if flags != 0x2000 or family != 0xe48bff56 or length != 256 or total != count or number != index:
             raise ValueError('Invalid RP2040 UF2 metadata')
-        # The board reserves its final 8 KiB flash for wear-levelled EEPROM.
-        if address % 256 or address < 0x10000000 or address + length > 0x10200000 - 8192 or address in addresses:
+        # The board reserves its final 72 KiB flash for wear-levelled EEPROM.
+        if address % 256 or address < 0x10000000 or address + length > 0x10200000 - 73728 or address in addresses:
             raise ValueError('Invalid UF2 flash address')
         addresses.add(address)
         payload.extend(block[32:32+length])
