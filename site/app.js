@@ -107,13 +107,18 @@ const layerLabels = [
   "Steno",
 ];
 let statusTimer;
+let statusExitTimer;
 function status(message, type = "") {
   clearTimeout(statusTimer);
+  clearTimeout(statusExitTimer);
   $("status").textContent = message;
   $("status").className = `status ${type}`;
   if (message) statusTimer = setTimeout(() => {
-    $("status").textContent = "";
-    $("status").className = "status";
+    $("status").classList.add("leaving");
+    statusExitTimer = setTimeout(() => {
+      $("status").textContent = "";
+      $("status").className = "status";
+    }, 220);
   }, 5000);
 }
 function codeName(code) {
