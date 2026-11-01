@@ -426,12 +426,14 @@ $("reverse-form").onsubmit = async (event) => {
     const useGrammar = $("reverse-grammar").value === "on";
     let grammar = [];
     let grammarUnavailable = false;
+    let grammarFailure = "";
     if (useGrammar) {
       status.textContent = "構文解析中…";
       try {
         grammar = await grammarSpans(query);
-      } catch {
+      } catch (error) {
         grammarUnavailable = true;
+        grammarFailure = error.message;
       }
     }
     const grammarMs = performance.now() - started;
@@ -442,7 +444,7 @@ $("reverse-form").onsubmit = async (event) => {
     reverseRuleSnapshot = JSON.stringify(state.rules);
     const note = found.all.length || found.basic_and_particle.length
       ? grammarUnavailable
-        ? "構文解析を利用できなかったため、シンプルな順序で表示します。"
+        ? `${grammarFailure} シンプルな順序で表示します。`
         : found.truncated
           ? "探索上限に達したため、一部の候補を表示します。"
           : "編集した辞書の内容を反映した結果です。"

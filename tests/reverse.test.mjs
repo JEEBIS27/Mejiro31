@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { spansFromTokens } from "../site/grammar.js";
+import { grammarSpans, spansFromTokens } from "../site/grammar.js";
 import { reverseLookup } from "../site/reverse.js";
 
 const wasm = readFileSync(new URL("../site/engine/mejiro_native.wasm", import.meta.url));
@@ -22,6 +22,21 @@ test("site grammar groups consecutive particles and a verb ending", () => {
     { start: 2, end: 5, kind: 2, lemma: "いう" },
     { start: 5, end: 6, kind: 1 },
   ]);
+});
+
+test("a stalled grammar worker times out and is terminated", async () => {
+  const originalWorker = globalThis.Worker;
+  let terminated = false;
+  globalThis.Worker = class {
+    postMessage() {}
+    terminate() { terminated = true; }
+  };
+  try {
+    await assert.rejects(grammarSpans("こんにちは", 10), /時間内に完了しませんでした/);
+    assert.equal(terminated, true);
+  } finally {
+    globalThis.Worker = originalWorker;
+  }
 });
 
 test("browser WebAssembly returns both routes and applies grammar", async () => {

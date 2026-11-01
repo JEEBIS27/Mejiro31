@@ -52,4 +52,4 @@ Both builds support host JIS/US selection and alternate-layout toggling. See the
 
 取り込み先は `site/firmware/` です。JP/EN両方のUF2、チェックサム、ビルドメタデータを検証し、配布一覧とソース情報を更新します。ビルド条件が異なるJP/ENは取り込みません。`firmware/sources.json` のCI用固定バージョンは変更しません。
 
-逆引きは共通RustエンジンのWebAssemblyを使用します。画面では「シンプル（構文解析なし）」を標準にし、必要なら「文法を考慮（構文解析あり）」に切り替えられます。文法解析器と辞書は後者を選んだときだけ読み込みます。エンジン更新後は `just build-reverse` で `site/engine/mejiro_native.wasm` を更新します。
+逆引きは共通RustエンジンのWebAssemblyを使用します。画面では「シンプル（構文解析なし）」を標準にし、必要なら「文法を考慮（構文解析あり）」に切り替えられます。文法解析器と辞書は後者を選んだときだけ別スレッドで読み込み、12秒以内に完了しなければシンプルな逆引きへ切り替えます。エンジン更新後は `just build-reverse` で `site/engine/mejiro_native.wasm` を更新します。

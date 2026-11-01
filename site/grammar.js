@@ -1,30 +1,56 @@
-// Japanese morphology stays in the site. The Rust engine receives only spans
-// and does not tokenize or assign parts of speech.
-let tokenizerPromise;
-function loadScript() {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = "./vendor/kuromoji/kuromoji.js";
-    script.onload = resolve;
-    script.onerror = () => reject(Error("文法解析器を読み込めません。"));
-    document.head.append(script);
-  });
-}
-export async function grammarSpans(text) {
-  tokenizerPromise ||= (async () => {
-    await loadScript();
-    return new Promise((resolve, reject) => {
-      window.kuromoji.builder({
-        dicPath: new URL("./vendor/kuromoji/dict/", import.meta.url).href,
-      }).build((error, tokenizer) => error ? reject(error) : resolve(tokenizer));
-    });
-  })();
-  try {
-    return spansFromTokens((await tokenizerPromise).tokenize(text));
-  } catch (error) {
-    tokenizerPromise = undefined;
-    throw error;
+// Keep morphology off the UI thread. A slow dictionary load falls back to
+// grammar-free reverse lookup instead of holding the form indefinitely.
+const GRAMMAR_TIMEOUT_MS = 12_000;
+let worker;
+let nextId = 0;
+const pending = new Map();
+
+function stopWorker(error) {
+  worker?.terminate();
+  worker = undefined;
+  for (const request of pending.values()) {
+    clearTimeout(request.timer);
+    request.reject(error);
   }
+  pending.clear();
+}
+
+function parserWorker() {
+  if (worker) return worker;
+  worker = new Worker(new URL("./grammar-worker.js", import.meta.url), { type: "module" });
+  worker.onmessage = ({ data }) => {
+    const request = pending.get(data.id);
+    if (!request) return;
+    pending.delete(data.id);
+    clearTimeout(request.timer);
+    if (data.error) request.reject(Error(data.error));
+    else request.resolve(data.spans);
+  };
+  worker.onerror = () => stopWorker(Error("文法解析器を読み込めません。"));
+  return worker;
+}
+
+export function grammarSpans(text, timeoutMs = GRAMMAR_TIMEOUT_MS) {
+  return new Promise((resolve, reject) => {
+    let parser;
+    try {
+      parser = parserWorker();
+    } catch (error) {
+      reject(error);
+      return;
+    }
+    const id = ++nextId;
+    const timer = setTimeout(
+      () => stopWorker(Error("文法解析が時間内に完了しませんでした。")),
+      timeoutMs,
+    );
+    pending.set(id, { resolve, reject, timer });
+    try {
+      parser.postMessage({ id, text });
+    } catch (error) {
+      stopWorker(error);
+    }
+  });
 }
 export function spansFromTokens(tokens) {
   const spans = [];
