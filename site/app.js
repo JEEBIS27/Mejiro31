@@ -1,3 +1,5 @@
+import { reverseLookup } from "./reverse.js";
+import { grammarSpans } from "./grammar.js";
 import { captureKey, isModifierEvent } from "./key-capture.js";
 import {
   ruleNames,
@@ -372,6 +374,78 @@ $("reset-settings").onclick = async () => {
     delete state.settings.timing;
   touch();
 };
+let reverseRuleSnapshot = null;
+const reverseLabels = ["基本入力", "助詞", "動詞", "一般略語", "ユーザー略語", "マイナー母音・例外かな"];
+function showReverseGroup(title, candidates) {
+  const section = document.createElement("section");
+  section.className = "reverse-group";
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+  section.append(heading);
+  if (!candidates.length) {
+    const empty = document.createElement("p");
+    empty.className = "fine";
+    empty.textContent = "候補がありません。";
+    section.append(empty);
+    return section;
+  }
+  const display = (candidate) => {
+    const row = document.createElement("div");
+    row.className = "reverse-candidate";
+    const stroke = document.createElement("code");
+    stroke.textContent = candidate.strokes;
+    const types = document.createElement("small");
+    types.className = "fine";
+    types.textContent = candidate.segments.map(([, , kind]) => reverseLabels[kind]).join(" / ");
+    row.append(stroke, types);
+    return row;
+  };
+  section.append(display(candidates[0]));
+  if (candidates.length > 1) {
+    const more = document.createElement("details");
+    const summary = document.createElement("summary");
+    summary.textContent = `ほかの候補（${candidates.length - 1}件）`;
+    more.append(summary, ...candidates.slice(1).map(display));
+    section.append(more);
+  }
+  return section;
+}
+$("reverse-form").onsubmit = async (event) => {
+  event.preventDefault();
+  const query = $("reverse-query").value.trim();
+  const status = $("reverse-status");
+  const results = $("reverse-results");
+  results.replaceChildren();
+  if (!query || !/^[\u3041-\u3096ー・、。？]+$/u.test(query)) {
+    status.textContent = "ひらがなを入力してください。";
+    return;
+  }
+  status.textContent = "逆引き中…";
+  try {
+    let grammar = [];
+    let grammarUnavailable = false;
+    try {
+      grammar = await grammarSpans(query);
+    } catch {
+      grammarUnavailable = true;
+    }
+    const found = await reverseLookup(query, grammar, state.rules);
+    reverseRuleSnapshot = JSON.stringify(state.rules);
+    status.textContent = found.all.length || found.basic_and_particle.length
+      ? grammarUnavailable
+        ? "文法解析を利用できないため、ストローク数順で表示します。"
+        : found.truncated
+          ? "探索上限に達したため、一部の候補を表示します。"
+          : "編集した辞書の内容を反映した結果です。"
+      : "基本入力と助詞では表せないため、候補がありません。";
+    results.replaceChildren(
+      showReverseGroup("文法を考慮した候補", found.all),
+      showReverseGroup("基本入力と助詞のみ", found.basic_and_particle),
+    );
+  } catch (error) {
+    status.textContent = `逆引きに失敗しました: ${error.message}`;
+  }
+};
 let editingRule = null;
 let dictionary = [];
 let dictionaryError = "";
@@ -453,6 +527,11 @@ fetch("./dictionary.json?v=004a3fb")
     renderDictionary();
   });
 function renderRules() {
+  if (reverseRuleSnapshot !== null && reverseRuleSnapshot !== JSON.stringify(state.rules)) {
+    reverseRuleSnapshot = null;
+    $("reverse-results").replaceChildren();
+    $("reverse-status").textContent = "辞書設定が変わりました。再検索してください。";
+  }
   renderDictionary();
   const list = $("rule-list");
   list.replaceChildren();

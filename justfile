@@ -24,3 +24,7 @@ generate:
 # QMKの検証済みQWERTY JP/ENをサイト配布用に取り込む
 sync source='../qmk_firmware/.build':
     python3 scripts/sync-firmware.py "$1"
+
+# 共通Rustエンジンの逆引きWebAssemblyを更新
+build-reverse source='../Mejiro_Engine':
+    python3 scripts/build-reverse.py --engine-source "$1"

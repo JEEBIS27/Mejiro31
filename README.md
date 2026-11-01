@@ -8,7 +8,7 @@ A 31-key keyboard for ordinary typing and stenography. A unified input engine ha
 
 ## 設定スタジオ / Configurator
 
-Vial対応のファームウェアダウンローダーとリマッパーを `site/` に追加しています。物理キー・二段圧縮の出力・Tap/Hold・代替配列に加え、メジロ式の辞書とFirst up chords sendを編集できます。
+Vial対応のファームウェアダウンローダーとリマッパーを `site/` に追加しています。物理キー・二段圧縮の出力・Tap/Hold・代替配列に加え、メジロ式の辞書とFirst up chords sendを編集でき、ひらがなからストロークを逆引きできます。
 
 - **[設定サイトを開く / Open Configurator](https://jeebis27.github.io/Mejiro31/)**
 - [設定スタジオの使い方・開発・自動配布](docs/CONFIGURATOR.md)
@@ -51,3 +51,5 @@ Both builds support host JIS/US selection and alternate-layout toggling. See the
 - `just sync /path/to/artifacts`: 取り込み元を指定します。
 
 取り込み先は `site/firmware/` です。JP/EN両方のUF2、チェックサム、ビルドメタデータを検証し、配布一覧とソース情報を更新します。ビルド条件が異なるJP/ENは取り込みません。`firmware/sources.json` のCI用固定バージョンは変更しません。
+
+逆引きは共通RustエンジンのWebAssemblyとブラウザー内の日本語解析器を使用します。エンジン更新後は `just build-reverse` で `site/engine/mejiro_native.wasm` を更新します。解析器と辞書は逆引きを実行したときだけ読み込みます。

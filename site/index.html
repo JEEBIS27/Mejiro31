@@ -11,7 +11,7 @@
     <title>Mejiro31</title>
     <link rel="stylesheet" href="./style.css?v=20261031-cap96" />
     <script type="module" src="./ui.js?v=20261031-timing1"></script>
-    <script type="module" src="./app.js?v=20261031-cap96"></script>
+    <script type="module" src="./app.js?v=20261101-reverse1"></script>
   </head>
   <body>
     <header class="topbar">
@@ -377,6 +377,15 @@
                 send（最初のキーを離した時点で送信）</label
               >
             </div>
+          </div>
+          <div class="settings-card rule-card">
+            <h2>メジロ式の逆引き</h2>
+            <form id="reverse-form" class="reverse-form">
+              <label>ひらがなからストロークを探す<input id="reverse-query" type="search" placeholder="例：とはいっても" autocomplete="off" required /></label>
+              <button type="submit" class="button">逆引き</button>
+            </form>
+            <p id="reverse-status" class="fine" role="status"></p>
+            <div id="reverse-results" class="reverse-results"></div>
           </div>
           <div class="settings-card rule-card">
             <h2>メジロ式の辞書</h2>
