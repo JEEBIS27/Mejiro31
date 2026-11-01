@@ -2,11 +2,9 @@
   "format": "mejiro31-build-sources-v1",
   "sources": {
     "vial": "dd43959ae5c08d8a28d38a1acf7b04e86b14a344",
-    "engine": "81f6f12bc19eba2f93f890b4a0d31410480d1ff6",
-    "engine_source": "/home/jeebis/Git/Mejiro_Engine",
-    "engine_ref": "local",
-    "engine_dirty": false,
-    "engine_source_sha256": "67f67e83f1d0379b0ea3164faeee9d5684d7ac3c9d89c60b20f4a08aa7a739e5",
-    "keyboard_head": "2835d69296c551a870ff3efda4954296804e5d9d"
+    "engine": "b7a52cfe88be66691d2bb35d6f672084e02a50c5",
+    "engine_url": "https://github.com/JEEBIS27/Mejiro_Engine.git",
+    "engine_ref": "b7a52cfe88be66691d2bb35d6f672084e02a50c5",
+    "keyboard_head": "f21733862e95266493f8e84c4cae850677a506d8"
   }
 }
