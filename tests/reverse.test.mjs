@@ -36,6 +36,13 @@ test("browser WebAssembly returns both routes and applies grammar", async () => 
   assert.ok(result.all.length <= 10 && result.basic_and_particle.length <= 10);
 });
 
+test("simple reverse lookup accepts empty grammar", async () => {
+  const result = await reverseLookup("こんにちは", []);
+  assert.ok(result.all.length > 0);
+  assert.ok(result.basic_and_particle.length > 0);
+  assert.equal(result.all[0].stroke_count, result.all[0].strokes.split("/").length);
+});
+
 test("edited rules are used by reverse lookup", async () => {
   const rule = { kind: 0, key: "KA-", value: "ねこ", row: "", context: 0, hidden: false };
   const result = await reverseLookup("ねこ", [], [rule]);

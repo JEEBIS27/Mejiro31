@@ -422,24 +422,35 @@ $("reverse-form").onsubmit = async (event) => {
   }
   status.textContent = "逆引き中…";
   try {
+    const started = performance.now();
+    const useGrammar = $("reverse-grammar").value === "on";
     let grammar = [];
     let grammarUnavailable = false;
-    try {
-      grammar = await grammarSpans(query);
-    } catch {
-      grammarUnavailable = true;
+    if (useGrammar) {
+      status.textContent = "構文解析中…";
+      try {
+        grammar = await grammarSpans(query);
+      } catch {
+        grammarUnavailable = true;
+      }
     }
+    const grammarMs = performance.now() - started;
+    status.textContent = "ストロークを探索中…";
+    await new Promise((resolve) => setTimeout(resolve, 0));
     const found = await reverseLookup(query, grammar, state.rules);
+    const engineMs = performance.now() - started - grammarMs;
     reverseRuleSnapshot = JSON.stringify(state.rules);
-    status.textContent = found.all.length || found.basic_and_particle.length
+    const note = found.all.length || found.basic_and_particle.length
       ? grammarUnavailable
-        ? "文法解析を利用できないため、ストローク数順で表示します。"
+        ? "構文解析を利用できなかったため、シンプルな順序で表示します。"
         : found.truncated
           ? "探索上限に達したため、一部の候補を表示します。"
           : "編集した辞書の内容を反映した結果です。"
       : "基本入力と助詞では表せないため、候補がありません。";
+    const parseTime = useGrammar ? `解析 ${(grammarMs / 1000).toFixed(2)} 秒・` : "解析なし・";
+    status.textContent = `${note} ${parseTime}探索 ${(engineMs / 1000).toFixed(2)} 秒`;
     results.replaceChildren(
-      showReverseGroup("文法を考慮した候補", found.all),
+      showReverseGroup(useGrammar && !grammarUnavailable ? "文法を考慮した候補" : "ストローク数順の候補", found.all),
       showReverseGroup("基本入力と助詞のみ", found.basic_and_particle),
     );
   } catch (error) {

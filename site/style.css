@@ -1274,8 +1274,9 @@ dialog::backdrop {
 .key-capture-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 #key-capture-status { min-height: 1.6em; }
 
-.reverse-form { display: flex; align-items: end; gap: 12px; }
-.reverse-form label { display: grid; gap: 5px; flex: 1; }
+.reverse-form { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; }
+.reverse-form label { display: grid; gap: 5px; flex: 1 1 180px; }
+.reverse-form label:first-child { flex-grow: 2; }
 .reverse-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .reverse-group { min-width: 0; }
 .reverse-group h3 { margin: 8px 0; }
