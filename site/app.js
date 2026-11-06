@@ -4,7 +4,7 @@ import { captureKey, isModifierEvent } from "./key-capture.js";
 import {
   ruleNames,
   searchDictionary,
-} from "./dictionary.js?v=20261031-rulekind1";
+} from "./dictionary.js?v=20261106-verbsearch1";
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName } from "./key-names.js?v=20261031-capture1";

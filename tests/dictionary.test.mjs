@@ -24,3 +24,24 @@ test("user settings override built-ins, include disabled entries, and restore on
   const user = { kind: 0, key: "STK-", value: "こんにちは", row: "", context: 0, hidden: false };
   assert.equal(searchDictionary(entries, [user], "こんにちは", "0")[0].custom, true);
 });
+
+test("verbs are searchable by dictionary form as well as stem and stroke", () => {
+  const working = entries.find(r => r.kind === 4 && r.value === "はたら" && r.row === "k");
+  assert.ok(working);
+  assert.ok(searchDictionary(entries, [], "はたらく", "4").some(r => r.key === working.key));
+  assert.ok(searchDictionary(entries, [], "はたら", "4").some(r => r.key === working.key));
+  assert.ok(searchDictionary(entries, [], working.key, "4").some(r => r.key === working.key));
+  const forms = [
+    ["およ", "g", "およぐ"], ["お", "ki", "おきる"],
+    ["た", "be", "たべる"], ["べんきょう", "sh", "べんきょうする"],
+    ["もって", "kh", "もってくる"],
+  ];
+  for (const [value, row, form] of forms) {
+    const rule = { ...working, key: "STK-", value, row };
+    assert.equal(searchDictionary([], [rule], form, "4")[0]?.value, value);
+  }
+  const override = { ...working, value: "か", row: "k" };
+  assert.ok(!searchDictionary([working], [override], "はたらく", "4").length);
+  assert.equal(searchDictionary([working], [override], "かく", "4")[0]?.custom, true);
+  assert.equal(searchDictionary([working], [{...working, hidden: true, value: ""}], "はたらく", "4").length, 0);
+});
