@@ -6,11 +6,12 @@ const { entries, engine } = JSON.parse(readFileSync(new URL("../site/dictionary.
 const pins = JSON.parse(readFileSync(new URL("../firmware/dictionary-source.json", import.meta.url)));
 test("built-in dictionary is complete, pinned and searchable by kind, stroke and text", () => {
   assert.equal(engine, pins.ref);
-  assert.equal(entries.length, 3730);
+  assert.equal(entries.length, 3742);
   assert.equal(new Set(entries.map(r => `${r.kind}:${r.key}`)).size, entries.length);
   assert.ok(searchDictionary(entries, [], "A-", "4").some(r => r.key === "A-" && r.value === "あ" && r.row === "ge"));
   assert.ok(searchDictionary(entries, [], "この", "2").some(r => r.key === "K"));
   assert.ok(searchDictionary(entries, [], "KAU", "3").some(r => r.value === "こと"));
+  assert.ok(searchDictionary(entries, [], "ST-", "1").some(r => r.value === "から"));
 });
 test("user settings override built-ins, include disabled entries, and restore on removal", () => {
   const original = entries.find(r => r.kind === 2 && r.key === "K");
