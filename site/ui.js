@@ -1,4 +1,4 @@
-import { english, localizePage, t } from "./locale.js?v=20261126-motion";
+import { english, localizePage, t } from "./locale.js?v=20261126-autosave";
 import { initPageSearch } from "./page-search.js";
 import { initInputTest } from "./input-test.js?v=20261126-motion";
 // View navigation and accessible icon controls, independent of device state.
@@ -9,8 +9,7 @@ const paths = {
   reset: '<path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/>',
   image:
     '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/>',
-  autosave:
-    '<path d="M20 7a8 8 0 0 0-13-3L4 7m0-5v5h5M4 17a8 8 0 0 0 13 3l3-3m0 5v-5h-5"/><path d="m9 12 2 2 4-4"/>',
+  gear: '<path d="M10 3h4l.7 2.6 2 .9 2.5-1.2 2 3.4-2 1.9v2.8l2 1.9-2 3.4-2.5-1.2-2 .9L14 21h-4l-.7-2.6-2-.9-2.5 1.2-2-3.4 2-1.9v-2.8l-2-1.9 2-3.4 2.5 1.2 2-.9z"/><circle cx="12" cy="12" r="3"/>',
   moon: '<path d="M20 15a9 9 0 0 1-11-11 9 9 0 1 0 11 11Z"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1 1m12 12 1 1M5 19l1-1M18 6l1-1"/>',
   test: '<path d="m4 7 5 5-5 5m8 0h8"/>',
@@ -65,6 +64,7 @@ const titles = {
   remap: "キーマップ",
   tester: "入力テスト",
   settings: "キーボード設定",
+  "site-settings": "サイトの設定",
   mejiro: "メジロ式設定",
   firmware: "ファームウェア",
   guide: "ヘルプ",
@@ -113,11 +113,11 @@ function showView() {
   search.setPanel(document.getElementById(view), t(titles[view]));
   document.title = `${t(titles[view])} · Mejiro31`;
   document.querySelector("main").scrollTop = 0;
-  document.querySelector(".save-bar").hidden = ![
+  document.querySelector(".save-bar").toggleAttribute("data-editor", [
     "remap",
     "settings",
     "mejiro",
-  ].includes(view);
+  ].includes(view));
 }
 window.addEventListener("hashchange", showView);
 showView();

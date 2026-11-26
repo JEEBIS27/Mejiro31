@@ -45,7 +45,7 @@
   position: relative; flex: none; display: flex; align-items: center; gap: 8px;
   padding: 0 12px; width: auto; height: 38px; color: var(--ink); font-weight: 450; border-radius: 13px;
 }
-.sidebar .rail #language-link { margin-top: auto; }
+.sidebar .rail #site-settings-link { margin-top: auto; }
 .sidebar .rail .repo-link { margin-top: 0; }
 .sidebar .rail a:hover { background: var(--hover); color: var(--ink); }
 .sidebar .rail a[aria-current="page"] { background: transparent; color: var(--green); font-weight: 650; box-shadow: none; }
@@ -132,7 +132,7 @@ h2 { font-size: 18px; }
   .sidebar .connection { grid-area: 1 / 2; margin: 0; padding: 0; border: 0; }
   .sidebar .rail { grid-column: 1 / -1; flex-direction: row; }
   .sidebar .rail a { padding-inline: 12px; height: 36px; font-size: 12px; gap: 6px; }
-  .sidebar .rail #language-link { margin-top: 0; }
+  .sidebar .rail #site-settings-link { margin-top: 0; }
   body { display: flex; flex-direction: column; height: 100dvh; }
   .workspace { margin: 0; flex: 1; height: auto; min-height: 0; }
   main { padding: 22px 14px; }
@@ -231,13 +231,13 @@ h2 { font-size: 18px; }
   position: absolute; inset: 0 auto auto 0; pointer-events: none;
   background: var(--selected); border-radius: 13px;
 }
-.page-dock:has(.save-bar:not(:has(button:enabled, [aria-busy="true"]))) { column-gap: 0; }
+.page-dock:has(.save-bar:not(:has(button:enabled, [aria-busy="true"], .save-spinner:not([hidden])))) { column-gap: 0; }
 .page-dock { position: relative; }
-:root .page-dock .save-bar:not(:has(button:enabled, [aria-busy="true"])) { min-height: 0; position: static; }
-.save-actions:not(:has(button:enabled, [aria-busy="true"])) { display: none; }
+:root .page-dock .save-bar:not(:has(button:enabled, [aria-busy="true"], .save-spinner:not([hidden]))) { min-height: 0; position: static; }
+.save-actions:not(:has(button:enabled, [aria-busy="true"], .save-spinner:not([hidden]))) { display: none; }
 button:disabled:not([aria-busy="true"]) { display: none; }
 #save[aria-busy="true"] { opacity: 1; cursor: progress; }
-#save[aria-busy="true"] .icon { width: 18px; height: 18px; stroke-width: 2; }
+:is(#save[aria-busy="true"], .save-spinner) .icon { width: 18px; height: 18px; stroke-width: 2; }
 
 @media (prefers-reduced-motion: no-preference) {
   .rail-highlight { transition: transform 320ms cubic-bezier(.30,.35,.30,1), width 300ms ease-out; }
@@ -253,8 +253,8 @@ button:disabled:not([aria-busy="true"]) { display: none; }
   .checkbox-label input[role="switch"]::before {
     transition: transform 240ms cubic-bezier(.32,0,.28,1), background-color 210ms ease-in-out;
   }
-  #save:not(:disabled), #save[aria-busy="true"] { animation: save-appear 340ms cubic-bezier(.35,0,.35,1); }
-  #save[aria-busy="true"] .icon { animation: save-spin 768ms linear infinite; }
+  #save:not(:disabled), #save[aria-busy="true"], .save-spinner { animation: save-appear 340ms cubic-bezier(.35,0,.35,1); }
+  :is(#save[aria-busy="true"], .save-spinner) .icon { animation: save-spin 768ms linear infinite; }
   #tooltip:not([hidden]) { animation: surface-appear 150ms ease-out; }
 }
 @keyframes page-enter { from { opacity: .68; } }
@@ -262,3 +262,13 @@ button:disabled:not([aria-busy="true"]) { display: none; }
 @keyframes surface-appear { from { opacity: .3; } }
 @keyframes save-appear { from { opacity: .25; transform: scale(.7); } }
 @keyframes save-spin { to { transform: rotate(1turn); } }
+
+.save-bar:not([data-editor]) .save-actions > button { display: none; }
+:root .page-dock .save-bar:not([data-editor]):not(:has(.save-spinner:not([hidden]))) {
+  min-height: 0;
+  position: static;
+}
+.save-bar:not([data-editor]):not(:has(.save-spinner:not([hidden]))) .save-actions,
+.save-bar:not([data-editor]):not(:has(.save-spinner:not([hidden]))) progress { display: none; }
+.page-dock:has(.save-bar:not([data-editor]):not(:has(.save-spinner:not([hidden])))) { column-gap: 0; }
+.save-spinner { cursor: progress; }

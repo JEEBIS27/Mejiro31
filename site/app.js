@@ -1,6 +1,6 @@
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { english, t } from "./locale.js?v=20261126-motion";
+import { english, t } from "./locale.js?v=20261126-autosave";
 import { reverseLookup } from "./reverse.js?v=20261126-lexical";
 import { hasKanji, lookupSpelling } from "./lexical-lookup.js?v=20261126-lexical";
 import { grammarSpans } from "./grammar.js?v=20261126-lexical";
@@ -13,7 +13,7 @@ import {
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
-import { setIcon } from "./ui.js?v=20261126-dock";
+import { setIcon } from "./ui.js?v=20261126-autosave";
 import {
   keyChoices,
   searchChoices,
@@ -324,6 +324,9 @@ function confirmAction(message) {
     dialog.showModal();
   });
 }
+try {
+  state.autoSave = localStorage.getItem("mejiro31-auto-save") === "true";
+} catch {}
 let autoSaveTimer;
 function queueAutoSave() {
   clearTimeout(autoSaveTimer);
@@ -336,8 +339,11 @@ function queueAutoSave() {
   )
     autoSaveTimer = setTimeout(() => saveChanges(), 500);
 }
-$("auto-save").onclick = () => {
-  state.autoSave = !state.autoSave;
+$("auto-save").onchange = (event) => {
+  state.autoSave = event.target.checked;
+  try {
+    localStorage.setItem("mejiro31-auto-save", String(state.autoSave));
+  } catch {}
   render();
   queueAutoSave();
   if (state.autoSave && state.client && !state.unlocked)
@@ -1012,23 +1018,20 @@ function render() {
         : t("オフライン");
   if ($("dirty-label").textContent !== stateLabel) $("dirty-label").textContent = stateLabel;
   const save = $("save");
-  if (save.getAttribute("aria-busy") !== String(state.saving)) {
-    save.setAttribute("aria-busy", String(state.saving));
-    setIcon(save, state.saving ? "spinner" : "save", state.saving ? "保存中…" : "キーボードに保存");
+  const manualSaving = state.saving && !state.autoSave;
+  if (save.getAttribute("aria-busy") !== String(manualSaving)) {
+    save.setAttribute("aria-busy", String(manualSaving));
+    setIcon(save, manualSaving ? "spinner" : "save", manualSaving ? "保存中…" : "キーボードに保存");
   }
-  $("save").disabled = !state.client || !state.unlocked || state.busy || !dirty;
+  $("auto-save-spinner").hidden = !state.saving || !state.autoSave;
+  $("save").disabled = !state.client || !state.unlocked || state.busy || !dirty || state.autoSave;
   $("unlock").disabled = !state.client || state.busy;
   $("unlock").setAttribute(
     "aria-pressed",
     String(!!state.client && !state.unlocked),
   );
-  $("auto-save").disabled = !state.client || !state.unlocked || state.busy;
-  $("auto-save").setAttribute("aria-pressed", String(state.autoSave));
-  setIcon(
-    $("auto-save"),
-    "autosave",
-    t(state.autoSave ? "オートセーブ：オン" : "オートセーブ：オフ"),
-  );
+  $("auto-save").checked = state.autoSave;
+  $("auto-save").disabled = state.saving;
   setIcon(
     $("unlock"),
     state.unlocked ? "unlock" : "lock",
@@ -1062,7 +1065,9 @@ $("apply-key").onclick = () => {
     state.keymap[state.layer + 6][state.selected] = hold;
     touch();
     status(
-      t("編集中の設定に反映しました。本体へ反映するには「キーボードに保存」を押してください。"),
+      t(state.autoSave
+        ? "編集中の設定に反映しました。接続中のキーボードのロックを解除すると自動で保存されます。"
+        : "編集中の設定に反映しました。本体へ反映するには「キーボードに保存」を押してください。"),
     );
   } catch (e) {
     status(e.message, "error");
@@ -1514,7 +1519,9 @@ $("unlock").onclick = async () => {
       if (result[0]) {
         state.unlocked = true;
         status(
-          t("ロックを解除しました。変更内容を確認して「キーボードに保存」を押してください。"),
+          t(state.autoSave
+            ? "ロックを解除しました。変更は自動で保存されます。"
+            : "ロックを解除しました。変更内容を確認して「キーボードに保存」を押してください。"),
           "success",
         );
         return;

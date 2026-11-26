@@ -10,9 +10,9 @@
     />
     <title>Mejiro31</title>
     <link rel="stylesheet" href="./style.css?v=20261126-rmk-preview" />
-    <link rel="stylesheet" href="./prism.css?v=20261126-dock" />
-    <script type="module" src="./ui.js?v=20261126-dock"></script>
-    <script type="module" src="./app.js?v=20261126-dock"></script>
+    <link rel="stylesheet" href="./prism.css?v=20261126-autosave" />
+    <script type="module" src="./ui.js?v=20261126-autosave"></script>
+    <script type="module" src="./app.js?v=20261126-autosave"></script>
   </head>
   <body>
     <aside class="sidebar" aria-label="Mejiro31">
@@ -64,6 +64,8 @@
         data-tip="入力テスト"
         aria-label="入力テスト"
       ><span>入力テスト</span></a>
+      <a id="site-settings-link" href="#site-settings" data-view="site-settings"
+        data-icon="gear" data-tip="サイトの設定" aria-label="サイトの設定"><span>サイトの設定</span></a>
       <a id="language-link" href="?lang=en" lang="en" hreflang="en">English</a>
       <a
         class="guide-link"
@@ -618,6 +620,18 @@
             </div>
           </div>
         </section>
+        <section id="site-settings" data-panel="site-settings" aria-label="サイトの設定" hidden>
+          <div class="settings-card switch-list">
+            <h2>保存</h2>
+            <div>
+              <label class="checkbox-label">
+                <input id="auto-save" type="checkbox" role="switch" aria-describedby="auto-save-help" />
+                オートセーブ
+              </label>
+              <p id="auto-save-help" class="fine">接続したキーボードのロックを解除すると、設定の変更を自動で本体に保存します。</p>
+            </div>
+          </div>
+        </section>
         <section id="guide" data-panel="guide" aria-label="ヘルプ" hidden>
           <div class="settings-card help-card">
             <h2>接続と保存</h2>
@@ -688,14 +702,8 @@
               data-tip="キーボードに保存"
               aria-label="キーボードに保存"
             ></button>
-            <button
-              id="auto-save" disabled
-              class="button icon-button toggle-button"
-              data-icon="autosave"
-              data-tip="オートセーブ：オフ"
-              aria-label="オートセーブ：オフ"
-              aria-pressed="false"
-            ></button>
+            <span id="auto-save-spinner" class="button icon-button primary save-spinner"
+              data-icon="spinner" aria-hidden="true" hidden></span>
           </div>
           <span id="dirty-label" class="sr-only" role="status"></span>
           <progress
