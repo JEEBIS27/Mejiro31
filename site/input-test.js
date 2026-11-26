@@ -57,8 +57,13 @@ export function initInputTest(document, window) {
     Backspace: "⌫",
     Escape: "Esc",
   };
-  const updateCount = () =>
-    (document.getElementById("test-log-count").textContent = english ? `${total} events` : `${total} 件`);
+  function updateCount() {
+    document.getElementById("test-log-count").textContent = english ? `${total} events` : `${total} 件`;
+    const empty = !total && !input.value;
+    document.getElementById("test-export").disabled = empty;
+    document.getElementById("test-clear").disabled = empty;
+  }
+  input.addEventListener("input", updateCount);
   document.getElementById("test-export").onclick = () => {
     updateDuration();
     const blob = new Blob(
@@ -181,8 +186,8 @@ export function initInputTest(document, window) {
     previous = null;
     log.length = 0;
     total = 0;
-    updateCount();
     input.value = "";
+    updateCount();
     document.getElementById("test-events").replaceChildren();
     input.focus();
   };

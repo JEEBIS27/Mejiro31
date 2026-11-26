@@ -103,6 +103,7 @@ USBを再接続し、右上の接続アイコンを押します。WebHID対応�
 このサイトに対応した最新UF2を使用してください。Linuxでは=Use the latest UF2. On Linux, check
 USBアクセス設定=USB access settings
 も確認してください。=as well.
+保存中…=Saving…
 オフライン=Offline
 本体のロックを解除=Unlock keyboard
 キーボードに保存=Save to keyboard

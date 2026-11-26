@@ -8,7 +8,7 @@ function searchEntries(panel, query) {
     "h2, h3, label, summary, li > strong, a, button[aria-label], textarea[aria-label]",
   );
   for (const item of candidates) {
-    if (!item.getClientRects().length || item.closest("#dictionary-results, #reverse-results, #rule-list")) continue;
+    if (!item.getClientRects().length || item.closest("[inert], #dictionary-results, #reverse-results, #rule-list")) continue;
     let label, detail = "";
     if (item.tagName === "LABEL") {
       label = [...item.childNodes].filter(node => node.nodeType === Node.TEXT_NODE)

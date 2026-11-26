@@ -38,17 +38,17 @@
 .brand { flex-direction: column; gap: 6px; font-size: 16px; margin-bottom: 16px; }
 .brand img { width: 44px; height: 44px; border-radius: 50% !important; }
 .sidebar .rail {
-  position: static; background: transparent; border: 0; width: auto;
+  position: relative; inset: auto; background: transparent; border: 0; width: auto;
   align-items: stretch; padding: 0; flex: 1; min-height: 0; overflow: auto; gap: 4px;
 }
 .sidebar .rail a {
   position: relative; flex: none; display: flex; align-items: center; gap: 8px;
   padding: 0 12px; width: auto; height: 38px; color: var(--ink); font-weight: 450; border-radius: 13px;
 }
-.sidebar .rail .guide-link { margin-top: auto; }
+.sidebar .rail #language-link { margin-top: auto; }
 .sidebar .rail .repo-link { margin-top: 0; }
 .sidebar .rail a:hover { background: var(--hover); color: var(--ink); }
-.sidebar .rail a[aria-current="page"] { background: var(--selected); color: var(--green); font-weight: 650; box-shadow: none; }
+.sidebar .rail a[aria-current="page"] { background: transparent; color: var(--green); font-weight: 650; box-shadow: none; }
 .sidebar .rail a[aria-current="page"]::before {
   content: ""; position: absolute; inset: calc(50% - 8px) auto auto 2px; height: 16px; width: 3px;
   border-radius: 3px; background: var(--green);
@@ -132,7 +132,7 @@ h2 { font-size: 18px; }
   .sidebar .connection { grid-area: 1 / 2; margin: 0; padding: 0; border: 0; }
   .sidebar .rail { grid-column: 1 / -1; flex-direction: row; }
   .sidebar .rail a { padding-inline: 12px; height: 36px; font-size: 12px; gap: 6px; }
-  .sidebar .rail .guide-link { margin-top: 0; }
+  .sidebar .rail #language-link { margin-top: 0; }
   body { display: flex; flex-direction: column; height: 100dvh; }
   .workspace { margin: 0; flex: 1; height: auto; min-height: 0; }
   main { padding: 22px 14px; }
@@ -213,11 +213,7 @@ h2 { font-size: 18px; }
   .page-dock { padding-inline: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); gap: 8px; }
 }
 @media (max-width: 520px) {
-  .page-dock { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
-  .page-search:has(+ [hidden]) { grid-column: 1 / -1; }
-  .page-dock .save-bar { display: contents; }
-  .page-dock .save-bar > div:first-child { grid-row: 2; grid-column: 1 / -1; }
-  .page-dock .save-actions { grid-area: 1 / 2; }
+  .page-dock, :root .page-dock .save-bar, .page-dock .save-actions { gap: 5px; }
   :root .search-field input[type="search"] { font-size: 16px; }
   .page-search { position: static; }
   .page-dock { position: relative; }
@@ -231,3 +227,42 @@ h2 { font-size: 18px; }
 @media (forced-colors: active) {
   .mejiro-mark { forced-color-adjust: none; background: LinkText; }
 }
+
+.rail-highlight {
+  position: absolute; inset: 0 auto auto 0; pointer-events: none;
+  background: var(--selected); border-radius: 13px;
+}
+#save-state { display: inline-flex; align-items: center; color: var(--muted); }
+#save-state:is([data-icon="check"], [data-icon="unsaved"]) { color: var(--green); }
+#save-state.saving {
+  width: 0; height: 0; overflow: hidden;
+}
+.save-actions:not(:has(button:enabled, [aria-busy="true"])) { display: none; }
+.save-bar:has(#save-state.saving) { gap: 0; }
+#save-state.saving .icon, button:disabled:not([aria-busy="true"]) { display: none; }
+#save[aria-busy="true"] { opacity: 1; cursor: progress; }
+#save[aria-busy="true"] .icon { width: 18px; height: 18px; stroke-width: 2; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .rail-highlight { transition: transform 320ms cubic-bezier(.30,.35,.30,1), width 300ms ease-out; }
+  .sidebar .rail a, dialog[open], #page-search-results:not([hidden]) {
+    animation: surface-appear 150ms ease-out;
+  }
+  [data-panel]:not([hidden]) { animation: page-enter 220ms ease-out; }
+  #guide:not([hidden]) { animation: guide-enter 340ms ease-out; }
+  .button, .layer-tab, .sidebar .rail a, .search-field input, .key-option {
+    transition: background-color 210ms ease-in-out, color 210ms ease-in-out, border-color 210ms ease-in-out, transform 120ms ease-out;
+  }
+  .checkbox-label input[role="switch"] { transition: background-color 210ms ease-in-out; }
+  .checkbox-label input[role="switch"]::before {
+    transition: transform 240ms cubic-bezier(.32,0,.28,1), background-color 210ms ease-in-out;
+  }
+  #save:not(:disabled), #save[aria-busy="true"] { animation: save-appear 340ms cubic-bezier(.35,0,.35,1); }
+  #save[aria-busy="true"] .icon { animation: save-spin 768ms linear infinite; }
+  #tooltip:not([hidden]) { animation: surface-appear 150ms ease-out; }
+}
+@keyframes page-enter { from { opacity: .68; } }
+@keyframes guide-enter { from { opacity: .55; transform: translateX(14px); } }
+@keyframes surface-appear { from { opacity: .3; } }
+@keyframes save-appear { from { opacity: .25; transform: scale(.7); } }
+@keyframes save-spin { to { transform: rotate(1turn); } }

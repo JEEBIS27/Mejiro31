@@ -10,9 +10,9 @@
     />
     <title>Mejiro31</title>
     <link rel="stylesheet" href="./style.css?v=20261126-rmk-preview" />
-    <link rel="stylesheet" href="./prism.css?v=20261126-ime" />
-    <script type="module" src="./ui.js?v=20261126-ime"></script>
-    <script type="module" src="./app.js?v=20261126-ime"></script>
+    <link rel="stylesheet" href="./prism.css?v=20261126-motion" />
+    <script type="module" src="./ui.js?v=20261126-motion"></script>
+    <script type="module" src="./app.js?v=20261126-motion"></script>
   </head>
   <body>
     <aside class="sidebar" aria-label="Mejiro31">
@@ -28,6 +28,7 @@
       >
 
     <nav id="page-navigation" class="rail" aria-label="機能">
+      <span class="rail-highlight" aria-hidden="true" hidden></span>
       <a
         href="#remap"
         data-view="remap"
@@ -62,8 +63,9 @@
         data-icon="test"
         data-tip="入力テスト"
         aria-label="入力テスト"
-      ><span>入力テスト</span></a
-      ><a
+      ><span>入力テスト</span></a>
+      <a id="language-link" href="?lang=en" lang="en" hreflang="en">English</a>
+      <a
         class="guide-link"
         href="#guide"
         data-view="guide"
@@ -80,7 +82,6 @@
         data-tip="GitHub"
         aria-label="GitHub"
       ><span>GitHub</span></a>
-      <a id="language-link" href="?lang=en" lang="en" hreflang="en">English</a>
     </nav>
       <div class="connection">
         <button
@@ -94,7 +95,7 @@
         <span class="dot" id="connection-dot"></span
         ><span id="connection-label">未接続</span
         ><button
-          id="connect"
+          id="connect" disabled
           class="button icon-button primary"
           data-icon="plug"
           data-tip="キーボードを接続"
@@ -225,7 +226,7 @@
               /></label>
 
               <button
-                id="apply-key"
+                id="apply-key" disabled
                 class="button primary icon-button"
                 data-icon="check"
                 data-tip="選択したキーに割り当てる"
@@ -240,14 +241,14 @@
               <div id="test-held" aria-label="押しているキー"></div>
               <div class="toolbar-actions">
                 <button
-                  id="test-export"
+                  id="test-export" disabled
                   class="button icon-button"
                   data-icon="export"
                   data-tip="入力ログを保存"
                   aria-label="入力ログを保存"
                 ></button
                 ><button
-                  id="test-clear"
+                  id="test-clear" disabled
                   class="button icon-button"
                   data-icon="clear"
                   data-tip="テスト結果を消去"
@@ -587,7 +588,7 @@
               >
               <div class="download-actions">
                 <button
-                  id="download"
+                  id="download" disabled
                   aria-label="UF2をダウンロード"
                   data-tip="選択したプロファイルのUF2をダウンロード"
                   class="button dark"
@@ -672,27 +673,26 @@
           </div>
         </search>
         <footer class="save-bar">
-          <div>
-            <strong id="dirty-label">オフライン</strong
-            ><span id="save-hint" class="sr-only"></span>
-          </div>
+          <span id="save-state" data-icon="offline" title="オフライン">
+            <span id="dirty-label" class="sr-only" role="status">オフライン</span>
+          </span>
           <div class="save-actions">
             <button
-              id="unlock"
+              id="unlock" disabled
               class="button icon-button"
               data-icon="unlock"
               data-tip="本体のロックを解除"
               aria-label="本体のロックを解除"
             ></button
             ><button
-              id="save"
+              id="save" disabled
               class="button icon-button primary"
               data-icon="save"
               data-tip="キーボードに保存"
               aria-label="キーボードに保存"
             ></button>
             <button
-              id="auto-save"
+              id="auto-save" disabled
               class="button icon-button toggle-button"
               data-icon="autosave"
               data-tip="オートセーブ：オフ"

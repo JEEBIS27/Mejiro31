@@ -1,6 +1,6 @@
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { english, t } from "./locale.js?v=20261126-ime";
+import { english, t } from "./locale.js?v=20261126-motion";
 import { reverseLookup } from "./reverse.js?v=20261126-lexical";
 import { hasKanji, lookupSpelling } from "./lexical-lookup.js?v=20261126-lexical";
 import { grammarSpans } from "./grammar.js?v=20261126-lexical";
@@ -13,7 +13,7 @@ import {
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
-import { setIcon } from "./ui.js?v=20261126-ime";
+import { setIcon } from "./ui.js?v=20261126-motion";
 import {
   keyChoices,
   searchChoices,
@@ -69,6 +69,7 @@ const state = {
   selected: 1,
   client: null,
   busy: false,
+  saving: false,
   unlocked: false,
   autoSave: false,
   releases: [],
@@ -343,7 +344,7 @@ $("auto-save").onclick = () => {
     status(t("オートセーブを開始するには本体のロックを解除してください。"));
 };
 function touch() {
-  state.modified = true;
+  if (!state.baseline) state.modified = true;
   render();
   queueAutoSave();
 }
@@ -835,12 +836,13 @@ function render() {
   if (state.layer === 5 && data.pairs.some((p) => p.logical === state.selected))
     state.selected = 1;
   const pair = data.pairs.find((p) => p.logical === state.selected);
+  $("board").parentElement.inert = state.busy;
+  $("layers").inert = state.busy;
   $("board").setAttribute("role", "tabpanel");
   $("board").setAttribute("aria-labelledby", `layer-tab-${state.layer}`);
   for (const [i, b] of [...$("layers").children].entries()) {
     b.setAttribute("aria-selected", String(i === state.layer));
     b.tabIndex = i === state.layer ? 0 : -1;
-    b.disabled = state.busy;
     const reference = state.baseline?.keymap || data.defaults[state.profile];
     b.classList.toggle(
       "dirty",
@@ -887,7 +889,7 @@ function render() {
       button.title = `${combo ? t("同時押し") : t("キー")} · ${t("短く押す")}: ${keyName(code, codeName(code)).label} · ${t("長押し")}: ${keyName(hold, codeName(hold)).label}`;
       button.setAttribute("aria-label", button.title);
       button.setAttribute("aria-pressed", String(state.selected === pos));
-      button.disabled = state.busy;
+
       const text = document.createElement("span");
       text.className = "key-label";
       const holdLabel = !mac && [0xe1, 0xe5].includes(outputKey(hold)) ? "Shift" : outputLegend(hold);
@@ -970,7 +972,6 @@ function render() {
   for (const id of [
     "tap-code",
     "hold-code",
-    "apply-key",
     "import",
     "reset-settings",
     "english-layout",
@@ -989,7 +990,8 @@ function render() {
     "rule-hidden",
   ])
     $(id).disabled = state.busy;
-  $("connect").disabled = state.busy;
+  $("apply-key").disabled = true;
+  $("connect").disabled = state.busy || !navigator.hid;
   setIcon(
     $("connect"),
     state.client ? "close" : "plug",
@@ -1001,23 +1003,34 @@ function render() {
     ? t("Mejiro31 接続済み")
     : t("オフライン編集");
   const dirty = isDirty();
-  $("dirty-label").textContent = state.busy
+  const stateLabel = state.saving ? t("保存中…") : state.busy
     ? t("キーボードと通信中…")
     : dirty
       ? t("未保存")
       : state.client
         ? t("保存済み")
         : t("オフライン");
-  $("save-hint").textContent = state.client
-    ? t("変更内容を確認して、本体に保存してください。")
-    : t("設定の保存にはキーボードを接続してください。");
+  const stateIcon = state.busy ? "transfer" : dirty ? "unsaved" : state.client ? "check" : "offline";
+  const indicator = $("save-state");
+  if (indicator.dataset.icon !== stateIcon) {
+    indicator.dataset.icon = stateIcon;
+    setIcon(indicator, stateIcon);
+  }
+  indicator.title = stateLabel;
+  if ($("dirty-label").textContent !== stateLabel) $("dirty-label").textContent = stateLabel;
+  indicator.classList.toggle("saving", state.saving);
+  const save = $("save");
+  if (save.getAttribute("aria-busy") !== String(state.saving)) {
+    save.setAttribute("aria-busy", String(state.saving));
+    setIcon(save, state.saving ? "spinner" : "save", state.saving ? "保存中…" : "キーボードに保存");
+  }
   $("save").disabled = !state.client || !state.unlocked || state.busy || !dirty;
   $("unlock").disabled = !state.client || state.busy;
   $("unlock").setAttribute(
     "aria-pressed",
     String(!!state.client && !state.unlocked),
   );
-  $("auto-save").disabled = state.busy;
+  $("auto-save").disabled = !state.client || !state.unlocked || state.busy;
   $("auto-save").setAttribute("aria-pressed", String(state.autoSave));
   setIcon(
     $("auto-save"),
@@ -1161,7 +1174,18 @@ $("key-capture-use").onclick = () => {
   $("key-picker").close();
   $(pickerTarget).focus();
 };
-$("key-picker").addEventListener("close", stopCapture);
+$("key-picker").addEventListener("close", () => {
+  stopCapture();
+  if (state.selected === null || state.busy) return;
+  try {
+    $("apply-key").disabled =
+      parseCode($("tap-code").dataset.code) === state.keymap[state.layer][state.selected] &&
+      parseCode($("hold-code").dataset.code, true) === state.keymap[state.layer + 6][state.selected];
+  } catch (error) {
+    $("apply-key").disabled = true;
+    status(error.message, "error");
+  }
+});
 
 function renderChoices() {
   const choices = searchChoices(pickerChoices, $("key-search").value);
@@ -1361,6 +1385,7 @@ $("import-file").onchange = async () => {
 };
 $("connect").onclick = async () => {
   if (state.client) {
+    const pendingChanges = !!isDirty();
     busy(true);
     try {
       await state.client.close();
@@ -1369,6 +1394,7 @@ $("connect").onclick = async () => {
     } finally {
       state.client = null;
       state.baseline = null;
+      state.modified = pendingChanges;
       busy(false);
     }
     return;
@@ -1391,8 +1417,8 @@ $("connect").onclick = async () => {
       throw Error("This page requires the English Mejiro31 firmware.");
     const keymap = await client.readKeymap((p) => ($("progress").value = p));
     const rules = await client.readRules((p) => ($("progress").value = p));
-    state.client = client;
     state.unlocked = !!(await client.unlockStatus())[0];
+    state.client = client;
     state.profile = client.profile;
     state.settings = result.settings;
     state.keymap = keymap;
@@ -1419,8 +1445,11 @@ $("connect").onclick = async () => {
 };
 async function saveChanges() {
   clearTimeout(autoSaveTimer);
-  if (!state.client || state.busy) return;
+  if (!state.client || !state.unlocked || state.busy || !isDirty()) return;
   const client = state.client;
+  const restoreFocus = document.activeElement === $("save");
+  const startPage = location.hash;
+  state.saving = true;
   busy(true);
   try {
     const result = await client.save(
@@ -1453,7 +1482,12 @@ async function saveChanges() {
     }
     state.modified = true;
   } finally {
+    state.saving = false;
     busy(false);
+    if (restoreFocus && location.hash === startPage && document.activeElement === document.body) {
+      const next = [$("save"), $("unlock"), $("page-query")].find(element => !element.disabled);
+      next.focus({ preventScroll: true });
+    }
   }
 }
 $("save").onclick = saveChanges;
