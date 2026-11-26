@@ -10,11 +10,12 @@
     />
     <title>Mejiro31</title>
     <link rel="stylesheet" href="./style.css?v=20261126-rmk-preview" />
-    <script type="module" src="./ui.js?v=20261031-timing1"></script>
-    <script type="module" src="./app.js?v=20261125-output1"></script>
+    <link rel="stylesheet" href="./prism.css?v=20261126-prism" />
+    <script type="module" src="./ui.js?v=20261126-prism"></script>
+    <script type="module" src="./app.js?v=20261126-prism"></script>
   </head>
   <body>
-    <header class="topbar">
+    <aside class="sidebar" aria-label="Mejiro31">
       <a class="brand" href="#remap"
         ><img
           src="./assets/mejiro-logo.jpg"
@@ -23,6 +24,62 @@
           height="36"
         /><strong>Mejiro31</strong></a
       >
+
+    <nav class="rail" aria-label="機能">
+      <a
+        href="#remap"
+        data-view="remap"
+        data-icon="keyboard"
+        data-tip="キーマップ"
+        aria-label="キーマップ"
+      ><span>キーマップ</span></a
+      ><a
+        href="#settings"
+        data-view="settings"
+        data-icon="sliders"
+        data-tip="キーボード設定"
+        aria-label="キーボード設定"
+      ><span>キーボード設定</span></a
+      ><a
+        href="#mejiro"
+        data-view="mejiro"
+        data-icon="book"
+        data-tip="メジロ式設定"
+        aria-label="メジロ式設定"
+      ><span>メジロ式設定</span></a
+      ><a
+        href="#firmware"
+        data-view="firmware"
+        data-icon="chip"
+        data-tip="ファームウェア"
+        aria-label="ファームウェア"
+      ><span>ファームウェア</span></a
+      ><a
+        href="#tester"
+        data-view="tester"
+        data-icon="test"
+        data-tip="入力テスト"
+        aria-label="入力テスト"
+      ><span>入力テスト</span></a
+      ><a
+        class="guide-link"
+        href="#guide"
+        data-view="guide"
+        data-icon="help"
+        data-tip="ヘルプ"
+        aria-label="ヘルプ"
+      ><span>ヘルプ</span></a
+      ><a
+        class="repo-link"
+        href="https://github.com/JEEBIS27/Mejiro31"
+        target="_blank"
+        rel="noopener"
+        data-icon="code"
+        data-tip="GitHub"
+        aria-label="GitHub"
+      ><span>GitHub</span></a>
+      <a id="language-link" href="?lang=en" lang="en" hreflang="en">English</a>
+    </nav>
       <div class="connection">
         <button
           id="theme-toggle"
@@ -42,60 +99,7 @@
           aria-label="キーボードを接続"
         ></button>
       </div>
-    </header>
-    <nav class="rail" aria-label="機能">
-      <a
-        href="#remap"
-        data-view="remap"
-        data-icon="keyboard"
-        data-tip="キーマップ"
-        aria-label="キーマップ"
-      ></a
-      ><a
-        href="#settings"
-        data-view="settings"
-        data-icon="sliders"
-        data-tip="キーボード設定"
-        aria-label="キーボード設定"
-      ></a
-      ><a
-        href="#mejiro"
-        data-view="mejiro"
-        data-icon="book"
-        data-tip="メジロ式設定"
-        aria-label="メジロ式設定"
-      ></a
-      ><a
-        href="#firmware"
-        data-view="firmware"
-        data-icon="chip"
-        data-tip="ファームウェア"
-        aria-label="ファームウェア"
-      ></a
-      ><a
-        href="#tester"
-        data-view="tester"
-        data-icon="test"
-        data-tip="入力テスト"
-        aria-label="入力テスト"
-      ></a
-      ><a
-        href="#guide"
-        data-view="guide"
-        data-icon="help"
-        data-tip="ヘルプ"
-        aria-label="ヘルプ"
-      ></a
-      ><a
-        class="repo-link"
-        href="https://github.com/JEEBIS27/Mejiro31"
-        target="_blank"
-        rel="noopener"
-        data-icon="code"
-        data-tip="GitHub"
-        aria-label="GitHub"
-      ></a>
-    </nav>
+    </aside>
     <div class="workspace">
       <main id="main-content">
         <noscript>JavaScriptを有効にしてください。</noscript>
@@ -285,11 +289,37 @@
               ><label class="checkbox-label"
                 ><input
                   id="alt-enabled"
-                  type="checkbox"
+                  type="checkbox" role="switch"
                   checked
                 />代替配列を有効にする</label
               >
             </div>
+          </div>
+          <div class="settings-card" id="shortcut-settings">
+            <h2>ショートカットの互換設定</h2>
+            <label>Home／Endの動作
+              <select id="shortcut-home">
+                <option value="auto">OSに合わせる</option>
+                <option value="native">Home／Endを送る</option>
+                <option value="apple">Command＋矢印を送る</option>
+              </select>
+            </label>
+            <p class="fine">Command＋矢印を選ぶと、Home／Endで行頭・行末に移動します。</p>
+            <h3>修飾キーの入れ替え</h3>
+            <label>修飾キーの動作
+              <select id="modifier-mode">
+                <option value="auto">OSに合わせる</option>
+                <option value="manual">個別に設定</option>
+              </select>
+            </label>
+            <div class="settings-fields" id="modifier-fields">
+              <label>Control<select id="modifier-0"></select></label>
+              <label>Shift<select id="modifier-1"></select></label>
+              <label>Alt／Option<select id="modifier-2"></select></label>
+              <label>GUI／Command<select id="modifier-3"></select></label>
+            </div>
+            <p class="fine">各キーが送る修飾キーを指定します。左右のキーに同じ入れ替えを適用します。</p>
+            <p class="fine" id="shortcut-support">本体に保存するには対応ファームウェアが必要です。</p>
           </div>
           <div class="settings-card rule-card">
             <h2>入力の判定時間</h2>
@@ -365,29 +395,29 @@
         >
           <div class="settings-card">
             <h2>メジロ式の入力</h2>
-            <div class="settings-fields">
+            <div class="switch-list">
               <label class="checkbox-label"
                 ><input
                   id="mejiro-enabled"
-                  type="checkbox"
+                  type="checkbox" role="switch"
                   checked
                 />速記モードでメジロ式を使用</label
               ><label class="checkbox-label"
-                ><input id="first-up" type="checkbox" checked />First up chords
+                ><input id="first-up" type="checkbox" role="switch" checked />First up chords
                 send（最初のキーを離した時点で送信）</label
               >
               <div class="setting-with-help">
                 <label class="checkbox-label">
                   <input
                     id="auto-ime-switch"
-                    type="checkbox"
+                    type="checkbox" role="switch"
                     checked
                     aria-describedby="auto-ime-switch-help auto-ime-switch-support"
                   />
                   モード切替時にPCのIMEも切り替える
                 </label>
                 <p id="auto-ime-switch-help" class="fine">
-                  日本語プロファイルでメジロ式を使うとき、速記モードに入るとIMEをオンにし、戻るとキーボード側の言語に合わせます。Ploverや英語プロファイルでは自動で切り替えません。言語キーを手動で押す操作には影響しません。
+                  日本語プロファイルでメジロ式を使うとき、速記モードに入るとIMEをオンにし、戻るとキーボード側の言語に合わせます。
                 </p>
                 <p id="auto-ime-switch-support" class="fine" hidden>
                   この設定を使うには対応ファームウェアを書き込んでください。
@@ -397,7 +427,7 @@
                 <label class="checkbox-label">
                   <input
                     id="immediate-sokuon"
-                    type="checkbox"
+                    type="checkbox" role="switch"
                     aria-describedby="immediate-sokuon-help immediate-sokuon-support"
                   />
                   ストローク末尾の「っ」をすぐ入力
@@ -501,7 +531,7 @@
                 data-tip="この種類・ストロークの内蔵辞書項目を無効にします。登録した無効化項目を削除すると元に戻ります。"
                 ><input
                   id="rule-hidden"
-                  type="checkbox"
+                  type="checkbox" role="switch"
                 />標準項目を無効化</label
               ><label id="rule-row-label"
                 >活用行<input id="rule-row" placeholder="例：ge"
@@ -579,9 +609,9 @@
             <p>実機検証向けです。書き込む前に、現在のキーマップと辞書を設定スタジオからJSONに書き出してください。</p>
             <p>試験版の設定変更には、RMK対応の試験用スタジオが必要です。</p>
             <div class="download-actions">
-              <a class="button" href="https://github.com/JEEBIS27/Mejiro31-Firmware/releases/download/v0.0.1/mejiro31-rmk.uf2">試験版 JPのUF2</a>
+              <a class="button" data-japanese-download href="https://github.com/JEEBIS27/Mejiro31-Firmware/releases/download/v0.0.1/mejiro31-rmk.uf2">試験版 JPのUF2</a>
               <a class="button" href="https://github.com/JEEBIS27/Mejiro31-Firmware/releases/download/v0.0.1/mejiro31-rmk-en.uf2">試験版 ENのUF2</a>
-              <a href="https://github.com/JEEBIS27/Mejiro31-Firmware/releases/tag/v0.0.1">v0.0.1の詳細</a>
+              <a data-japanese-download href="https://github.com/JEEBIS27/Mejiro31-Firmware/releases/tag/v0.0.1">v0.0.1の詳細</a>
             </div>
           </div>
         </section>

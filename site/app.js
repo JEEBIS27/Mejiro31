@@ -1,3 +1,6 @@
+import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
+import { detectPlatform } from "./platform.js?v=20261126-prism";
+import { english, t } from "./locale.js?v=20261126-prism";
 import { reverseLookup } from "./reverse.js";
 import { grammarSpans } from "./grammar.js";
 import { captureKey, isModifierEvent } from "./key-capture.js";
@@ -7,8 +10,8 @@ import {
 } from "./dictionary.js?v=20261106-verbsearch1";
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
-import { keyName } from "./key-names.js?v=20261031-capture1";
-import { setIcon } from "./ui.js?v=20261031-timing1";
+import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
+import { setIcon } from "./ui.js?v=20261126-prism";
 import {
   keyChoices,
   searchChoices,
@@ -23,8 +26,8 @@ import {
   selectRelease,
   selectBundledFirmware,
   supportedCode,
-} from "./model.js?v=20261125-output1";
-import { connectKeyboard } from "./hid.js?v=20261125-output1";
+} from "./model.js?v=20261126-prism";
+import { connectKeyboard } from "./hid.js?v=20261126-prism";
 import { ruleId, validateRules } from "./rules.js?v=20261031-cap96";
 import {
   boardKeys,
@@ -35,17 +38,19 @@ import {
 const $ = (id) => document.getElementById(id);
 const data = await fetch("./data.json?v=20261031-cap96")
   .then((r) => {
-    if (!r.ok) throw Error("設定データを読み込めません。");
+    if (!r.ok) throw Error(t("設定データを読み込めません。"));
     return r.json();
   })
   .catch((error) => {
     $("status").textContent = error.message;
     throw error;
   });
+const mac = detectPlatform(navigator)?.legends === "mac";
+const initialProfile = english ? "en" : "jp";
 const state = {
-  profile: "jp",
+  profile: initialProfile,
   settings: {
-    flags: 6,
+    flags: english ? 2 : 6,
     en: 0,
     jp: 0,
     firstUp: true,
@@ -56,7 +61,7 @@ const state = {
     timing: { ...DEFAULT_TIMING },
   },
   rules: [],
-  keymap: clone(data.defaults.jp),
+  keymap: clone(data.defaults[initialProfile]),
   baseline: null,
   layer: 0,
   selected: 1,
@@ -139,6 +144,8 @@ function codeName(code) {
   );
 }
 function shortName(code) {
+  const appleSymbol = macKeySymbol(code);
+  if (appleSymbol) return appleSymbol;
   const punctuation = {
     45: "-",
     46: "=",
@@ -256,9 +263,14 @@ function pairLabel(p) {
     .map((i) => `${Math.floor(i / 12) + 1}-${(i % 12) + 1}`)
     .join(" + ");
 }
+const englishLayouts = new Set([
+  "qwerty", "graphite", "colemak", "colemak_dh", "dvorak", "workman",
+  "handsdown_neu", "sturdy", "engram", "gallium", "canary", "boo",
+]);
 function fillLayouts(id) {
   $(id).replaceChildren(
-    ...data.layouts.map((p, i) => {
+    ...data.layouts.flatMap((p, i) => {
+      if (english && id === "english-layout" && !englishLayouts.has(p.id)) return [];
       const o = document.createElement("option");
       o.value = i;
       o.textContent = p.label;
@@ -326,7 +338,7 @@ $("auto-save").onclick = () => {
   render();
   queueAutoSave();
   if (state.autoSave && state.client && !state.unlocked)
-    status("オートセーブを開始するには本体のロックを解除してください。");
+    status(t("オートセーブを開始するには本体のロックを解除してください。"));
 };
 function touch() {
   state.modified = true;
@@ -350,6 +362,9 @@ function isDirty() {
           (state.settings.autoImeSwitch ?? true) ||
         (state.baseline.settings.immediateSokuon ?? false) !==
           (state.settings.immediateSokuon ?? false) ||
+        (state.baseline.settings.shortcutHome ?? "auto") !==
+          (state.settings.shortcutHome ?? "auto") ||
+        (state.baseline.settings.modifierOrder ?? 0) !== (state.settings.modifierOrder ?? 0) ||
         JSON.stringify(state.baseline.rules) !== JSON.stringify(state.rules) ||
         ["flags", "en", "jp", "firstUp"].some(
           (key) => state.baseline.settings[key] !== state.settings[key],
@@ -368,7 +383,7 @@ $("board").parentElement.onclick = (event) => {
 $("reset-settings").onclick = async () => {
   if (
     !(await confirmAction(
-      "キーマップ・入力設定・メジロ式の辞書を標準設定に戻します。よろしいですか？",
+      t("キーマップ・入力設定・メジロ式の辞書を標準設定に戻します。よろしいですか？"),
     ))
   )
     return;
@@ -674,7 +689,64 @@ function updateTimingAppearance(name) {
   field.classList.toggle("customized", changed);
   $("timing-" + name + "-default").hidden = !changed;
 }
+const modifierNames = ["Control", "Shift", t("Alt／Option"), t("GUI／Command")];
+const modifierFields = modifierNames.map((_, i) => $(`modifier-${i}`));
+for (const field of modifierFields) {
+  field.replaceChildren(...modifierNames.map((name, i) => new Option(name, i)));
+}
+function effectiveModifiers() {
+  return modifierOrder(state.settings.modifierOrder ?? 0, state.client?.appleHost ?? mac);
+}
+function outputKey(code) {
+  const order = effectiveModifiers();
+  if (code >= 224 && code <= 231) return 224 + ((code - 224) & 4) + order[(code - 224) & 3];
+  if (code > 255 && code < 0x2000) {
+    const bits = (code >> 8) & 15;
+    let mapped = 0;
+    for (let i = 0; i < 4; i++) if (bits & (1 << i)) mapped |= 1 << order[i];
+    return (code & 0x10ff) | (mapped << 8);
+  }
+  return code;
+}
+function outputLegend(code) {
+  const home = state.settings.shortcutHome ?? "auto";
+  const appleHome = home === "apple" || (home === "auto" && (state.client?.appleHost ?? mac));
+  if (appleHome && (code === 74 || code === 77)) return code === 74 ? "⌘←" : "⌘→";
+  return shortName(outputKey(code));
+}
+function renderShortcutSettings() {
+  const unsupported = !!state.client && !state.client.shortcutsSupported;
+  const manual = !!state.settings.modifierOrder;
+  $("shortcut-home").value = state.settings.shortcutHome ?? "auto";
+  $("modifier-mode").value = manual ? "manual" : "auto";
+  $("shortcut-support").hidden = !!state.client?.shortcutsSupported;
+  for (const id of ["shortcut-home", "modifier-mode"]) $(id).disabled = state.busy || unsupported;
+  const order = effectiveModifiers();
+  modifierFields.forEach((field, i) => {
+    field.value = order[i];
+    field.disabled = state.busy || unsupported || !manual;
+  });
+}
+$("shortcut-home").onchange = (event) => {
+  state.settings.shortcutHome = event.target.value;
+  touch();
+};
+$("modifier-mode").onchange = (event) => {
+  state.settings.modifierOrder = event.target.value === "manual" ? 1 : 0;
+  touch();
+};
+modifierFields.forEach((field, i) => {
+  field.onchange = () => {
+    const order = [...effectiveModifiers()];
+    const other = order.indexOf(Number(field.value));
+    [order[i], order[other]] = [order[other], order[i]];
+    state.settings.modifierOrder = 1 + modifierOrders.findIndex((candidate) =>
+      candidate.every((value, index) => value === order[index]));
+    touch();
+  };
+});
 function render() {
+  renderShortcutSettings();
   if (state.layer === 5 && data.pairs.some((p) => p.logical === state.selected))
     state.selected = 1;
   const pair = data.pairs.find((p) => p.logical === state.selected);
@@ -727,20 +799,20 @@ function render() {
       button.style.width = `${((key.width - (combo ? 0 : 0.06)) / BOARD_WIDTH) * 100}%`;
       button.style.height = `${((key.height - (combo ? 0 : 0.06)) / BOARD_HEIGHT) * 100}%`;
 
-      button.title = `${combo ? "同時押し" : "キー"} · 短く押す：${keyName(code, codeName(code)).label} · 長押し：${keyName(hold, codeName(hold)).label}`;
+      button.title = `${combo ? t("同時押し") : t("キー")} · ${t("短く押す")}: ${keyName(code, codeName(code)).label} · ${t("長押し")}: ${keyName(hold, codeName(hold)).label}`;
       button.setAttribute("aria-label", button.title);
       button.setAttribute("aria-pressed", String(state.selected === pos));
       button.disabled = state.busy;
       const text = document.createElement("span");
       text.className = "key-label";
-      const holdLabel = [0xe1, 0xe5].includes(hold) ? "Shift" : shortName(hold);
+      const holdLabel = !mac && [0xe1, 0xe5].includes(outputKey(hold)) ? "Shift" : outputLegend(hold);
       const hasHold = hold !== 0 && hold !== 1;
       // Modifier-only keys show the modifier as their main legend.
       // Every key, including the 2u thumbs, uses the same Tap/Hold hierarchy.
       text.textContent =
         !combo && [0, 1].includes(code) && hasHold
           ? holdLabel
-          : shortName(code);
+          : outputLegend(code);
       const iconCode = !combo && [0, 1].includes(code) && hasHold ? hold : code;
       const symbol = createKeyIcon(iconCode);
       if (symbol) {
@@ -836,24 +908,24 @@ function render() {
   setIcon(
     $("connect"),
     state.client ? "close" : "plug",
-    state.client ? "接続を終了" : "キーボードを接続",
+    state.client ? t("接続を終了") : t("キーボードを接続"),
   );
-  $("connection-label").textContent = state.client ? "接続済み" : "未接続";
+  $("connection-label").textContent = state.client ? t("接続済み") : t("未接続");
   $("connection-dot").classList.toggle("connected", !!state.client);
   $("mode-badge").textContent = state.client
-    ? "Mejiro31 接続済み"
-    : "オフライン編集";
+    ? t("Mejiro31 接続済み")
+    : t("オフライン編集");
   const dirty = isDirty();
   $("dirty-label").textContent = state.busy
-    ? "キーボードと通信中…"
+    ? t("キーボードと通信中…")
     : dirty
-      ? "未保存"
+      ? t("未保存")
       : state.client
-        ? "保存済み"
-        : "オフライン";
+        ? t("保存済み")
+        : t("オフライン");
   $("save-hint").textContent = state.client
-    ? "変更内容を確認して、本体に保存してください。"
-    : "設定の保存にはキーボードを接続してください。";
+    ? t("変更内容を確認して、本体に保存してください。")
+    : t("設定の保存にはキーボードを接続してください。");
   $("save").disabled = !state.client || !state.unlocked || state.busy || !dirty;
   $("unlock").disabled = !state.client || state.busy;
   $("unlock").setAttribute(
@@ -865,12 +937,12 @@ function render() {
   setIcon(
     $("auto-save"),
     "autosave",
-    `オートセーブ：${state.autoSave ? "オン" : "オフ"}`,
+    t(state.autoSave ? "オートセーブ：オン" : "オートセーブ：オフ"),
   );
   setIcon(
     $("unlock"),
     state.unlocked ? "unlock" : "lock",
-    !state.client ? "未接続" : state.unlocked ? "本体をロック" : "ロックを解除",
+    !state.client ? t("未接続") : state.unlocked ? t("本体をロック") : t("ロックを解除"),
   );
 }
 function busy(value) {
@@ -900,7 +972,7 @@ $("apply-key").onclick = () => {
     state.keymap[state.layer + 6][state.selected] = hold;
     touch();
     status(
-      "編集中の設定に反映しました。本体へ反映するには「キーボードに保存」を押してください。",
+      t("編集中の設定に反映しました。本体へ反映するには「キーボードに保存」を押してください。"),
     );
   } catch (e) {
     status(e.message, "error");
@@ -950,7 +1022,7 @@ $("key-capture").onclick = () => {
   pendingModifier = null;
   $("key-capture").setAttribute("aria-pressed", "true");
   $("key-capture-status").textContent =
-    "割り当てたいキーやショートカットを押してください。";
+    t("割り当てたいキーやショートカットを押してください。");
   $("key-capture-use").disabled = true;
   $("key-capture").focus();
 };
@@ -965,7 +1037,7 @@ $("key-capture").onkeydown = (event) => {
     const code = captureKey(event, {
       hold: pickerTarget === "hold-code",
       modifierCodes: [...capturedModifiers],
-      mac: /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || ""),
+      mac,
     });
     if (isModifierEvent(event)) pendingModifier = code;
     else {
@@ -1009,8 +1081,8 @@ $("key-picker").addEventListener("close", stopCapture);
 function renderChoices() {
   const choices = searchChoices(pickerChoices, $("key-search").value);
   $("key-count").textContent = choices.length
-    ? `${choices.length} 件の候補`
-    : "一致するキーがありません。検索語を変えてください。";
+    ? (english ? `${choices.length} matches` : `${choices.length} 件の候補`)
+    : t("一致するキーがありません。検索語を変えてください。");
   $("key-options").replaceChildren(
     ...choices.map((choice) => {
       const button = document.createElement("button");
@@ -1046,8 +1118,8 @@ function openPicker(id) {
       !data.pairs.some((p) => p.logical === state.selected),
   });
   $("key-picker-title").textContent = hold
-    ? "長押し — キー・レイヤーを選択"
-    : "短く押す — キーを選択";
+    ? t("長押し — キー・レイヤーを選択")
+    : t("短く押す — キーを選択");
   $("key-search").value = "";
   renderChoices();
   $("key-picker").showModal();
@@ -1158,8 +1230,13 @@ $("import-file").onchange = async () => {
   const file = $("import-file").files[0];
   if (!file) return;
   try {
-    if (file.size > 100000) throw Error("設定ファイルが大きすぎます。");
+    if (file.size > 100000) throw Error(t("設定ファイルが大きすぎます。"));
     const parsed = validateBackup(JSON.parse(await file.text()), data);
+    if (english && (parsed.profile !== "en" || !englishLayouts.has(data.layouts[parsed.settings.en]?.id)))
+      throw Error("Choose a backup that uses an English profile and layout.");
+    if (state.client && !state.client.shortcutsSupported &&
+        ((parsed.settings.shortcutHome ?? "auto") !== "auto" || parsed.settings.modifierOrder))
+      throw Error(t("本体に保存するには対応ファームウェアが必要です。"));
     if (state.client && parsed.profile !== state.profile)
       throw Error(
         "接続中のファームウェアと基本プロファイルが違います。対応する言語のファームウェアを使用してください。",
@@ -1173,7 +1250,7 @@ $("import-file").onchange = async () => {
       throw Error("促音の設定がオンのため、対応ファームウェアが必要です。");
     if (
       isDirty() &&
-      !(await confirmAction("現在の編集内容を読み込んだ設定で置き換えますか？"))
+      !(await confirmAction(t("現在の編集内容を読み込んだ設定で置き換えますか？")))
     )
       return;
     state.profile = parsed.profile;
@@ -1188,11 +1265,11 @@ $("import-file").onchange = async () => {
     state.rules = parsed.rules;
     touch();
     status(
-      "設定を読み込みました。キーボードへの書き込みはまだ行っていません。",
+      t("設定を読み込みました。キーボードへの書き込みはまだ行っていません。"),
       "success",
     );
   } catch (e) {
-    status(`読み込めませんでした: ${e.message}`, "error");
+    status(`${english ? "Import failed" : "読み込めませんでした"}: ${e.message}`, "error");
   } finally {
     $("import-file").value = "";
   }
@@ -1214,7 +1291,7 @@ $("connect").onclick = async () => {
   if (
     isDirty() &&
     !(await confirmAction(
-      "接続するとキーボードの現在の設定を読み込み、編集中の内容を置き換えます。必要なら先に「書き出す」で保存してください。",
+      t("接続するとキーボードの現在の設定を読み込み、編集中の内容を置き換えます。必要なら先に「書き出す」で保存してください。"),
     ))
   )
     return;
@@ -1224,6 +1301,9 @@ $("connect").onclick = async () => {
     const result = await connectKeyboard(data);
     if (!result) return;
     client = result.client;
+    Object.assign(result.settings, await client.shortcuts());
+    if (english && client.profile !== "en")
+      throw Error("This page requires the English Mejiro31 firmware.");
     const keymap = await client.readKeymap((p) => ($("progress").value = p));
     const rules = await client.readRules((p) => ($("progress").value = p));
     state.client = client;
@@ -1239,13 +1319,13 @@ $("connect").onclick = async () => {
     };
     state.modified = false;
     status(
-      "Mejiro31の設定を読み込みました。変更後はロックを解除して保存してください。",
+      t("Mejiro31の設定を読み込みました。変更後はロックを解除して保存してください。"),
       "success",
     );
   } catch (e) {
     if (client) await client.close().catch(() => {});
     status(
-      e.name === "NotFoundError" ? "接続をキャンセルしました。" : e.message,
+      e.name === "NotFoundError" ? t("接続をキャンセルしました。") : e.message,
       "error",
     );
   } finally {
@@ -1271,13 +1351,13 @@ async function saveChanges() {
     );
     state.baseline = { ...clone(result), rules: clone(rules) };
     state.modified = false;
-    status("キーボードに保存し、読み戻して内容を確認しました。", "success");
+    status(t("キーボードに保存し、読み戻して内容を確認しました。"), "success");
   } catch (e) {
     const disconnected = client.disconnected || state.client !== client;
     status(
       disconnected
-        ? "デバイスが切断されました"
-        : `保存できませんでした：${e.message}`,
+        ? t("デバイスが切断されました")
+        : `${english ? "Save failed" : "保存できませんでした"}: ${e.message}`,
       "error",
     );
     // Keep a usable connection open after validation/readback errors.
@@ -1301,7 +1381,7 @@ $("unlock").onclick = async () => {
     try {
       await client.lock();
       state.unlocked = false;
-      status("本体をロックしました。");
+      status(t("本体をロックしました。"));
     } catch (e) {
       status(e.message, "error");
     } finally {
@@ -1312,7 +1392,7 @@ $("unlock").onclick = async () => {
   const controller = new AbortController();
   state.unlockController = controller;
   busy(true);
-  $("unlock-status").textContent = "キーが押されるのを待っています…";
+  $("unlock-status").textContent = t("キーが押されるのを待っています…");
   $("unlock-dialog").showModal();
   try {
     await client.unlockStart();
@@ -1323,17 +1403,17 @@ $("unlock").onclick = async () => {
       if (result[0]) {
         state.unlocked = true;
         status(
-          "ロックを解除しました。変更内容を確認して「キーボードに保存」を押してください。",
+          t("ロックを解除しました。変更内容を確認して「キーボードに保存」を押してください。"),
           "success",
         );
         return;
       }
       $("unlock-status").textContent =
-        `両端のキーを押し続けてください… ${Math.max(0, 50 - result[2])} / 50`;
+        `${english ? "Keep both keys held…" : "両端のキーを押し続けてください…"} ${Math.max(0, 50 - result[2])} / 50`;
     }
     if (!controller.signal.aborted)
       throw Error(
-        "時間内にロックを解除できませんでした。もう一度お試しください。",
+        t("時間内にロックを解除できませんでした。もう一度お試しください。"),
       );
   } catch (e) {
     status(e.message, "error");
@@ -1349,7 +1429,7 @@ $("unlock-dialog").addEventListener("close", () => {
   if (state.unlockController && !state.unlockController.signal.aborted) {
     state.unlockController.abort();
     state.client?.lock().catch(() => {});
-    status("ロック解除をキャンセルしました。");
+    status(t("ロック解除をキャンセルしました。"));
   }
 });
 navigator.hid?.addEventListener("disconnect", (event) => {
@@ -1362,7 +1442,7 @@ navigator.hid?.addEventListener("disconnect", (event) => {
     state.baseline = null;
     state.modified = true;
     render();
-    status("デバイスが切断されました", "error");
+    status(t("デバイスが切断されました"), "error");
   }
 });
 window.addEventListener("beforeunload", (e) => {
@@ -1372,7 +1452,7 @@ window.addEventListener("beforeunload", (e) => {
   }
 });
 function selectedFirmware() {
-  const profile = $("download-profile").value;
+  const profile = english ? "en" : $("download-profile").value;
   const layout = "qwerty";
   return (
     selectBundledFirmware(state.firmwareManifest, profile, layout) ||
@@ -1384,8 +1464,8 @@ function updateDownload() {
     const asset = selectedFirmware();
     $("download").disabled = !asset;
     $("release-status").textContent = asset
-      ? `${asset.tag} · ${asset.filename} · ${Math.round(asset.size / 1024)} KB`
-      : "このプロファイルのUF2はまだ用意されていません。配布UF2はQWERTYです。代替配列は書き込み後、このサイトの設定から変更できます。";
+      ? `${t(asset.tag)} · ${asset.filename} · ${Math.round(asset.size / 1024)} KB`
+      : t("このプロファイルのUF2はまだ用意されていません。配布UF2はQWERTYです。代替配列は書き込み後、このサイトの設定から変更できます。");
   } catch (e) {
     $("download").disabled = true;
     $("release-status").textContent = e.message;
@@ -1396,13 +1476,13 @@ $("download").onclick = async () => {
   $("download").disabled = true;
   try {
     const asset = selectedFirmware();
-    if (!asset) throw Error("この組み合わせのUF2はまだ用意されていません。");
+    if (!asset) throw Error(t("この組み合わせのUF2はまだ用意されていません。"));
     let url = asset.url;
     if (asset.bundled) {
       const response = await fetch(asset.url, { cache: "no-store" });
       if (!response.ok)
         throw Error(
-          "UF2を取得できませんでした。再読み込みしてお試しください。",
+          t("UF2を取得できませんでした。再読み込みしてお試しください。"),
         );
       const bytes = await response.arrayBuffer();
       const digest = [
@@ -1412,7 +1492,7 @@ $("download").onclick = async () => {
         .join("");
       if (bytes.byteLength !== asset.size || digest !== asset.sha256)
         throw Error(
-          "UF2の検証に失敗しました。書き込まず、ファイルを再配置してください。",
+          t("UF2の検証に失敗しました。書き込まず、ファイルを再配置してください。"),
         );
       url = URL.createObjectURL(
         new Blob([bytes], { type: "application/octet-stream" }),
@@ -1424,7 +1504,7 @@ $("download").onclick = async () => {
     a.click();
     if (asset.bundled) setTimeout(() => URL.revokeObjectURL(url), 1000);
     status(
-      `ダウンロードしました: ${asset.filename}。BOOTSELを押しながら接続し、RPI-RP2へコピーしてください。`,
+      english ? `Downloaded ${asset.filename}. Connect while holding BOOTSEL and copy the file to the RPI-RP2 drive.` : `ダウンロードしました: ${asset.filename}。BOOTSELを押しながら接続し、RPI-RP2へコピーしてください。`,
     );
   } catch (e) {
     status(e.message, "error");
@@ -1436,7 +1516,7 @@ render();
 status(
   navigator.hid
     ? ""
-    : "本体への接続にはWebHID対応のChrome／Edgeを使用してください。",
+    : t("本体への接続にはWebHID対応のChrome／Edgeを使用してください。"),
   navigator.hid ? "" : "notice",
 );
 $("download").disabled = true;
@@ -1495,7 +1575,7 @@ $("save-png").onclick = async () => {
       state.profile,
     );
   } catch (e) {
-    status(`PNGを保存できませんでした: ${e.message}`, "error");
+    status(`${english ? "PNG export failed" : "PNGを保存できませんでした"}: ${e.message}`, "error");
   } finally {
     $("save-png").disabled = false;
   }

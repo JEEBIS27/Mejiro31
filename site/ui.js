@@ -1,4 +1,5 @@
-import { initInputTest } from "./input-test.js?v=20261029-inputlog3";
+import { english, localizePage, t } from "./locale.js?v=20261126-prism";
+import { initInputTest } from "./input-test.js?v=20261126-prism";
 // View navigation and accessible icon controls, independent of device state.
 const paths = {
   book: '<path d="M12 5v16M3 3h5a4 4 0 0 1 4 2 4 4 0 0 1 4-2h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z"/>',
@@ -38,10 +39,15 @@ export function setIcon(element, name, label) {
   svg.innerHTML = paths[name] || paths.help;
   element.prepend(svg);
   if (label) {
-    element.setAttribute("aria-label", label);
-    element.dataset.tip = label;
+    element.setAttribute("aria-label", t(label));
+    element.dataset.tip = t(label);
   }
 }
+localizePage(document);
+const languageLink = document.getElementById("language-link");
+languageLink.textContent = english ? "日本語" : "English";
+languageLink.lang = english ? "ja" : "en";
+languageLink.hreflang = languageLink.lang;
 for (const element of document.querySelectorAll("[data-icon]")) {
   setIcon(element, element.dataset.icon);
 }
@@ -55,15 +61,21 @@ const titles = {
 };
 function showView() {
   const requested = location.hash.slice(1);
-  const view = Object.hasOwn(titles, requested) ? requested : "remap";
+  const view = Object.hasOwn(titles, requested) && !(english && requested === "mejiro")
+    ? requested : "remap";
+  const otherLanguage = new URL(location.href);
+  if (english) otherLanguage.searchParams.delete("lang");
+  else otherLanguage.searchParams.set("lang", "en");
+  otherLanguage.hash = view === "mejiro" ? "remap" : view;
+  languageLink.href = otherLanguage.href;
   for (const panel of document.querySelectorAll("[data-panel]"))
     panel.hidden = panel.dataset.panel !== view;
   for (const link of document.querySelectorAll("[data-view]")) {
     if (link.dataset.view === view) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   }
-  document.getElementById("view-title").textContent = titles[view];
-  document.title = `${titles[view]} · Mejiro31`;
+  document.getElementById("view-title").textContent = t(titles[view]);
+  document.title = `${t(titles[view])} · Mejiro31`;
   document.querySelector("main").scrollTop = 0;
   document.querySelector(".save-bar").hidden = ![
     "remap",

@@ -1,3 +1,5 @@
+import { shortcutHomeModes } from "./shortcuts.js?v=20261126-prism";
+import { t } from "./locale.js?v=20261126-prism";
 import {
   UID,
   validateTiming,
@@ -9,7 +11,7 @@ import {
   decodeKeymap,
   validateSettings,
   changes,
-} from "./model.js?v=20261125-output1";
+} from "./model.js?v=20261126-prism";
 import {
   decodeRule,
   encodeRule,
@@ -104,6 +106,27 @@ export class MejiroHID {
     this.identified = true;
     return settings;
   }
+  async shortcuts(next) {
+    // Older firmware returns status 2 to the read probe.
+    const desiredHome = next ? shortcutHomeModes.indexOf(next.shortcutHome ?? "auto") : 0;
+    const desiredOrder = next?.modifierOrder ?? 0;
+    const op = next ? 8 : 7;
+    const result = await this.request([0xfa, 1, op, 0, ...SIGNATURE, desiredHome, desiredOrder]);
+    if (result[0] !== 0xfa || result[1] !== 1 || result[2] !== op ||
+        SIGNATURE.some((value, i) => value !== result[i + 4]))
+      fail("Shortcut settings response did not match.");
+    if (!next && result[3] === 2) {
+      this.shortcutsSupported = false;
+      return {};
+    }
+    if (result[3] || !shortcutHomeModes[result[12]] || result[13] > 24 || result[14] > 1)
+      fail("Could not read or save shortcut settings.");
+    if (next && (result[12] !== desiredHome || result[13] !== desiredOrder))
+      fail("Saved shortcut settings did not match.");
+    this.shortcutsSupported = true;
+    this.appleHost = !!result[14];
+    return { shortcutHome: shortcutHomeModes[result[12]], modifierOrder: result[13] };
+  }
   async settings(next) {
     if (next) {
       validateSettings(next, this.data);
@@ -189,7 +212,7 @@ export class MejiroHID {
       };
     if (next?.timing) {
       if (!this.timingSupported)
-        fail("判定時間の変更には最新のUF2を書き込んでください。");
+        fail(t("判定時間の変更には最新のUF2を書き込んでください。"));
       if (
         ["combo", "continuation", "hold"].some(
           (key) => settings.timing[key] !== next.timing[key],
@@ -445,11 +468,14 @@ export class MejiroHID {
     await this.checkImmediateSokuonSupport(settings);
     await this.checkAutoImeSwitchSupport(settings);
     await this.checkOutputSupport(settings);
+    if (this.shortcutsSupported === false &&
+        ((settings.shortcutHome ?? "auto") !== "auto" || settings.modifierOrder))
+      fail(t("本体に保存するには対応ファームウェアが必要です。"));
     if (settings.timing) {
       validateTiming(settings.timing);
       if (this.timingSupported === undefined) await this.settings();
       if (!this.timingSupported)
-        fail("判定時間の変更には最新のUF2を書き込んでください。");
+        fail(t("判定時間の変更には最新のUF2を書き込んでください。"));
     }
     const edits = changes(before, after);
     for (let i = 0; i < edits.length; i++) {
@@ -472,6 +498,10 @@ export class MejiroHID {
     }
     await this.settings(settings);
     const actualSettings = await this.settings();
+    if (this.shortcutsSupported) {
+      await this.shortcuts(settings);
+      Object.assign(actualSettings, await this.shortcuts());
+    }
     const actual = await this.readKeymap((p) => progress(0.5 + p * 0.5));
     if (
       changes(after, actual).length ||

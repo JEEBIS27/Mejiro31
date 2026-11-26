@@ -533,3 +533,28 @@ test("old firmware refuses non-default output settings before other writes", asy
   assert.equal(device.sent.some(b => b[0] === 250 && b[1] === 1 && b[2] === 6), false);
   await client.close();
 });
+
+test("shortcut settings probe and write keep navigation and modifiers independent", async () => {
+  const device = Object.create(MejiroHID.prototype);
+  let supported = false;
+  let bytes = [0, 0];
+  device.request = async (request) => {
+    const response = new Uint8Array(32);
+    response.set(request.slice(0, 12));
+    if (!supported) response[3] = 2;
+    else {
+      if (request[2] === 8) bytes = request.slice(12, 14);
+      response.set([...bytes, 1], 12);
+    }
+    return response;
+  };
+  assert.deepEqual(await device.shortcuts(), {});
+  assert.equal(device.shortcutsSupported, false);
+  supported = true;
+  assert.deepEqual(await device.shortcuts(), { shortcutHome: "auto", modifierOrder: 0 });
+  assert.equal(device.appleHost, true);
+  await device.shortcuts({ shortcutHome: "apple", modifierOrder: 1 });
+  assert.deepEqual(await device.shortcuts(), { shortcutHome: "apple", modifierOrder: 1 });
+  await device.shortcuts({ shortcutHome: "native", modifierOrder: 22 });
+  assert.deepEqual(await device.shortcuts(), { shortcutHome: "native", modifierOrder: 22 });
+});

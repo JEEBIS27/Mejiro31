@@ -1,3 +1,5 @@
+import { shortcutHomeModes } from "./shortcuts.js?v=20261126-prism";
+import { t } from "./locale.js?v=20261126-prism";
 import { validateRules } from "./rules.js?v=20261031-cap96";
 export const ROWS = 4,
   COLS = 12,
@@ -34,6 +36,9 @@ export function validateSettings(settings, data) {
   if (settings?.timing !== undefined) validateTiming(settings.timing);
   if (
     !settings ||
+    (settings.shortcutHome !== undefined && !shortcutHomeModes.includes(settings.shortcutHome)) ||
+    (settings.modifierOrder !== undefined &&
+      (!Number.isInteger(settings.modifierOrder) || settings.modifierOrder < 0 || settings.modifierOrder > 24)) ||
     !Number.isInteger(settings.flags) ||
     settings.flags < 0 ||
     settings.flags > 7 ||
@@ -52,7 +57,7 @@ export function validateSettings(settings, data) {
         settings[k] < data.layouts.length,
     )
   )
-    throw Error("設定値がこのファームウェアに対応していません。");
+    throw Error(t("設定値がこのファームウェアに対応していません。"));
 }
 export function supportedCode(code) {
   if (!Number.isInteger(code) || code < 0 || code > 65535) return false;
@@ -75,7 +80,7 @@ export function validateBackup(value, data) {
     value.uid.join() !== UID.join() ||
     !["jp", "en"].includes(value.profile)
   )
-    throw Error("Mejiro31用の設定ファイルではありません。");
+    throw Error(t("Mejiro31用の設定ファイルではありません。"));
   validateSettings(value.settings, data);
   if (
     !Array.isArray(value.keymap) ||
@@ -178,7 +183,7 @@ export function selectBundledFirmware(manifest, profile, layout = "qwerty") {
   return {
     ...asset,
     url: `./firmware/${filename}`,
-    tag: "サイト同梱版",
+    tag: manifest.preview ? "試作ファームウェア" : "サイト同梱版",
     bundled: true,
   };
 }

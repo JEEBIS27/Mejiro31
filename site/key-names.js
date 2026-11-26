@@ -1,3 +1,5 @@
+import { detectPlatform } from "./platform.js?v=20261126-prism";
+import { t } from "./locale.js?v=20261126-prism";
 // User-facing names are separate from the firmware codes saved to the device.
 const symbols = {
   45: ["-", "Minus", "マイナス"],
@@ -38,8 +40,8 @@ const shifted = {
   56: ["?", "Question", "疑問符 クエスチョン"],
 };
 const names = {
-  0: ["未割り当て", "None 無効 なし"],
-  1: ["下のレイヤーを使用", "Transparent 透過"],
+  0: [t("未割り当て"), "None 無効 なし"],
+  1: [t("下のレイヤーを使用"), "Transparent 透過"],
   40: ["Enter", "エンター 改行 リターン"],
   41: ["Esc", "Escape エスケープ"],
   42: ["Backspace", "バックスペース"],
@@ -100,7 +102,51 @@ export const layerNames = [
   "Function",
   "Steno",
 ];
+const mac = detectPlatform(globalThis.navigator)?.legends === "mac";
+// Standard characters used in Apple keyboard menus and shortcut documentation.
+const appleKeys = {
+  40: ["⏎", "Return"],
+  41: ["⎋", "Escape"],
+  42: ["⌫", "Delete"],
+  43: ["⇥", "Tab"],
+  57: ["⇪", "Caps Lock"],
+  74: ["↖", "Home"],
+  75: ["⇞", "Page Up"],
+  76: ["⌦", "Forward Delete"],
+  77: ["↘", "End"],
+  78: ["⇟", "Page Down"],
+  79: ["▶", "Right Arrow"],
+  80: ["◀", "Left Arrow"],
+  81: ["▼", "Down Arrow"],
+  82: ["▲", "Up Arrow"],
+  88: ["⌤", "Keypad Enter"],
+  224: ["⌃", "Left Control"],
+  225: ["⇧", "Left Shift"],
+  226: ["⌥", "Left Option"],
+  227: ["⌘", "Left Command"],
+  228: ["⌃", "Right Control"],
+  229: ["⇧", "Right Shift"],
+  230: ["⌥", "Right Option"],
+  231: ["⌘", "Right Command"],
+};
+
+export function macKeySymbol(code) {
+  if (!mac) return undefined;
+  if (code > 0xff && code <= 0x1fff && (code & 255) === 0) {
+    const bits = (code >> 8) & 15;
+    return [0, 2, 1, 3]
+      .filter((bit) => bits & (1 << bit))
+      .map((bit) => appleKeys[224 + bit][0])
+      .join("") || undefined;
+  }
+  return appleKeys[code]?.[0];
+}
+
 export function keyName(code, fallback) {
+  if (mac && appleKeys[code]) {
+    const [symbol, name] = appleKeys[code];
+    return { label: `${symbol} ${name}`, search: names[code]?.[1] ?? name };
+  }
   if (code >= 4 && code <= 29)
     return {
       label: String.fromCharCode(65 + code - 4),

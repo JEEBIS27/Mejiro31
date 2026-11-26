@@ -1,3 +1,4 @@
+import { english, t } from "./locale.js?v=20261126-prism";
 // Tests host-visible keyboard events only; never requests raw matrix access.
 export function inputEventLabel(event) {
   const names = { " ": "Space", Dead: "Dead key", Process: "IME" };
@@ -34,7 +35,7 @@ export function initInputTest(document, window) {
     const duration = intervalMs(active.started, now);
     active.entry.durationMs = duration;
     active.number.textContent = String(duration);
-    active.row.title = `${active.entry.action === "press" ? "押す" : "離す"}：${active.entry.label} / 継続 ${duration}ms`;
+    active.row.title = `${active.entry.action === "press" ? t("押す") : t("離す")}：${active.entry.label} / ${english ? "held" : "継続"} ${duration} ms`;
     if (duration === 999 && timer !== null) {
       window.clearInterval(timer);
       timer = null;
@@ -57,7 +58,7 @@ export function initInputTest(document, window) {
     Escape: "Esc",
   };
   const updateCount = () =>
-    (document.getElementById("test-log-count").textContent = `${total} 件`);
+    (document.getElementById("test-log-count").textContent = english ? `${total} events` : `${total} 件`);
   document.getElementById("test-export").onclick = () => {
     updateDuration();
     const blob = new Blob(
@@ -144,7 +145,7 @@ export function initInputTest(document, window) {
     const marker = document.createElement("span");
     marker.className = "input-marker";
     marker.textContent = down ? "●" : "○";
-    marker.setAttribute("aria-label", down ? "押す" : "離す");
+    marker.setAttribute("aria-label", down ? t("押す") : t("離す"));
     const keys = document.createElement("span");
     keys.className = "input-keys";
     keys.textContent = marks[event.key] || label;
@@ -152,7 +153,7 @@ export function initInputTest(document, window) {
     chord.className = "input-chord";
     chord.textContent = heldNames.join(" + ") || "N";
     row.append(time, marker, keys, chord);
-    row.title = `${down ? "押す" : "離す"}：${label} / 間隔 ${delta}ms${event.repeat ? " / リピート" : ""}`;
+    row.title = `${down ? t("押す") : t("離す")}：${label} / ${english ? "interval" : "間隔"} ${delta} ms${event.repeat ? (english ? " / repeat" : " / リピート") : ""}`;
     const list = document.getElementById("test-events");
     list.prepend(row);
     active = { entry, number, row, started: window.performance.now() };

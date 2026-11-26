@@ -1,5 +1,5 @@
-import { keyName } from "./key-names.js?v=20261031-capture1";
-import { supportedCode } from "./model.js";
+import { keyName } from "./key-names.js?v=20261126-prism";
+import { supportedCode } from "./model.js?v=20261126-prism";
 export function keyChoices(
   data,
   nameFor,
