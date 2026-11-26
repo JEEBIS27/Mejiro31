@@ -1,4 +1,4 @@
-# How to Build Mejiro31 ([Back to Start Page](../README.md))
+# How to Build Mejiro31 ([Back to Start Page](../README_EN.md))
 
 ![](./imgs/keyboard_black.jpg)
 
@@ -56,7 +56,7 @@ Here are some recommended switches for your reference.
 
 ## 3. Assembly
 
-Prepare a UF2 for your layout using the [firmware guide](FIRMWARE.md#english).
+Open the [Configurator](https://jeebis27.github.io/Mejiro31/), select the Japanese or English profile, and download its UF2 file.
 
 After downloading, hold the BOOT button on the PCB while connecting it to your PC.
 The PCB BOOT button is on the side away from the USB connector. Use this method to enter the bootloader.
@@ -159,4 +159,4 @@ There might be a soldering error. Please reach out via [Contact Us](#5-contact-u
 
 Email `jeebis.iox@gmail.com`, or for fundamental issues, open an [Issue on the Mejiro31 GitHub repo](https://github.com/JEEBIS27/Mejiro31/issues).
 
-[Back to Start Page](../README.md)
+[Back to Start Page](../README_EN.md)
