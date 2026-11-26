@@ -1,7 +1,7 @@
 import { replaceButtons } from "./button-motion.js?v=20261127-ime-motion";
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { english, t } from "./locale.js?v=20261126-autosave";
+import { english, t } from "./locale.js?v=20261127-language";
 import { reverseLookup } from "./reverse.js?v=20261126-lexical";
 import { hasKanji, lookupSpelling } from "./lexical-lookup.js?v=20261126-lexical";
 import { grammarSpans } from "./grammar.js?v=20261126-lexical";
@@ -13,8 +13,8 @@ import {
 } from "./dictionary.js?v=20261126-lexical";
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
-import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
-import { setIcon } from "./ui.js?v=20261127-ime-motion";
+import { keyName, macKeySymbol } from "./key-names.js?v=20261127-language";
+import { setIcon } from "./ui.js?v=20261127-language";
 import {
   keyChoices,
   searchChoices,
@@ -29,8 +29,8 @@ import {
   selectRelease,
   selectBundledFirmware,
   supportedCode,
-} from "./model.js?v=20261126-prism";
-import { connectKeyboard } from "./hid.js?v=20261126-prism";
+} from "./model.js?v=20261127-language";
+import { connectKeyboard } from "./hid.js?v=20261127-language";
 import { ruleId, validateRules } from "./rules.js?v=20261031-cap96";
 import {
   boardKeys,

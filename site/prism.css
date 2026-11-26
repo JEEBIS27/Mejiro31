@@ -156,8 +156,8 @@ h2 { font-size: 18px; }
   .checkbox-label input[role="switch"]:checked { background: Highlight; border-color: Highlight; }
   .checkbox-label input[role="switch"]:checked::before { background: HighlightText; }
 }
-.sidebar .rail #language-link { font-size: 12px; }
 
+#site-language { margin-top: 12px; max-width: 320px; }
 #shortcut-settings h3 { margin: 20px 0 12px; }
 #shortcut-settings .fine { margin-top: 8px; }
 #modifier-fields { margin-top: 14px; }

@@ -1,5 +1,5 @@
 import { shortcutHomeModes } from "./shortcuts.js?v=20261126-prism";
-import { t } from "./locale.js?v=20261126-prism";
+import { t } from "./locale.js?v=20261127-language";
 import {
   UID,
   validateTiming,
@@ -11,7 +11,7 @@ import {
   decodeKeymap,
   validateSettings,
   changes,
-} from "./model.js?v=20261126-prism";
+} from "./model.js?v=20261127-language";
 import {
   decodeRule,
   encodeRule,

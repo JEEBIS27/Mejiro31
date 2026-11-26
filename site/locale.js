@@ -1,5 +1,30 @@
+const languageKey = "mejiro31-language";
+const supported = (language) => language === "ja" || language === "en";
+
+export function preferredLanguage(query, saved, languages) {
+  if (supported(query)) return query;
+  if (supported(saved)) return saved;
+  return languages.map(language => language.toLowerCase().split("-")[0]).find(supported) ?? "en";
+}
+
+const requested = typeof location !== "undefined" ? new URLSearchParams(location.search).get("lang") : null;
+let saved;
+try { saved = localStorage.getItem(languageKey); } catch {}
+export const languageSetting = supported(requested) ? requested : supported(saved) ? saved : "auto";
 export const english = typeof location !== "undefined" &&
-  new URLSearchParams(location.search).get("lang") === "en";
+  preferredLanguage(requested, saved, navigator.languages?.length ? navigator.languages : [navigator.language]) === "en";
+
+export function setSiteLanguage(language) {
+  const url = new URL(location.href);
+  if (supported(language)) url.searchParams.set("lang", language);
+  else url.searchParams.delete("lang");
+  try {
+    if (supported(language)) localStorage.setItem(languageKey, language);
+    else localStorage.removeItem(languageKey);
+  } catch {}
+  if (url.href === location.href) location.reload();
+  else location.assign(url);
+}
 
 const translations = new Map(`
 メジロ式=Mejiro
@@ -29,6 +54,8 @@ GUI／Command=GUI / Command
 キーマップ=Keymap
 キーボード設定=Keyboard settings
 サイトの設定=Site settings
+言語=Language
+ブラウザーの設定に合わせる=Use browser language
 保存=Saving
 オートセーブ=Autosave
 接続したキーボードのロックを解除すると、設定の変更を自動で本体に保存します。=Automatically save changes to the connected keyboard when it is unlocked.

@@ -1,6 +1,6 @@
-import { english, localizePage, t } from "./locale.js?v=20261126-autosave";
-import { initPageSearch } from "./page-search.js?v=20261127-ime-motion";
-import { initInputTest } from "./input-test.js?v=20261126-motion";
+import { english, languageSetting, localizePage, setSiteLanguage, t } from "./locale.js?v=20261127-language";
+import { initPageSearch } from "./page-search.js?v=20261127-language";
+import { initInputTest } from "./input-test.js?v=20261127-language";
 // View navigation and accessible icon controls, independent of device state.
 const paths = {
   spinner: '<path d="M12 3a9 9 0 1 1-9 9"/>',
@@ -53,10 +53,9 @@ export function setIcon(element, name, label) {
   }
 }
 localizePage(document);
-const languageLink = document.getElementById("language-link");
-languageLink.textContent = english ? "日本語" : "English";
-languageLink.lang = english ? "ja" : "en";
-languageLink.hreflang = languageLink.lang;
+const languageSelect = document.getElementById("site-language");
+languageSelect.value = languageSetting;
+languageSelect.addEventListener("change", () => setSiteLanguage(languageSelect.value));
 for (const element of document.querySelectorAll("[data-icon]")) {
   setIcon(element, element.dataset.icon);
 }
@@ -114,11 +113,6 @@ function showView() {
   const requested = location.hash.slice(1);
   const view = Object.hasOwn(titles, requested) && !(english && requested === "mejiro")
     ? requested : "remap";
-  const otherLanguage = new URL(location.href);
-  if (english) otherLanguage.searchParams.delete("lang");
-  else otherLanguage.searchParams.set("lang", "en");
-  otherLanguage.hash = view === "mejiro" ? "remap" : view;
-  languageLink.href = otherLanguage.href;
   for (const panel of document.querySelectorAll("[data-panel]")) {
     panel.hidden = panel.dataset.panel !== view;
     panel.inert = panel.hidden;

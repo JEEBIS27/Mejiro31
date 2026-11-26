@@ -1,5 +1,5 @@
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { t } from "./locale.js?v=20261126-prism";
+import { t } from "./locale.js?v=20261127-language";
 // User-facing names are separate from the firmware codes saved to the device.
 const symbols = {
   45: ["-", "Minus", "マイナス"],

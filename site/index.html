@@ -10,9 +10,9 @@
     />
     <title>Mejiro31</title>
     <link rel="stylesheet" href="./style.css?v=20261127-ime-motion" />
-    <link rel="stylesheet" href="./prism.css?v=20261127-ime-motion" />
-    <script type="module" src="./ui.js?v=20261127-ime-motion"></script>
-    <script type="module" src="./app.js?v=20261127-ime-motion"></script>
+    <link rel="stylesheet" href="./prism.css?v=20261127-language" />
+    <script type="module" src="./ui.js?v=20261127-language"></script>
+    <script type="module" src="./app.js?v=20261127-language"></script>
   </head>
   <body>
     <aside class="sidebar" aria-label="Mejiro31">
@@ -66,7 +66,6 @@
       ><span>入力テスト</span></a>
       <a id="site-settings-link" href="#site-settings" data-view="site-settings"
         data-icon="gear" data-tip="サイトの設定" aria-label="サイトの設定"><span>サイトの設定</span></a>
-      <a id="language-link" href="?lang=en" lang="en" hreflang="en">English</a>
       <a
         class="guide-link"
         href="#guide"
@@ -621,6 +620,15 @@
           </div>
         </section>
         <section id="site-settings" data-panel="site-settings" aria-label="サイトの設定" hidden>
+          <div class="settings-card">
+            <h2>言語</h2>
+            <label class="sr-only" for="site-language">言語</label>
+            <select id="site-language">
+              <option value="auto">ブラウザーの設定に合わせる</option>
+              <option value="ja" lang="ja">日本語</option>
+              <option value="en" lang="en">English</option>
+            </select>
+          </div>
           <div class="settings-card switch-list">
             <h2>保存</h2>
             <div>
