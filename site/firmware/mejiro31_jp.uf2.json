@@ -1,13 +1,13 @@
 {
   "format": "mejiro31-build-v1",
   "filename": "mejiro31_jp.uf2",
-  "sha256": "fb072e1e68bf89717902184aba97d0d3416834c34a385db0ad1ee1e78e44f64f",
+  "sha256": "759877acf3a2cfba30a5bcd95978a733bf807d2554eb819ee4d2d368a09d3b3f",
   "sources": {
     "vial": "dd43959ae5c08d8a28d38a1acf7b04e86b14a344",
     "engine": "7bcb453e11a02d2858615a53b37f9dc1ebbc8d0c",
     "engine_url": "https://github.com/JEEBIS27/Mejiro_Engine.git",
     "engine_ref": "7bcb453e11a02d2858615a53b37f9dc1ebbc8d0c",
-    "keyboard_head": "e9a15e91da290c9e7be5a6147753a7a70c07aec7"
+    "keyboard_head": "866ea329555281d7dedc8c517b7d3011a131b10b"
   },
   "keymap": "vial",
   "profile": "jp",
