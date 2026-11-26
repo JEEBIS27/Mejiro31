@@ -1,5 +1,5 @@
 import { english, localizePage, t } from "./locale.js?v=20261126-autosave";
-import { initPageSearch } from "./page-search.js";
+import { initPageSearch } from "./page-search.js?v=20261127-button-motion";
 import { initInputTest } from "./input-test.js?v=20261126-motion";
 // View navigation and accessible icon controls, independent of device state.
 const paths = {
@@ -76,6 +76,7 @@ toggle.addEventListener("click", () => {
   const open = toggle.getAttribute("aria-expanded") !== "true";
   toggle.setAttribute("aria-expanded", String(open));
   sidebar.classList.toggle("collapsed", !open);
+  document.getElementById("page-navigation").inert = !open;
   setIcon(toggle, "sidebar", open ? "サイドバーをたたむ" : "サイドバーを開く");
 });
 
@@ -102,8 +103,10 @@ function showView() {
   else otherLanguage.searchParams.set("lang", "en");
   otherLanguage.hash = view === "mejiro" ? "remap" : view;
   languageLink.href = otherLanguage.href;
-  for (const panel of document.querySelectorAll("[data-panel]"))
+  for (const panel of document.querySelectorAll("[data-panel]")) {
     panel.hidden = panel.dataset.panel !== view;
+    panel.inert = panel.hidden;
+  }
   for (const link of document.querySelectorAll("[data-view]")) {
     if (link.dataset.view === view) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");

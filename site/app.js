@@ -1,3 +1,4 @@
+import { replaceButtons } from "./button-motion.js";
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
 import { english, t } from "./locale.js?v=20261126-autosave";
@@ -13,7 +14,7 @@ import {
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
-import { setIcon } from "./ui.js?v=20261127-save-feedback";
+import { setIcon } from "./ui.js?v=20261127-button-motion";
 import {
   keyChoices,
   searchChoices,
@@ -558,6 +559,7 @@ function dictionaryResult({ title, description, rule }) {
     edit.className = "button";
     edit.textContent = "編集";
     edit.disabled = state.busy;
+    edit.dataset.motionKey = ruleId(rule) + ":edit";
     edit.onclick = () => editRule(rule);
     row.append(edit);
   }
@@ -566,9 +568,7 @@ function dictionaryResult({ title, description, rule }) {
 function showDictionary(entries, error = dictionaryError) {
   $("dictionary-count").textContent = error ||
     `${entries.length} 件（${Math.min(dictionaryLimit, entries.length)} 件表示）`;
-  $("dictionary-results").replaceChildren(
-    ...entries.slice(0, dictionaryLimit).map(dictionaryResult),
-  );
+  replaceButtons($("dictionary-results"), entries.slice(0, dictionaryLimit).map(dictionaryResult));
   $("dictionary-more").hidden = entries.length <= dictionaryLimit;
 }
 function renderDictionary() {
@@ -576,7 +576,7 @@ function renderDictionary() {
   const kind = $("dictionary-kind").value;
   if (!query) {
     spellingSearch = null;
-    $("dictionary-results").replaceChildren();
+    replaceButtons($("dictionary-results"), []);
     $("dictionary-count").textContent = "";
     $("dictionary-more").hidden = true;
     return;
@@ -670,12 +670,12 @@ function renderRules() {
   }
   renderDictionary();
   const list = $("rule-list");
-  list.replaceChildren();
+  const rows = [];
   if (!state.rules.length) {
     const empty = document.createElement("p");
     empty.className = "fine";
     empty.textContent = "登録した辞書項目はありません。";
-    list.append(empty);
+    rows.push(empty);
   }
   for (const rule of state.rules) {
     const item = document.createElement("div");
@@ -691,12 +691,14 @@ function renderRules() {
     edit.className = "button";
     edit.textContent = "編集";
     edit.disabled = state.busy;
+    edit.dataset.motionKey = ruleId(rule) + ":edit";
     edit.onclick = () => editRule(rule);
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "button";
     remove.textContent = "削除";
     remove.disabled = state.busy;
+    remove.dataset.motionKey = ruleId(rule) + ":remove";
     remove.onclick = () => {
       state.rules = state.rules.filter(
         (entry) => ruleId(entry) !== ruleId(rule),
@@ -705,8 +707,9 @@ function renderRules() {
       touch();
     };
     item.append(title, value, edit, remove);
-    list.append(item);
+    rows.push(item);
   }
+  replaceButtons(list, rows);
 }
 function updateRuleFields() {
   const kind = Number($("rule-kind").value);
@@ -859,8 +862,7 @@ function render() {
     );
   }
   $("layer-heading").textContent = layerLabels[state.layer].toUpperCase();
-  $("board").replaceChildren(
-    ...boardKeys(data, state.layer).map((key) => {
+  replaceButtons($("board"), boardKeys(data, state.layer).map((key) => {
       const pos = key.logical;
       const code = state.keymap[state.layer][pos];
       const hold = state.keymap[state.layer + 6][pos];
@@ -887,6 +889,7 @@ function render() {
           ? " customized"
           : "");
       button.dataset.logical = pos;
+      button.dataset.motionKey = pos;
       button.dataset.kind = key.kind;
       button.style.left = `${(key.x / BOARD_WIDTH) * 100}%`;
       button.style.top = `${(key.y / BOARD_HEIGHT) * 100}%`;
@@ -934,7 +937,9 @@ function render() {
     }),
   );
   const hasSelection = state.selected !== null;
-  document.querySelector(".binding-panel").hidden = !hasSelection;
+  const bindingPanel = document.querySelector(".binding-panel");
+  bindingPanel.hidden = !hasSelection;
+  bindingPanel.inert = !hasSelection;
   const selected = state.selected ?? 1;
   const code = state.keymap[state.layer][selected];
   $("binding-title").textContent = shortName(code);
@@ -1197,11 +1202,11 @@ function renderChoices() {
   $("key-count").textContent = choices.length
     ? (english ? `${choices.length} matches` : `${choices.length} 件の候補`)
     : t("一致するキーがありません。検索語を変えてください。");
-  $("key-options").replaceChildren(
-    ...choices.map((choice) => {
+  replaceButtons($("key-options"), choices.map((choice) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "key-option";
+      button.dataset.motionKey = choice.code;
       button.textContent = choice.label;
       button.setAttribute(
         "aria-pressed",

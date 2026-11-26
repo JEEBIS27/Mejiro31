@@ -1,3 +1,4 @@
+import { replaceButtons } from "./button-motion.js";
 import { english } from "./locale.js?v=20261126-autosave";
 
 const normalize = (text) => text.normalize("NFKC").toLocaleLowerCase().trim();
@@ -35,8 +36,13 @@ export function initPageSearch() {
   const search = form.closest("search");
   let panel;
 
+  function setPopupVisible(visible) {
+    popup.inert = !visible;
+    popup.hidden = !visible;
+  }
+
   function openResult(target) {
-    popup.hidden = true;
+    setPopupVisible(false);
     if (target.tabIndex < 0) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
     target.scrollIntoView({ block: "center", inline: "nearest" });
@@ -44,18 +50,18 @@ export function initPageSearch() {
 
   function update() {
     const query = normalize(input.value);
-    matches.replaceChildren();
-    popup.hidden = !query;
+    setPopupVisible(!!query);
     if (!query) return;
     const entries = searchEntries(panel, query);
     count.textContent = english ? (entries.length === 1 ? "1 match" : entries.length + " matches") : entries.length + " 件";
-    for (const { label, target } of entries) {
+    replaceButtons(matches, entries.map(({ label, target }, index) => {
       const button = document.createElement("button");
       button.type = "button";
       button.textContent = label;
       button.onclick = () => openResult(target);
-      matches.append(button);
-    }
+      button.dataset.motionKey = target.id || label + ":" + index;
+      return button;
+    }));
   }
 
   input.addEventListener("input", update);
@@ -70,7 +76,7 @@ export function initPageSearch() {
     if (event.key === "Escape") {
       event.preventDefault();
       input.focus();
-      popup.hidden = true;
+      setPopupVisible(false);
     }
     const button = event.target.closest("#page-matches button");
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
@@ -82,10 +88,10 @@ export function initPageSearch() {
     }
   });
   search.addEventListener("focusout", event => {
-    if (event.relatedTarget && !search.contains(event.relatedTarget)) popup.hidden = true;
+    if (event.relatedTarget && !search.contains(event.relatedTarget)) setPopupVisible(false);
   });
   document.addEventListener("pointerdown", event => {
-    if (!search.contains(event.target)) popup.hidden = true;
+    if (!search.contains(event.target)) setPopupVisible(false);
   });
   return {
     setPanel(nextPanel, title) {

@@ -213,7 +213,7 @@ h2 { font-size: 18px; }
   .page-dock { padding-inline: 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); gap: 8px; }
 }
 @media (max-width: 520px) {
-  .page-dock, :root .page-dock .save-bar, .page-dock .save-actions { gap: 5px; }
+  .page-dock, :root .page-dock .save-bar { gap: 5px; }
   :root .search-field input[type="search"] { font-size: 16px; }
   .page-search { position: static; }
   #page-search-results { inset: auto 12px 100%; }
@@ -234,18 +234,12 @@ h2 { font-size: 18px; }
 .page-dock:has(.save-bar:not(:has(button:enabled, [aria-busy="true"], .save-feedback:not([hidden])))) { column-gap: 0; }
 .page-dock { position: relative; }
 :root .page-dock .save-bar:not(:has(button:enabled, [aria-busy="true"], .save-feedback:not([hidden]))) { min-height: 0; position: static; }
-.save-actions:not(:has(button:enabled, [aria-busy="true"], .save-feedback:not([hidden]))) { display: none; }
 button:disabled:not([aria-busy="true"]) { display: none; }
 #save[aria-busy="true"] { opacity: 1; cursor: progress; }
 :is(#save[aria-busy="true"], .save-feedback) .icon { width: 18px; height: 18px; stroke-width: 2; }
 
 @media (prefers-reduced-motion: no-preference) {
   .rail-highlight { transition: transform 320ms cubic-bezier(.30,.35,.30,1), width 300ms ease-out; }
-  .sidebar .rail a, dialog[open], #page-search-results:not([hidden]) {
-    animation: surface-appear 150ms ease-out;
-  }
-  [data-panel]:not([hidden]) { animation: page-enter 220ms ease-out; }
-  #guide:not([hidden]) { animation: guide-enter 340ms ease-out; }
   .button, .layer-tab, .sidebar .rail a, .search-field input, .key-option {
     transition: background-color 210ms ease-in-out, color 210ms ease-in-out, border-color 210ms ease-in-out, transform 120ms ease-out;
   }
@@ -253,22 +247,58 @@ button:disabled:not([aria-busy="true"]) { display: none; }
   .checkbox-label input[role="switch"]::before {
     transition: transform 240ms cubic-bezier(.32,0,.28,1), background-color 210ms ease-in-out;
   }
-  #save:not(:disabled), #save[aria-busy="true"], .save-feedback[data-icon="spinner"] { animation: save-appear 340ms cubic-bezier(.35,0,.35,1); }
   :is(#save[aria-busy="true"], .save-feedback[data-icon="spinner"]) .icon { animation: save-spin 768ms linear infinite; }
   #tooltip:not([hidden]) { animation: surface-appear 150ms ease-out; }
 }
-@keyframes page-enter { from { opacity: .68; } }
-@keyframes guide-enter { from { opacity: .55; transform: translateX(14px); } }
 @keyframes surface-appear { from { opacity: .3; } }
-@keyframes save-appear { from { opacity: .25; transform: scale(.7); } }
 @keyframes save-spin { to { transform: rotate(1turn); } }
 
-.save-bar:not([data-editor]) .save-actions > button { display: none; }
-:root .page-dock .save-bar:not([data-editor]):not(:has(.save-feedback:not([hidden]))) {
-  min-height: 0;
-  position: static;
-}
-.save-bar:not([data-editor]):not(:has(.save-feedback:not([hidden]))) .save-actions,
+.save-bar:not([data-editor]) .save-actions button { display: none; }
 .save-bar:not([data-editor]):not(:has(.save-feedback:not([hidden]))) progress { display: none; }
 .page-dock:has(.save-bar:not([data-editor]):not(:has(.save-feedback:not([hidden])))) { column-gap: 0; }
 .save-feedback { pointer-events: none; }
+.save-slot { display: grid; }
+.save-slot > * { grid-area: 1 / 1; }
+.save-slot:has(.save-feedback[data-icon="check"]:not([hidden])) #save:disabled { transition: none; }
+.save-actions { column-gap: 0; }
+.save-actions:has(#unlock:enabled):has(#save:enabled, #save[aria-busy="true"], .save-feedback:not([hidden])) {
+  column-gap: 8px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(button, .save-feedback) {
+    transition: opacity 140ms ease-out, scale 180ms ease-out, display 180ms allow-discrete,
+      background-color 210ms ease-in-out, color 210ms ease-in-out,
+      border-color 210ms ease-in-out, transform 120ms ease-out;
+  }
+  :is(button[hidden], button:disabled:not([aria-busy="true"]), .save-feedback[hidden],
+      .save-bar:not([data-editor]) .save-actions button) {
+    opacity: 0;
+    scale: .94;
+    pointer-events: none;
+    transition-duration: 120ms;
+  }
+
+  :is([data-panel], .sidebar .rail, .binding-panel, #page-search-results, dialog) {
+    transition: opacity 220ms ease-out, display 220ms allow-discrete;
+  }
+  dialog {
+    transition: opacity 180ms ease-out, display 180ms allow-discrete, overlay 180ms allow-discrete;
+  }
+  dialog::backdrop { transition: opacity 180ms ease-out; }
+  :is([data-panel][hidden], .sidebar.collapsed .rail, .binding-panel[hidden],
+      #page-search-results[hidden], dialog:not([open])), dialog:not([open])::backdrop {
+    opacity: 0;
+    pointer-events: none;
+    transition-duration: 140ms;
+  }
+  .view-panels { display: grid; }
+  .view-panels > [data-panel] { grid-area: 1 / 1; min-width: 0; }
+  .view-panels > [hidden] { height: 0; overflow: clip; overflow-clip-margin: 100dvh; }
+  @starting-style {
+    :is(button:not([data-motion-key]), .save-feedback) { opacity: 0; scale: .94; }
+    :is([data-panel], .sidebar .rail, .binding-panel, #page-search-results, dialog[open]), dialog[open]::backdrop { opacity: 0; }
+  }
+}
+
+.departing-button { pointer-events: none; margin: 0; }
