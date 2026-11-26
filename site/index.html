@@ -10,12 +10,14 @@
     />
     <title>Mejiro31</title>
     <link rel="stylesheet" href="./style.css?v=20261126-rmk-preview" />
-    <link rel="stylesheet" href="./prism.css?v=20261126-prism" />
-    <script type="module" src="./ui.js?v=20261126-prism"></script>
-    <script type="module" src="./app.js?v=20261126-lexical"></script>
+    <link rel="stylesheet" href="./prism.css?v=20261126-ime" />
+    <script type="module" src="./ui.js?v=20261126-ime"></script>
+    <script type="module" src="./app.js?v=20261126-ime"></script>
   </head>
   <body>
     <aside class="sidebar" aria-label="Mejiro31">
+      <button id="sidebar-toggle" type="button" class="button icon-button" data-icon="sidebar"
+        aria-label="サイドバーをたたむ" data-tip="サイドバーをたたむ" aria-controls="page-navigation" aria-expanded="true"></button>
       <a class="brand" href="#remap"
         ><img
           src="./assets/mejiro-logo.jpg"
@@ -25,11 +27,11 @@
         /><strong>Mejiro31</strong></a
       >
 
-    <nav class="rail" aria-label="機能">
+    <nav id="page-navigation" class="rail" aria-label="機能">
       <a
         href="#remap"
         data-view="remap"
-        data-icon="keyboard"
+        data-icon="edit"
         data-tip="キーマップ"
         aria-label="キーマップ"
       ><span>キーマップ</span></a
@@ -43,7 +45,7 @@
       ><a
         href="#mejiro"
         data-view="mejiro"
-        data-icon="book"
+        data-icon="mejiro"
         data-tip="メジロ式設定"
         aria-label="メジロ式設定"
       ><span>メジロ式設定</span></a
@@ -57,7 +59,7 @@
       ><a
         href="#tester"
         data-view="tester"
-        data-icon="test"
+        data-icon="keyboard"
         data-tip="入力テスト"
         aria-label="入力テスト"
       ><span>入力テスト</span></a
@@ -471,7 +473,7 @@
           <div class="settings-card rule-card">
             <h2>メジロ式の逆引き</h2>
             <form id="reverse-form" class="reverse-form">
-              <label>読み・漢字表記からストロークを探す<input id="reverse-query" type="search" placeholder="例：かえる、変える" autocomplete="off" required /></label>
+              <label>読み・漢字表記からストロークを探す<span class="search-field" data-icon="search"><input id="reverse-query" type="search" name="reverse-query" spellcheck="false" placeholder="例：かえる、変える" autocomplete="off" required /></span></label>
               <label>候補の並べ方<select id="reverse-grammar"><option value="off">シンプル（構文解析なし）</option><option value="on">文法を考慮（構文解析あり）</option></select></label>
               <button type="submit" class="button">逆引き</button>
             </form>
@@ -485,11 +487,11 @@
             </p>
             <div class="dictionary-search-controls">
               <label
-                >辞書を検索<input
+                >辞書を検索<span class="search-field" data-icon="search"><input
                   id="dictionary-search"
-                  type="search"
+                  type="search" autocomplete="off" name="dictionary-search" spellcheck="false"
                   placeholder="ストローク・出力文字・種類で検索"
-              /></label>
+              /></span></label>
               <label
                 >種類<select id="dictionary-kind">
                   <option value="">すべて</option>
@@ -656,43 +658,57 @@
           </div>
         </section>
       </main>
-      <footer class="save-bar">
-        <div>
-          <strong id="dirty-label">オフライン</strong
-          ><span id="save-hint" class="sr-only"></span>
-        </div>
-        <div class="save-actions">
-          <button
-            id="unlock"
-            class="button icon-button"
-            data-icon="unlock"
-            data-tip="本体のロックを解除"
-            aria-label="本体のロックを解除"
-          ></button
-          ><button
-            id="save"
-            class="button icon-button primary"
-            data-icon="save"
-            data-tip="キーボードに保存"
-            aria-label="キーボードに保存"
-          ></button>
-          <button
-            id="auto-save"
-            class="button icon-button toggle-button"
-            data-icon="autosave"
-            data-tip="オートセーブ：オフ"
-            aria-label="オートセーブ：オフ"
-            aria-pressed="false"
-          ></button>
-        </div>
-        <progress
-          id="progress"
-          max="1"
-          value="0"
-          hidden
-          aria-label="通信進行状況"
-        ></progress>
-      </footer>
+      <div class="page-dock">
+        <search class="page-search">
+          <form id="page-search-form">
+            <label class="search-field" data-icon="search">
+              <input id="page-query" name="q" type="search" aria-label="ページ内を検索"
+                aria-controls="page-search-results" autocomplete="off" spellcheck="false" />
+            </label>
+          </form>
+          <div id="page-search-results" hidden>
+            <p id="page-match-count" class="fine" role="status"></p>
+            <div id="page-matches"></div>
+          </div>
+        </search>
+        <footer class="save-bar">
+          <div>
+            <strong id="dirty-label">オフライン</strong
+            ><span id="save-hint" class="sr-only"></span>
+          </div>
+          <div class="save-actions">
+            <button
+              id="unlock"
+              class="button icon-button"
+              data-icon="unlock"
+              data-tip="本体のロックを解除"
+              aria-label="本体のロックを解除"
+            ></button
+            ><button
+              id="save"
+              class="button icon-button primary"
+              data-icon="save"
+              data-tip="キーボードに保存"
+              aria-label="キーボードに保存"
+            ></button>
+            <button
+              id="auto-save"
+              class="button icon-button toggle-button"
+              data-icon="autosave"
+              data-tip="オートセーブ：オフ"
+              aria-label="オートセーブ：オフ"
+              aria-pressed="false"
+            ></button>
+          </div>
+          <progress
+            id="progress"
+            max="1"
+            value="0"
+            hidden
+            aria-label="通信進行状況"
+          ></progress>
+        </footer>
+      </div>
     </div>
     <div id="tooltip" role="tooltip" hidden></div>
     <dialog id="confirm-dialog" aria-labelledby="confirm-title">
@@ -752,12 +768,12 @@
       </div>
       <p id="key-capture-status" class="fine" role="status"></p>
       <label for="key-search">名前で検索</label>
-      <input
+      <span class="search-field" data-icon="search"><input
         id="key-search"
-        type="search"
+        type="search" name="key-search" spellcheck="false"
         autocomplete="off"
         placeholder="例: #、Hash、シャープ、Enter、左Alt"
-      />
+      /></span>
       <p id="key-count" role="status"></p>
       <div id="key-options" aria-label="割り当て候補"></div>
     </dialog>

@@ -4,6 +4,9 @@ export const english = typeof location !== "undefined" &&
 const translations = new Map(`
 メジロ式=Mejiro
 機能=Navigation
+サイドバーをたたむ=Collapse sidebar
+サイドバーを開く=Expand sidebar
+ページ内を検索=Search this page
 RMKファームウェア（試験版）=RMK firmware preview
 実機検証向けです。書き込む前に、現在のキーマップと辞書を設定スタジオからJSONに書き出してください。=For hardware testing. Export your current keymap and dictionary as JSON before flashing.
 試験版の設定変更には、RMK対応の試験用スタジオが必要です。=Use the RMK-compatible preview of Studio to edit these firmware settings.

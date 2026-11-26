@@ -1,8 +1,12 @@
-import { english, localizePage, t } from "./locale.js?v=20261126-prism";
+import { english, localizePage, t } from "./locale.js?v=20261126-ime";
+import { initPageSearch } from "./page-search.js";
 import { initInputTest } from "./input-test.js?v=20261126-prism";
 // View navigation and accessible icon controls, independent of device state.
 const paths = {
-  book: '<path d="M12 5v16M3 3h5a4 4 0 0 1 4 2 4 4 0 0 1 4-2h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z"/>',
+  sidebar: '<path d="M4 6 H20 M4 12 H20 M4 18 H20"/>',
+  search: '<path d="M15.5 15.5 21 21 M17.5 10.5 A7 7 0 1 1 3.5 10.5 A7 7 0 1 1 17.5 10.5Z"/>',
+  preview: '<path d="M3 5 H21 V19 H3 Z M11 9 L16 12 L11 15 Z"/>',
+  edit: '<path d="M4 16 L15.5 4.5 Q17 3 18.5 4.5 L19.5 5.5 Q21 7 19.5 8.5 L8 20 L3 21 Z M13.5 6.5 L17.5 10.5"/>',
   reset: '<path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/>',
   image:
     '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/>',
@@ -10,15 +14,12 @@ const paths = {
     '<path d="M20 7a8 8 0 0 0-13-3L4 7m0-5v5h5M4 17a8 8 0 0 0 13 3l3-3m0 5v-5h-5"/><path d="m9 12 2 2 4-4"/>',
   moon: '<path d="M20 15a9 9 0 0 1-11-11 9 9 0 1 0 11 11Z"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1 1m12 12 1 1M5 19l1-1M18 6l1-1"/>',
-  test: '<path d="m4 7 5 5-5 5m8 0h8"/>',
   clear: '<path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7"/>',
   lock: '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4m-4 5v2"/>',
-  keyboard:
-    '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M7 15h10"/>',
-  sliders:
-    '<path d="M4 7h7m4 0h5M4 17h2m4 0h10"/><circle cx="13" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+  keyboard: '<path d="M4 5 H20 Q22 5 22 7 V17 Q22 19 20 19 H4 Q2 19 2 17 V7 Q2 5 4 5 Z M6 10 H7 M11.5 10 H12.5 M17 10 H18 M6 14 H7 M10 14 H14 M17 14 H18"/>',
+  sliders: '<path d="M3 6 H9 M13 6 H21 M3 12 H15 M19 12 H21 M3 18 H6 M10 18 H21 M11 3 V9 M17 9 V15 M8 15 V21"/>',
   chip: '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4m6-4v4M9 18v4m6-4v4M2 9h4m-4 6h4m12-6h4m-4 6h4"/><path d="M10 10h4v4h-4z"/>',
-  help: '<circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4m0 3h.01"/>',
+  help: '<path d="M21 12 A9 9 0 1 1 3 12 A9 9 0 1 1 21 12Z M9 9 A3 3 0 0 1 15 9 C15 11.5 12 11.5 12 14 M12 17 H12.1"/>',
   plug: '<path d="M8 3v5m8-5v5M6 8h12v3a6 6 0 0 1-12 0zm6 9v4"/>',
   close: '<path d="m6 6 12 12M6 18 18 6"/>',
   import: '<path d="M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4"/>',
@@ -27,11 +28,18 @@ const paths = {
   check: '<path d="m5 12 4 4L19 6"/>',
   unlock:
     '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0m-4 9v2"/>',
-  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2Z"/><path d="M7 3v6h10V3M7 21v-8h10v8"/>',
+  save: '<path d="M4 3 H17 L21 7 V21 H3 V3 Z M7 3 V9 H16 V3 M7 21 V13 H17 V21"/>',
   code: '<path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18"/>',
 };
 export function setIcon(element, name, label) {
-  element.querySelector("svg")?.remove();
+  element.querySelector(".icon")?.remove();
+  if (name === "mejiro") {
+    const bird = document.createElement("span");
+    bird.className = "icon mejiro-mark";
+    bird.setAttribute("aria-hidden", "true");
+    element.prepend(bird);
+    return;
+  }
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
   svg.setAttribute("class", "icon");
@@ -59,6 +67,16 @@ const titles = {
   firmware: "ファームウェア",
   guide: "ヘルプ",
 };
+const search = initPageSearch();
+const sidebar = document.querySelector(".sidebar");
+const toggle = document.getElementById("sidebar-toggle");
+toggle.addEventListener("click", () => {
+  const open = toggle.getAttribute("aria-expanded") !== "true";
+  toggle.setAttribute("aria-expanded", String(open));
+  sidebar.classList.toggle("collapsed", !open);
+  setIcon(toggle, "sidebar", open ? "サイドバーをたたむ" : "サイドバーを開く");
+});
+
 function showView() {
   const requested = location.hash.slice(1);
   const view = Object.hasOwn(titles, requested) && !(english && requested === "mejiro")
@@ -75,6 +93,7 @@ function showView() {
     else link.removeAttribute("aria-current");
   }
   document.getElementById("view-title").textContent = t(titles[view]);
+  search.setPanel(document.getElementById(view), t(titles[view]));
   document.title = `${t(titles[view])} · Mejiro31`;
   document.querySelector("main").scrollTop = 0;
   document.querySelector(".save-bar").hidden = ![

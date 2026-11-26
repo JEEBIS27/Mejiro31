@@ -1,6 +1,6 @@
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { english, t } from "./locale.js?v=20261126-prism";
+import { english, t } from "./locale.js?v=20261126-ime";
 import { reverseLookup } from "./reverse.js?v=20261126-lexical";
 import { hasKanji, lookupSpelling } from "./lexical-lookup.js?v=20261126-lexical";
 import { grammarSpans } from "./grammar.js?v=20261126-lexical";
@@ -13,7 +13,7 @@ import {
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
-import { setIcon } from "./ui.js?v=20261126-prism";
+import { setIcon } from "./ui.js?v=20261126-ime";
 import {
   keyChoices,
   searchChoices,
