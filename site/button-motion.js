@@ -7,6 +7,7 @@ export function replaceButtons(container, children) {
     return;
   }
 
+  const duration = Number.parseInt(getComputedStyle(container).getPropertyValue("--motion-feedback"), 10);
   const available = selector => selector.querySelectorAll("button[data-motion-key]:enabled");
   const incoming = document.createDocumentFragment();
   incoming.append(...children);
@@ -37,12 +38,12 @@ export function replaceButtons(container, children) {
       zIndex: "6",
     });
     viewport.append(copy);
-    copy.animate([{ opacity, scale: 1 }, { opacity: 0, scale: .94 }],
-      { duration: 120, easing: "ease-out" }).finished.then(() => copy.remove(), () => copy.remove());
+    copy.animate([{ opacity }, { opacity: 0 }],
+      { duration, easing: "ease-in-out" }).finished.then(() => copy.remove(), () => copy.remove());
   }
   container.replaceChildren(incoming);
   for (const [key, button] of next) {
-    if (!previous.has(key)) button.animate([{ opacity: 0, scale: .94 }, { opacity: 1, scale: 1 }],
-      { duration: 180, easing: "ease-out" });
+    if (!previous.has(key)) button.animate([{ opacity: 0 }, { opacity: 1 }],
+      { duration, easing: "ease-in-out" });
   }
 }

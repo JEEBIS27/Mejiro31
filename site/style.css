@@ -373,24 +373,9 @@ progress {
   box-shadow: 0 8px 28px #0003;
   font-size: 12px;
   line-height: 1.6;
-  animation: notification-enter 180ms ease-out;
-}
-@keyframes notification-enter {
-  from { opacity: 0; transform: translateX(calc(100% + 24px)); }
-  to { opacity: 1; transform: translateX(0); }
-}
-.status.leaving {
-  animation: notification-exit 220ms ease-in forwards;
-}
-@keyframes notification-exit {
-  from { opacity: 1; transform: translateX(0); }
-  to { opacity: 0; transform: translateX(calc(100% + 24px)); }
 }
 @media (max-width: 640px) {
   .status { top: 68px; right: 12px; max-width: calc(100vw - 24px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .status, .status.leaving { animation: none; }
 }
 .status:empty {
   display: none;

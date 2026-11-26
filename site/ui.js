@@ -1,5 +1,5 @@
 import { english, localizePage, t } from "./locale.js?v=20261126-autosave";
-import { initPageSearch } from "./page-search.js?v=20261127-button-motion";
+import { initPageSearch } from "./page-search.js?v=20261127-ime-motion";
 import { initInputTest } from "./input-test.js?v=20261126-motion";
 // View navigation and accessible icon controls, independent of device state.
 const paths = {
@@ -82,17 +82,33 @@ toggle.addEventListener("click", () => {
 
 const rail = document.getElementById("page-navigation");
 const highlight = rail.querySelector(".rail-highlight");
+const railLinks = [...rail.querySelectorAll("a")];
+const narrowRail = matchMedia("(max-width: 820px)");
+for (const link of railLinks) {
+  const ink = document.createElement("span");
+  ink.className = "rail-active-ink";
+  ink.setAttribute("aria-hidden", "true");
+  ink.append(...[...link.childNodes].map(node => node.cloneNode(true)));
+  link.append(ink);
+}
 function positionHighlight() {
   const active = rail.querySelector('[aria-current="page"]');
   if (!active?.offsetWidth) return;
-  highlight.style.width = active.offsetWidth + "px";
-  highlight.style.height = active.offsetHeight + "px";
-  highlight.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop}px)`;
+  const positionOf = link => narrowRail.matches ? link.offsetLeft : link.offsetTop;
+  const position = positionOf(active);
+  for (const link of railLinks) {
+    link.style.setProperty("--row-position", positionOf(link) + "px");
+  }
+  rail.style.setProperty("--link-width", active.offsetWidth + "px");
+  rail.style.setProperty("--link-height", active.offsetHeight + "px");
+  rail.style.setProperty("--rail-lead", position + "px");
+  rail.style.setProperty("--rail-trail", position + "px");
   highlight.hidden = false;
 }
 const railObserver = new ResizeObserver(positionHighlight);
 railObserver.observe(rail);
-for (const link of rail.querySelectorAll("a")) railObserver.observe(link);
+for (const link of railLinks) railObserver.observe(link);
+narrowRail.addEventListener("change", positionHighlight);
 
 function showView() {
   const requested = location.hash.slice(1);
@@ -126,7 +142,9 @@ window.addEventListener("hashchange", showView);
 showView();
 const tooltip = document.getElementById("tooltip");
 let owner;
+let tipTimer;
 function hideTip() {
+  clearTimeout(tipTimer);
   tooltip.hidden = true;
   owner?.removeAttribute("aria-describedby");
   owner = null;
@@ -149,9 +167,16 @@ function showTip(element) {
   tooltip.style.left = `${Math.max(12, Math.min(x, innerWidth - tip.width - 12))}px`;
   tooltip.style.top = `${Math.max(8, y)}px`;
 }
-document.addEventListener("pointerover", (e) =>
-  showTip(e.target.closest("[data-tip]")),
-);
+document.addEventListener("pointerover", event => {
+  const target = event.target.closest("[data-tip]");
+  if (!target || target.contains(event.relatedTarget)) return;
+  hideTip();
+  if (target.closest(".save-actions")) showTip(target);
+  else {
+    owner = target;
+    tipTimer = setTimeout(() => showTip(target), 500);
+  }
+});
 document.addEventListener("pointerout", (e) => {
   if (owner && !owner.contains(e.relatedTarget)) hideTip();
 });

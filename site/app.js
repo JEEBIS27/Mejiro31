@@ -1,4 +1,4 @@
-import { replaceButtons } from "./button-motion.js";
+import { replaceButtons } from "./button-motion.js?v=20261127-ime-motion";
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
 import { english, t } from "./locale.js?v=20261126-autosave";
@@ -14,7 +14,7 @@ import {
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
-import { setIcon } from "./ui.js?v=20261127-button-motion";
+import { setIcon } from "./ui.js?v=20261127-ime-motion";
 import {
   keyChoices,
   searchChoices,
@@ -126,19 +126,14 @@ const layerLabels = [
   "Steno",
 ];
 let statusTimer;
-let statusExitTimer;
 function status(message, type = "") {
   clearTimeout(statusTimer);
-  clearTimeout(statusExitTimer);
   $("status").textContent = message;
   $("status").className = `status ${type}`;
   if (message)
     statusTimer = setTimeout(() => {
-      $("status").classList.add("leaving");
-      statusExitTimer = setTimeout(() => {
-        $("status").textContent = "";
-        $("status").className = "status";
-      }, 220);
+      $("status").textContent = "";
+      $("status").className = "status";
     }, 5000);
 }
 function codeName(code) {
