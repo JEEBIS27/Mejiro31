@@ -447,6 +447,17 @@ progress {
   font-size: 12px;
   color: var(--muted);
 }
+.firmware-preview {
+  display: grid;
+  gap: 12px;
+}
+.firmware-preview .download-actions {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.firmware-preview .download-actions a {
+  color: var(--ink);
+}
 #release-status {
   grid-column: 1/-1;
 }
