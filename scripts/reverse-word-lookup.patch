@@ -1,0 +1,108 @@
+--- a/src/reverse.rs
++++ b/src/reverse.rs
+@@ -95,6 +95,52 @@ pub fn lookup(
+     })
+ }
+-
++
++/// All single-stroke lexical matches, before the UI filters by spelling and verb class.
++pub fn lookup_words(text: &str, rules: &RuleStore) -> Result<ReverseResult, ReverseError> {
++    use crate::ime::{SegmentKind, analyze};
++
++    if text.chars().count() > MAX_CHARS {
++        return Err(ReverseError::InputTooLong);
++    }
++    if text.is_empty() || !text.chars().all(is_hiragana) {
++        return Ok(ReverseResult::default());
++    }
++    let mut state = State::default();
++    state.mode = crate::Mode::Kana;
++    let end = text.chars().count();
++    let all = seeds(text, rules)
++        .into_iter()
++        .filter_map(|(raw, _)| {
++            let result = analyze(&raw, state, false, rules).ok()?;
++            if result.canonical_text.as_str() != text || result.translation.next.pending_sokuon() {
++                return None;
++            }
++            let [span] = result.segments() else {
++                return None;
++            };
++            let kind = match span.kind {
++                SegmentKind::Verb => Kind::Verb,
++                SegmentKind::GeneralAbbreviation => Kind::General,
++                _ => return None,
++            };
++            Some(Candidate {
++                strokes: raw,
++                segments: std::vec![Segment {
++                    start: 0,
++                    end,
++                    kind,
++                    lemma: None
++                }],
++                stroke_count: 1,
++            })
++        })
++        .collect();
++    Ok(ReverseResult {
++        all,
++        ..ReverseResult::default()
++    })
++}
++
+ fn is_hiragana(c: char) -> bool {
+     ('\u{3041}'..='\u{3096}').contains(&c) || matches!(c, 'ー' | '・' | '、' | '。' | '？')
+ }
+--- a/native/src/reverse.rs
++++ b/native/src/reverse.rs
+@@ -83,6 +83,7 @@ pub unsafe extern "C" fn mejiro_reverse_lookup(
+     rule_len: usize,
+     output: *mut u8,
+     capacity: usize,
++    word_only: u8,
+ ) -> i32 {
+     if input.is_null()
+         || output.is_null()
+@@ -162,7 +163,12 @@ pub unsafe extern "C" fn mejiro_reverse_lookup(
+             return -1;
+         }
+     }
+-    let result = match reverse::lookup(text, &spans, &overlay) {
++    let lookup = if word_only == 1 {
++        reverse::lookup_words(text, &overlay)
++    } else {
++        reverse::lookup(text, &spans, &overlay)
++    };
++    let result = match lookup {
+         Ok(value) => value,
+         Err(reverse::ReverseError::InputTooLong) => return -3,
+         Err(reverse::ReverseError::SearchLimit) => return -4,
+@@ -195,7 +201,26 @@ pub unsafe extern "C" fn mejiro_reverse_lookup(
+                     escape_json(segment.lemma.as_deref().unwrap_or(""))
+                 ));
+             }
+-            json.push_str("]}");
++            json.push(']');
++            // Forward analysis is authoritative for generated verbs as well as
++            // registered abbreviations. The reverse search's category is a heuristic.
++            if entry.stroke_count == 1 {
++                use mejiro_engine::ime::analyze;
++                let mut state = mejiro_engine::State::default();
++                state.mode = mejiro_engine::Mode::Kana;
++                if let Ok(result) = analyze(&entry.strokes, state, false, &overlay)
++                    && result.canonical_text.as_str() == text
++                    && let [span] = result.segments()
++                    && let Some(verb) = span.verb
++                    && let Some(class) = verb.class
++                {
++                    json.push_str(&format!(
++                        ",\"verb_class\":\"{class:?}\",\"verb_form\":{}",
++                        verb.form
++                    ));
++                }
++            }
++            json.push('}');
+         }
+     }
+     json.push_str(&format!("],\"truncated\":{}}}", result.truncated));

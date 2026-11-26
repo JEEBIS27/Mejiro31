@@ -1,13 +1,15 @@
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
 import { english, t } from "./locale.js?v=20261126-prism";
-import { reverseLookup } from "./reverse.js";
-import { grammarSpans } from "./grammar.js";
+import { reverseLookup } from "./reverse.js?v=20261126-lexical";
+import { hasKanji, lookupSpelling } from "./lexical-lookup.js?v=20261126-lexical";
+import { grammarSpans } from "./grammar.js?v=20261126-lexical";
 import { captureKey, isModifierEvent } from "./key-capture.js";
 import {
+  dictionaryReading,
   ruleNames,
   searchDictionary,
-} from "./dictionary.js?v=20261106-verbsearch1";
+} from "./dictionary.js?v=20261126-lexical";
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
@@ -405,6 +407,7 @@ $("reset-settings").onclick = async () => {
   touch();
 };
 let reverseRuleSnapshot = null;
+let reverseSearchId = 0;
 const reverseLabels = ["基本入力", "助詞", "動詞", "一般略語", "ユーザー略語", "マイナー母音・例外かな"];
 function showReverseGroup(title, candidates) {
   const section = document.createElement("section");
@@ -426,7 +429,10 @@ function showReverseGroup(title, candidates) {
     stroke.textContent = candidate.strokes;
     const types = document.createElement("small");
     types.className = "fine";
-    types.textContent = candidate.segments.map(([, , kind]) => reverseLabels[kind]).join(" / ");
+    types.textContent = [
+      candidate.reading,
+      candidate.verb_class ? "動詞" : candidate.segments.map(([, , kind]) => reverseLabels[kind]).join(" / "),
+    ].filter(Boolean).join(" · ");
     row.append(stroke, types);
     return row;
   };
@@ -442,16 +448,31 @@ function showReverseGroup(title, candidates) {
 }
 $("reverse-form").onsubmit = async (event) => {
   event.preventDefault();
-  const query = $("reverse-query").value.trim();
+  const query = $("reverse-query").value.trim().normalize("NFKC");
+  const searchId = ++reverseSearchId;
+  const rules = state.rules;
+  const current = () => searchId === reverseSearchId && JSON.stringify(rules) === JSON.stringify(state.rules);
   const status = $("reverse-status");
   const results = $("reverse-results");
   results.replaceChildren();
-  if (!query || !/^[\u3041-\u3096ー・、。？]+$/u.test(query)) {
-    status.textContent = "ひらがなを入力してください。";
+  const spelling = hasKanji(query);
+  if (!query || [...query].length > 32 || (!spelling && !/^[\u3041-\u3096ー・、。？]+$/u.test(query))) {
+    status.textContent = "ひらがなの読み、または漢字の語を32文字以内で入力してください。";
     return;
   }
   status.textContent = "逆引き中…";
+  reverseRuleSnapshot = JSON.stringify(rules);
   try {
+    if (spelling) {
+      const candidates = await lookupSpelling(query, rules);
+      if (!current()) return;
+      reverseRuleSnapshot = JSON.stringify(rules);
+      status.textContent = candidates.length
+        ? `${query}の表記に対応する候補です。`
+        : "この表記に対応する一般略語や動詞のストロークがありません。";
+      results.replaceChildren(showReverseGroup("表記が一致する候補", candidates));
+      return;
+    }
     const started = performance.now();
     const useGrammar = $("reverse-grammar").value === "on";
     let grammar = [];
@@ -466,10 +487,12 @@ $("reverse-form").onsubmit = async (event) => {
         grammarFailure = error.message;
       }
     }
+    if (!current()) return;
     const grammarMs = performance.now() - started;
     status.textContent = "ストロークを探索中…";
     await new Promise((resolve) => setTimeout(resolve, 0));
-    const found = await reverseLookup(query, grammar, state.rules);
+    const found = await reverseLookup(query, grammar, rules);
+    if (!current()) return;
     const engineMs = performance.now() - started - grammarMs;
     reverseRuleSnapshot = JSON.stringify(state.rules);
     const note = found.all.length || found.basic_and_particle.length
@@ -486,6 +509,7 @@ $("reverse-form").onsubmit = async (event) => {
       showReverseGroup("基本入力と助詞のみ", found.basic_and_particle),
     );
   } catch (error) {
+    if (!current()) return;
     status.textContent = `逆引きに失敗しました: ${error.message}`;
   }
 };
@@ -511,47 +535,108 @@ function editRule(rule) {
   updateRuleFields();
   $("rule-key").focus();
 }
+let spellingSearch = null;
+function dictionaryResult({ title, description, rule }) {
+  const row = document.createElement("div");
+  row.className = "rule-item dictionary-result";
+  const label = document.createElement("strong");
+  label.textContent = title;
+  const value = document.createElement("span");
+  value.textContent = description;
+  row.append(label, value);
+  if (rule) {
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "button";
+    edit.textContent = "編集";
+    edit.disabled = state.busy;
+    edit.onclick = () => editRule(rule);
+    row.append(edit);
+  }
+  return row;
+}
+function showDictionary(entries, error = dictionaryError) {
+  $("dictionary-count").textContent = error ||
+    `${entries.length} 件（${Math.min(dictionaryLimit, entries.length)} 件表示）`;
+  $("dictionary-results").replaceChildren(
+    ...entries.slice(0, dictionaryLimit).map(dictionaryResult),
+  );
+  $("dictionary-more").hidden = entries.length <= dictionaryLimit;
+}
 function renderDictionary() {
-  if (!$("dictionary-search").value.trim()) {
+  const query = $("dictionary-search").value.trim().normalize("NFKC");
+  const kind = $("dictionary-kind").value;
+  if (!query) {
+    spellingSearch = null;
     $("dictionary-results").replaceChildren();
     $("dictionary-count").textContent = "";
     $("dictionary-more").hidden = true;
     return;
   }
-  const results = searchDictionary(
-    dictionary,
-    state.rules,
-    $("dictionary-search").value,
-    $("dictionary-kind").value,
-  );
-  $("dictionary-count").textContent =
-    dictionaryError ||
-    `${results.length} 件（${Math.min(dictionaryLimit, results.length)} 件表示）`;
-  $("dictionary-results").replaceChildren(
-    ...results.slice(0, dictionaryLimit).map((rule) => {
-      const row = document.createElement("div");
-      row.className = "rule-item dictionary-result";
-      const title = document.createElement("strong");
-      title.textContent = `${ruleNames[rule.kind]} · ${rule.key || "（空）"}`;
-      const value = document.createElement("span");
-      value.textContent = `${rule.hidden ? "無効" : rule.value || "（空文字）"}${rule.row ? ` · ${rule.row}行（語幹）` : ""} · ${rule.custom ? "ユーザー設定" : "標準"}`;
-      const edit = document.createElement("button");
-      edit.type = "button";
-      edit.className = "button";
-      edit.textContent = "編集";
-      edit.disabled = state.busy;
-      edit.onclick = () => editRule(rule);
-      row.append(title, value, edit);
-      return row;
-    }),
-  );
-  $("dictionary-more").hidden = results.length <= dictionaryLimit;
+  if (!ruleNames.includes(query) && kind !== "0" && hasKanji(query) && /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}々ー]+$/u.test(query)) {
+    const rules = state.rules;
+    const key = JSON.stringify([query, rules]);
+    if (spellingSearch?.key !== key) {
+      const search = { key };
+      spellingSearch = search;
+      setTimeout(async () => {
+        if (spellingSearch !== search) return;
+        try {
+          search.candidates = [...query].length <= 32 ? await lookupSpelling(query, rules) : [];
+        } catch (error) {
+          search.error = error.message;
+          search.candidates = [];
+        }
+        if (spellingSearch === search) renderDictionary();
+      }, 180);
+    }
+    if (!spellingSearch.candidates) {
+      showDictionary([], "表記を照合中…");
+      return;
+    }
+    const candidates = spellingSearch.candidates;
+    const literalEntries = kind === ""
+      ? searchDictionary(dictionary, rules, query, "0").map(editableDictionaryResult) : [];
+    // The actual stroke can be a generated verb or a combination of rules.
+    const editable = searchDictionary(dictionary, rules);
+    const entries = candidates.flatMap((candidate) => {
+      const [left, right] = candidate.strokes.split("-");
+      const ids = candidate.verb_class ? [[4, candidate.strokes.replace(/\*$/, "")]] : [
+        [1, candidate.strokes], [2, left], [3, right?.replace(/\*$/, "")],
+      ];
+      const related = editable.filter((rule) =>
+        !rule.hidden && ids.some(([type, code]) => rule.kind === type && rule.key === code) &&
+        dictionaryReading(rule) === candidate.reading);
+      const rule = related.find((item) => kind === "" || item.kind === Number(kind));
+      if (kind !== "" && Number(kind) !== (candidate.verb_class ? 4 : -1) && !rule) return [];
+      return [{
+        title: `${candidate.verb_class ? "動詞" : "一般略語"} · ${candidate.strokes}`,
+        description: `${query}（${candidate.reading}）`,
+        rule,
+      }];
+    });
+    showDictionary([...entries, ...literalEntries], spellingSearch.error ?? "");
+    return;
+  }
+  spellingSearch = null;
+  const entries = searchDictionary(dictionary, state.rules, query, kind);
+  showDictionary(entries.map(editableDictionaryResult));
+}
+function editableDictionaryResult(rule) {
+  return {
+    rule,
+    title: `${ruleNames[rule.kind]} · ${rule.key || "（空）"}`,
+    description: `${rule.hidden ? "無効" : dictionaryReading(rule) || "（空文字）"}${rule.row ? ` · ${rule.row}行` : ""} · ${rule.custom ? "ユーザー設定" : "標準"}`,
+  };
+}
+function updateDictionarySearch(event) {
+  if (event.isComposing) return;
+  dictionaryLimit = 100;
+  renderDictionary();
 }
 for (const id of ["dictionary-search", "dictionary-kind"])
-  $(id).addEventListener("input", () => {
-    dictionaryLimit = 100;
-    renderDictionary();
-  });
+  $(id).addEventListener("input", updateDictionarySearch);
+$("dictionary-search").addEventListener("compositionend", updateDictionarySearch);
 $("dictionary-more").onclick = () => {
   dictionaryLimit += 100;
   renderDictionary();

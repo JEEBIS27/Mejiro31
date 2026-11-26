@@ -17,20 +17,20 @@ function stopWorker(error) {
 
 function parserWorker() {
   if (worker) return worker;
-  worker = new Worker(new URL("./grammar-worker.js", import.meta.url), { type: "module" });
+  worker = new Worker(new URL("./grammar-worker.js?v=20261126-lexical", import.meta.url), { type: "module" });
   worker.onmessage = ({ data }) => {
     const request = pending.get(data.id);
     if (!request) return;
     pending.delete(data.id);
     clearTimeout(request.timer);
     if (data.error) request.reject(Error(data.error));
-    else request.resolve(data.spans);
+    else request.resolve(request.word ? data.token : data.spans);
   };
   worker.onerror = () => stopWorker(Error("文法解析器を読み込めません。"));
   return worker;
 }
 
-export function grammarSpans(text, timeoutMs = GRAMMAR_TIMEOUT_MS) {
+function parse(text, timeoutMs, word) {
   return new Promise((resolve, reject) => {
     let parser;
     try {
@@ -44,14 +44,22 @@ export function grammarSpans(text, timeoutMs = GRAMMAR_TIMEOUT_MS) {
       () => stopWorker(Error("文法解析が時間内に完了しませんでした。")),
       timeoutMs,
     );
-    pending.set(id, { resolve, reject, timer });
+    pending.set(id, { resolve, reject, timer, word });
     try {
-      parser.postMessage({ id, text });
+      parser.postMessage({ id, text, word });
     } catch (error) {
       stopWorker(error);
     }
   });
 }
+export function grammarSpans(text, timeoutMs = GRAMMAR_TIMEOUT_MS) {
+  return parse(text, timeoutMs, false);
+}
+
+export function wordToken(text) {
+  return parse(text, GRAMMAR_TIMEOUT_MS, true);
+}
+
 export function spansFromTokens(tokens) {
   const spans = [];
   let offset = 0;

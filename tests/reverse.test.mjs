@@ -6,7 +6,7 @@ import { reverseLookup } from "../site/reverse.js";
 
 const wasm = readFileSync(new URL("../site/engine/mejiro_native.wasm", import.meta.url));
 globalThis.fetch = async (url) => {
-  if (url !== "./engine/mejiro_native.wasm") throw Error(`Unexpected URL: ${url}`);
+  if (!url.startsWith("./engine/mejiro_native.wasm")) throw Error(`Unexpected URL: ${url}`);
   return new Response(wasm, { status: 200 });
 };
 
@@ -64,4 +64,42 @@ test("edited rules are used by reverse lookup", async () => {
   assert.ok(result.all.some((item) => item.strokes === "KA-"));
   const masked = await reverseLookup("か", [], [rule]);
   assert.ok(!masked.all.some((item) => item.strokes === "KA-"));
+});
+
+test("dictionary-form verbs come before same-reading inflections", async () => {
+  const result = await reverseLookup("かえる");
+  assert.deepEqual(result.all.slice(0, 2).map(entry => entry.strokes), ["KA-IA*", "KA-SKIA*"]);
+  assert.ok(result.all.some(entry => entry.verb_class === "GodanW" && entry.verb_form === 9));
+});
+
+test("written verbs select the matching conjugation rather than all homophones", async () => {
+  const { lookupSpelling } = await import("../site/lexical-lookup.js");
+  const cases = [
+    ["変える", "一段", ["KA-SKIA*"]],
+    ["帰る", "五段・ラ行", ["KA-IA*"]],
+  ];
+  for (const [spelling, type, expected] of cases) {
+    const tokenize = async () => ({
+      basic_form: spelling, reading: "カエル", conjugated_type: type, pos: "動詞",
+    });
+    const matches = await lookupSpelling(spelling, [], reverseLookup, tokenize);
+    assert.deepEqual(matches.map(entry => entry.strokes), expected);
+  }
+});
+
+test("general-abbreviation spelling restrictions distinguish 感じ and 漢字", async () => {
+  const { lookupSpelling } = await import("../site/lexical-lookup.js");
+  const tokenize = async () => ({ basic_form: "漢字", reading: "カンジ", pos: "名詞" });
+  const matches = await lookupSpelling("感じ", [], reverseLookup, tokenize);
+  assert.ok(matches.some(entry => entry.strokes === "K-SN"));
+  assert.ok(matches.every(entry => entry.segments[0][2] === 3));
+  assert.deepEqual(await lookupSpelling("漢字", [], reverseLookup, tokenize), []);
+});
+
+test("dictionary search prefers the complete dictionary-form reading", async () => {
+  const { searchDictionary, dictionaryReading } = await import("../site/dictionary.js");
+  const rows = JSON.parse(readFileSync(new URL("../site/dictionary.json", import.meta.url))).entries;
+  const first = searchDictionary(rows, [], "かえる")[0];
+  assert.equal(first.key, "KA-IA");
+  assert.equal(dictionaryReading(first), "かえる");
 });

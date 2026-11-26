@@ -2,7 +2,7 @@ import { encodeRule } from "./rules.js";
 
 let enginePromise;
 async function engine() {
-  enginePromise ||= fetch("./engine/mejiro_native.wasm")
+  enginePromise ||= fetch("./engine/mejiro_native.wasm?v=20261126-lexical")
     .then((response) => {
       if (!response.ok) throw Error("逆引きエンジンを読み込めません。");
       return response.arrayBuffer();
@@ -12,7 +12,7 @@ async function engine() {
   return enginePromise;
 }
 
-export async function reverseLookup(text, grammar = [], rules = []) {
+export async function reverseLookup(text, grammar = [], rules = [], { wordOnly = false } = {}) {
   const wasm = await engine();
   const input = new TextEncoder().encode(text);
   if (!input.length || input.length > 512) return { all: [], basic_and_particle: [] };
@@ -49,11 +49,22 @@ export async function reverseLookup(text, grammar = [], rules = []) {
     allocations.push([outputPtr, outputCapacity]);
     const size = wasm.mejiro_reverse_lookup(
       inputPtr, input.length, grammarPtr, grammar.length,
-      rulesPtr, rules.length, outputPtr, outputCapacity,
+      rulesPtr, rules.length, outputPtr, outputCapacity, Number(wordOnly),
     );
     if (size < 0) throw Error(`逆引きに失敗しました（${size}）。`);
     const body = new Uint8Array(wasm.memory.buffer, outputPtr, size);
-    return JSON.parse(new TextDecoder().decode(body));
+    const result = JSON.parse(new TextDecoder().decode(body));
+    const exactWord = grammar.length === 0 ||
+      (grammar.length === 1 && grammar[0].kind === 2 &&
+       grammar[0].start === 0 && grammar[0].end === [...text].length);
+    if (!wordOnly && exactWord && result.all.some((candidate) => candidate.verb_form === 5)) {
+      // Exact one-stroke dictionary forms precede homophonous inflections.
+      const rank = ({ stroke_count, verb_form }) => stroke_count === 1 && verb_form !== undefined
+        ? verb_form === 5 ? 0 : 2
+        : 1;
+      result.all.sort((a, b) => rank(a) - rank(b));
+    }
+    return result;
   } finally {
     for (const [ptr, capacity] of allocations) wasm.mejiro_reverse_free(ptr, capacity);
   }
