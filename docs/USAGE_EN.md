@@ -1,8 +1,8 @@
 # Using Mejiro31
 
-[Start page](../README.md) / [日本語](USAGE.md)
+[Start page](../README_EN.md) / [日本語](USAGE.md)
 
-This guide explains ordinary typing and steno. See the [firmware guide](FIRMWARE.md#english) for building, flashing, initialization and layout configuration.
+This guide explains typing and steno. For firmware updates and key assignments, see the [Configurator guide](CONFIGURATOR_EN.md).
 
 ## Keyboard input and two-row compression
 
@@ -95,6 +95,6 @@ Plover Mejiro records steno output, but does not record normal keyboard input.
 
 The firmware uses six Tap/Hold pairs, twelve maps in total, and editable virtual positions for combo results.
 
-VIA Raw HID is available, but the editor needs a definition matching the twelve maps and virtual positions. A dedicated Vial UI has not been implemented. Use the [source customization guide](FIRMWARE.md#english) for now.
+Use the [Configurator](https://jeebis27.github.io/Mejiro31/) to edit Tap, Hold, and the output of two-key combinations.
 
-[Back to start](../README.md)
+[Back to start](../README_EN.md)
