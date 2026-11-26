@@ -426,6 +426,12 @@ progress {
 .checkbox-label input {
   accent-color: var(--green);
 }
+.setting-with-help {
+  grid-column: 1 / -1;
+}
+.setting-with-help p {
+  margin: 6px 0 0;
+}
 .download-options {
   display: grid;
   grid-template-columns: 1fr 1fr;

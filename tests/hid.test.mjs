@@ -89,6 +89,38 @@ class Device extends EventTarget {
           },
         );
       }
+      if (b[1] === 1 && this.immediateSokuon !== undefined) {
+        if (b[2] === 4) {
+          assert.equal(b[26], 0);
+          if (this.locked) b[3] = 1;
+          else if (b[27] > 1) b[3] = 2;
+          else if (!this.dropSokuonSave) this.immediateSokuon = !!b[27];
+        }
+        b[26] = 1;
+        b[27] = b[2] === 4 && this.dropSokuonSave
+          ? b[27]
+          : Number(this.immediateSokuon);
+      }
+      if (b[1] === 1 && this.autoImeSwitch !== undefined) {
+        if (b[2] === 5) {
+          assert.equal(b[28], 0);
+          if (this.locked) b[3] = 1;
+          else if (b[29] > 1) b[3] = 2;
+          else if (!this.dropImeSave) this.autoImeSwitch = !!b[29];
+        }
+        b[28] = 1;
+        if (b[2] !== 5 || !this.dropImeSave) b[29] = Number(this.autoImeSwitch);
+      }
+      if (b[1] === 1 && this.outputOptions !== undefined) {
+        if (b[2] === 6) {
+          assert.equal(b[30], 0);
+          if (this.locked) b[3] = 1;
+          else if (b[31] > 7) b[3] = 2;
+          else if (!this.dropOutputSave) this.outputOptions = b[31];
+        }
+        b[30] = 1;
+        if (b[2] !== 6 || !this.dropOutputSave) b[31] = this.outputOptions;
+      }
       if (b[1] === 1 && b[2] === 2) {
         if (this.locked) b[3] = 1;
         else this.settings.firstUp = !!b[18];
@@ -379,5 +411,125 @@ test("dictionary capacity follows firmware while preserving older 24-entry devic
   await client.readRules();
   await assert.rejects(client.saveRules([], rules), /24件/);
   assert.equal(device.rules.length, 0);
+  await client.close();
+});
+
+test("immediate sokuon is opt-in, locked writes fail, and save verifies both directions", async () => {
+  const device = new Device();
+  device.immediateSokuon = false;
+  const client = new MejiroHID(device, data);
+  const initial = await client.identify();
+  assert.equal(client.immediateSokuonSupported, true);
+  assert.equal(initial.immediateSokuon, false);
+  await assert.rejects(client.setImmediateSokuon(true), /ロック/);
+  device.locked = false;
+  const keymap = data.defaults.jp;
+  const wanted = { ...initial, immediateSokuon: true };
+  assert.equal((await client.save(keymap, keymap, wanted)).settings.immediateSokuon, true);
+  assert.equal((await client.settings()).immediateSokuon, true);
+  assert.equal((await client.save(keymap, keymap, initial)).settings.immediateSokuon, false);
+  assert.deepEqual(
+    device.sent.filter((b) => b[0] === 0xfa && b[1] === 1 && b[2] === 4)
+      .map((b) => b[27]),
+    [1, 1, 0],
+  );
+  device.dropSokuonSave = true;
+  await assert.rejects(client.save(keymap, keymap, wanted), /保存結果が一致しません/);
+  await client.close();
+});
+
+test("old firmware can save other changes but cannot receive immediate sokuon writes", async () => {
+  const device = new Device();
+  const client = new MejiroHID(device, data);
+  device.locked = false;
+  const initial = await client.identify();
+  assert.equal(client.immediateSokuonSupported, false);
+  const keymap = data.defaults.jp;
+  const changed = clone(keymap);
+  changed[0][1] = 6;
+  await assert.rejects(client.save(keymap, changed, { ...initial, immediateSokuon: true }), /対応ファームウェア/);
+  assert.equal(device.sent.some(b => b[0] === 5), false);
+  const saved = await client.save(keymap, changed, { ...initial, immediateSokuon: false });
+  assert.deepEqual(saved.keymap, changed);
+  assert.equal(device.sent.some(b => b[0] === 0xfa && b[1] === 1 && b[2] === 4), false);
+  await client.close();
+});
+
+test("automatic IME switch persists both ways, verifies readback and does not change with older backups", async () => {
+  const device = new Device();
+  device.autoImeSwitch = true;
+  const client = new MejiroHID(device, data);
+  const initial = await client.identify();
+  assert.equal(client.autoImeSwitchSupported, true);
+  assert.equal(initial.autoImeSwitch, true);
+  await assert.rejects(client.setAutoImeSwitch(false), /ロック/);
+  device.locked = false;
+  const keymap = data.defaults.jp;
+  const disabled = { ...initial, autoImeSwitch: false };
+  assert.equal((await client.save(keymap, keymap, disabled)).settings.autoImeSwitch, false);
+  const { autoImeSwitch: _omitted, ...legacy } = initial;
+  assert.equal((await client.save(keymap, keymap, legacy)).settings.autoImeSwitch, false);
+  assert.equal((await client.save(keymap, keymap, initial)).settings.autoImeSwitch, true);
+  assert.deepEqual(device.sent.filter(b => b[0] === 0xfa && b[1] === 1 && b[2] === 5)
+    .map(b => b[29]), [0, 0, 1]);
+  device.dropImeSave = true;
+  await assert.rejects(client.save(keymap, keymap, disabled), /保存結果が一致しません/);
+  await client.close();
+});
+
+test("old firmware rejects unsupported IME switch changes before writing other settings", async () => {
+  const device = new Device();
+  const client = new MejiroHID(device, data);
+  device.locked = false;
+  const initial = await client.identify();
+  assert.equal(client.autoImeSwitchSupported, false);
+  const keymap = data.defaults.jp;
+  const changed = clone(keymap);
+  changed[0][1] = 6;
+  await assert.rejects(client.save(keymap, changed, { ...initial, autoImeSwitch: false }), /対応ファームウェア/);
+  assert.equal(device.sent.some(b => b[0] === 5), false);
+  assert.deepEqual((await client.save(keymap, changed, { ...initial, autoImeSwitch: true })).keymap, changed);
+  assert.equal(device.sent.some(b => b[0] === 0xfa && b[1] === 1 && b[2] === 5), false);
+  await client.close();
+});
+
+test("output mode and spacing save independently and legacy backups preserve both", async () => {
+  const device = new Device();
+  device.outputOptions = 0;
+  device.immediateSokuon = true;
+  device.autoImeSwitch = false;
+  const client = new MejiroHID(device, data);
+  const initial = await client.identify();
+  assert.equal(client.outputSupported, true);
+  assert.equal(initial.outputMode, "romaji");
+  assert.equal(initial.outputGap, 0);
+  await assert.rejects(client.setOutput(7), /ロック/);
+  device.locked = false;
+  const keymap = data.defaults.jp;
+  const wanted = { ...initial, outputMode: "jis-kana", outputGap: 10 };
+  assert.deepEqual((await client.save(keymap, keymap, wanted)).settings, wanted);
+  const { outputMode, outputGap, ...legacy } = initial;
+  assert.deepEqual((await client.save(keymap, keymap, legacy)).settings, wanted);
+  assert.deepEqual((await client.save(keymap, keymap, { ...legacy, outputGap: 2 })).settings,
+    { ...wanted, outputGap: 2 });
+  assert.deepEqual((await client.save(keymap, keymap, initial)).settings, initial);
+  device.dropOutputSave = true;
+  await assert.rejects(client.save(keymap, keymap, wanted), /保存結果が一致しません/);
+  await client.close();
+});
+test("old firmware refuses non-default output settings before other writes", async () => {
+  const device = new Device();
+  device.locked = false;
+  const client = new MejiroHID(device, data);
+  const initial = await client.identify();
+  assert.equal(client.outputSupported, false);
+  const keymap = data.defaults.jp;
+  const changed = clone(keymap);
+  changed[0][1] = 6;
+  for (const settings of [{ outputMode: "jis-kana" }, { outputGap: 2 }])
+    await assert.rejects(client.save(keymap, changed, { ...initial, ...settings }), /対応ファームウェア/);
+  assert.equal(device.sent.some(b => b[0] === 5), false);
+  assert.deepEqual((await client.save(keymap, changed, { ...initial, outputMode: "romaji", outputGap: 0 })).keymap, changed);
+  assert.equal(device.sent.some(b => b[0] === 250 && b[1] === 1 && b[2] === 6), false);
   await client.close();
 });

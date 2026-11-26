@@ -185,3 +185,35 @@ test("thumb combos use new storage without changing old extension addresses", ()
   assert.equal(migrated.version,4);
   assert.ok(migrated.keymap.every(layer=>layer.length===58 && layer.slice(54).every(code=>code===0)));
 });
+
+test("immediate sokuon is saved in backups and must be a boolean when present", () => {
+  const backup = makeBackup("jp", { flags: 6, en: 0, jp: 0, immediateSokuon: true }, data.defaults.jp);
+  assert.equal(validateBackup(backup, data).settings.immediateSokuon, true);
+  backup.settings.immediateSokuon = 1;
+  assert.throws(() => validateBackup(backup, data), /設定値/);
+  delete backup.settings.immediateSokuon;
+  assert.equal(validateBackup(backup, data).settings.immediateSokuon, undefined);
+});
+
+test("the optional automatic IME switch field round-trips as a boolean", () => {
+  const backup = makeBackup("jp", { flags: 6, en: 0, jp: 0, autoImeSwitch: false }, data.defaults.jp);
+  assert.equal(validateBackup(backup, data).settings.autoImeSwitch, false);
+  backup.settings.autoImeSwitch = 0;
+  assert.throws(() => validateBackup(backup, data));
+  delete backup.settings.autoImeSwitch;
+  assert.equal(validateBackup(backup, data).settings.autoImeSwitch, undefined);
+});
+
+test("output settings survive backup, with only named modes and supported spacings", () => {
+  const backup = makeBackup("jp", { flags: 6, en: 0, jp: 0, outputMode: "jis-kana", outputGap: 10 }, data.defaults.jp);
+  assert.equal(validateBackup(backup, data).settings.outputMode, "jis-kana");
+  assert.equal(validateBackup(backup, data).settings.outputGap, 10);
+  backup.settings.outputGap = 20;
+  assert.throws(() => validateBackup(backup, data));
+  backup.settings.outputGap = 5;
+  backup.settings.outputMode = "kana";
+  assert.throws(() => validateBackup(backup, data));
+  delete backup.settings.outputMode;
+  delete backup.settings.outputGap;
+  assert.equal(validateBackup(backup, data).settings.outputMode, undefined);
+});

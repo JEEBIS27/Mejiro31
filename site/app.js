@@ -23,8 +23,8 @@ import {
   selectRelease,
   selectBundledFirmware,
   supportedCode,
-} from "./model.js?v=20261031-cap96";
-import { connectKeyboard } from "./hid.js?v=20261031-cap96";
+} from "./model.js?v=20261125-output1";
+import { connectKeyboard } from "./hid.js?v=20261125-output1";
 import { ruleId, validateRules } from "./rules.js?v=20261031-cap96";
 import {
   boardKeys,
@@ -49,6 +49,10 @@ const state = {
     en: 0,
     jp: 0,
     firstUp: true,
+    immediateSokuon: false,
+    autoImeSwitch: true,
+    outputMode: "romaji",
+    outputGap: 0,
     timing: { ...DEFAULT_TIMING },
   },
   rules: [],
@@ -339,6 +343,13 @@ function isDirty() {
             (state.baseline.settings.timing || DEFAULT_TIMING)[key] !==
             (state.settings.timing || DEFAULT_TIMING)[key],
         ) ||
+        (state.baseline.settings.outputMode ?? "romaji") !==
+          (state.settings.outputMode ?? "romaji") ||
+        (state.baseline.settings.outputGap ?? 0) !== (state.settings.outputGap ?? 0) ||
+        (state.baseline.settings.autoImeSwitch ?? true) !==
+          (state.settings.autoImeSwitch ?? true) ||
+        (state.baseline.settings.immediateSokuon ?? false) !==
+          (state.settings.immediateSokuon ?? false) ||
         JSON.stringify(state.baseline.rules) !== JSON.stringify(state.rules) ||
         ["flags", "en", "jp", "firstUp"].some(
           (key) => state.baseline.settings[key] !== state.settings[key],
@@ -367,6 +378,10 @@ $("reset-settings").onclick = async () => {
     en: 0,
     jp: 0,
     firstUp: true,
+    immediateSokuon: false,
+    autoImeSwitch: true,
+    outputMode: "romaji",
+    outputGap: 0,
     timing: { ...DEFAULT_TIMING },
   };
   state.rules = [];
@@ -770,6 +785,22 @@ function render() {
   $("alt-enabled").checked = !!(state.settings.flags & 2);
   $("mejiro-enabled").checked = !!(state.settings.flags & 4);
   $("first-up").checked = state.settings.firstUp;
+  const oldOutputFirmware = !!state.client && !state.client.outputSupported;
+  $("output-mode").value = state.settings.outputMode ?? "romaji";
+  $("output-gap").value = state.settings.outputGap ?? 0;
+  for (const id of ["output-mode", "output-gap"])
+    $(id).disabled = state.busy || oldOutputFirmware;
+  $("output-support").hidden = !oldOutputFirmware;
+  $("output-kana-help").hidden = state.settings.outputMode !== "jis-kana";
+  const oldImeSwitchFirmware = !!state.client && !state.client.autoImeSwitchSupported;
+  $("auto-ime-switch").checked = state.settings.autoImeSwitch ?? true;
+  $("auto-ime-switch").disabled = state.busy || oldImeSwitchFirmware;
+  $("auto-ime-switch-support").hidden = !oldImeSwitchFirmware;
+  const oldSokuonFirmware = !!state.client && !state.client.immediateSokuonSupported;
+  $("immediate-sokuon").checked = state.settings.immediateSokuon ?? false;
+  $("immediate-sokuon").disabled =
+    state.busy || oldSokuonFirmware || state.settings.outputMode === "jis-kana";
+  $("immediate-sokuon-support").hidden = !oldSokuonFirmware;
   for (const name of ["combo", "continuation", "hold"]) {
     $("timing-" + name).value = (state.settings.timing || DEFAULT_TIMING)[name];
     updateTimingAppearance(name);
@@ -1050,6 +1081,10 @@ $("edit-profile").onchange = async () => {
     en: 0,
     jp: 0,
     firstUp: true,
+    immediateSokuon: false,
+    autoImeSwitch: true,
+    outputMode: "romaji",
+    outputGap: 0,
     timing: { ...DEFAULT_TIMING },
   };
   state.baseline = null;
@@ -1078,6 +1113,22 @@ for (const id of [
     };
     touch();
   };
+$("output-mode").onchange = () => {
+  state.settings.outputMode = $("output-mode").value;
+  touch();
+};
+$("output-gap").onchange = () => {
+  state.settings.outputGap = Number($("output-gap").value);
+  touch();
+};
+$("auto-ime-switch").onchange = () => {
+  state.settings.autoImeSwitch = $("auto-ime-switch").checked;
+  touch();
+};
+$("immediate-sokuon").onchange = () => {
+  state.settings.immediateSokuon = $("immediate-sokuon").checked;
+  touch();
+};
 for (const name of ["combo", "continuation", "hold"])
   $("timing-" + name).oninput = () => updateTimingAppearance(name);
 for (const name of ["combo", "continuation", "hold"])
@@ -1113,6 +1164,13 @@ $("import-file").onchange = async () => {
       throw Error(
         "接続中のファームウェアと基本プロファイルが違います。対応する言語のファームウェアを使用してください。",
       );
+    if (state.client && !state.client.outputSupported &&
+        (parsed.settings.outputMode === "jis-kana" || parsed.settings.outputGap))
+      throw Error("出力方式や送信間隔を変更するには対応ファームウェアが必要です。");
+    if (state.client && parsed.settings.autoImeSwitch === false && !state.client.autoImeSwitchSupported)
+      throw Error("IMEの自動切り替えをオフにするには対応ファームウェアが必要です。");
+    if (state.client && parsed.settings.immediateSokuon && !state.client.immediateSokuonSupported)
+      throw Error("促音の設定がオンのため、対応ファームウェアが必要です。");
     if (
       isDirty() &&
       !(await confirmAction("現在の編集内容を読み込んだ設定で置き換えますか？"))
@@ -1120,6 +1178,12 @@ $("import-file").onchange = async () => {
       return;
     state.profile = parsed.profile;
     state.settings = parsed.settings;
+    if (state.client?.outputSupported) {
+      state.settings.outputMode ??= state.baseline?.settings.outputMode;
+      state.settings.outputGap ??= state.baseline?.settings.outputGap;
+    }
+    if (state.settings.autoImeSwitch === undefined && state.client?.autoImeSwitchSupported)
+      state.settings.autoImeSwitch = state.baseline?.settings.autoImeSwitch;
     state.keymap = parsed.keymap;
     state.rules = parsed.rules;
     touch();

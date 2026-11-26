@@ -29,6 +29,7 @@ export function validateTiming(timing) {
     );
   return timing;
 }
+export const OUTPUT_GAPS = Object.freeze([0, 2, 5, 10]);
 export function validateSettings(settings, data) {
   if (settings?.timing !== undefined) validateTiming(settings.timing);
   if (
@@ -37,6 +38,13 @@ export function validateSettings(settings, data) {
     settings.flags < 0 ||
     settings.flags > 7 ||
     (settings.firstUp !== undefined && typeof settings.firstUp !== "boolean") ||
+    (settings.outputMode !== undefined &&
+      !["romaji", "jis-kana"].includes(settings.outputMode)) ||
+    (settings.outputGap !== undefined && !OUTPUT_GAPS.includes(settings.outputGap)) ||
+    (settings.autoImeSwitch !== undefined &&
+      typeof settings.autoImeSwitch !== "boolean") ||
+    (settings.immediateSokuon !== undefined &&
+      typeof settings.immediateSokuon !== "boolean") ||
     !["en", "jp"].every(
       (k) =>
         Number.isInteger(settings[k]) &&

@@ -4,11 +4,12 @@ import {
   COLS,
   ROWS,
   STORAGE_LAYERS,
+  OUTPUT_GAPS,
   storageAddress,
   decodeKeymap,
   validateSettings,
   changes,
-} from "./model.js?v=20261031-cap96";
+} from "./model.js?v=20261125-output1";
 import {
   decodeRule,
   encodeRule,
@@ -104,7 +105,12 @@ export class MejiroHID {
     return settings;
   }
   async settings(next) {
-    if (next) validateSettings(next, this.data);
+    if (next) {
+      validateSettings(next, this.data);
+      await this.checkImmediateSokuonSupport(next);
+      await this.checkAutoImeSwitchSupport(next);
+      await this.checkOutputSupport(next);
+    }
     const expectedFirstUp = next?.firstUp ?? true;
     const result = await this.request([
       0xfa,
@@ -132,6 +138,9 @@ export class MejiroHID {
       );
     if (
       result[15] > 1 ||
+      (result[26] === 1 && result[27] > 1) ||
+      (result[28] === 1 && result[29] > 1) ||
+      (result[30] === 1 && result[31] > 7) ||
       result[16] !== STORAGE_LAYERS ||
       result[17] !== this.data.layouts.length
     )
@@ -142,6 +151,29 @@ export class MejiroHID {
       jp: result[14],
       firstUp: !!result[18],
     };
+    this.immediateSokuonSupported = result[26] === 1;
+    if (this.immediateSokuonSupported) {
+      settings.immediateSokuon = !!result[27];
+      const desired = next?.immediateSokuon ?? false;
+      if (next && settings.immediateSokuon !== desired)
+        settings.immediateSokuon = await this.setImmediateSokuon(desired);
+    }
+    this.autoImeSwitchSupported = result[28] === 1;
+    if (this.autoImeSwitchSupported) {
+      settings.autoImeSwitch = !!result[29];
+      if (next?.autoImeSwitch !== undefined && settings.autoImeSwitch !== next.autoImeSwitch)
+        settings.autoImeSwitch = await this.setAutoImeSwitch(next.autoImeSwitch);
+    }
+    this.outputSupported = result[30] === 1;
+    if (this.outputSupported) {
+      let options = result[31];
+      const mode = next?.outputMode ?? (options & 1 ? "jis-kana" : "romaji");
+      const gap = next?.outputGap ?? OUTPUT_GAPS[options >> 1];
+      const desired = Number(mode === "jis-kana") | (OUTPUT_GAPS.indexOf(gap) << 1);
+      if (desired !== options) options = await this.setOutput(desired);
+      settings.outputMode = options & 1 ? "jis-kana" : "romaji";
+      settings.outputGap = OUTPUT_GAPS[options >> 1];
+    }
     if (next && settings.firstUp !== expectedFirstUp) {
       settings = {
         ...settings,
@@ -168,6 +200,75 @@ export class MejiroHID {
     validateSettings(settings, this.data);
     this.profile = result[15] ? "en" : "jp";
     return settings;
+  }
+  async checkOutputSupport(settings) {
+    if (settings.outputMode !== "jis-kana" && !settings.outputGap) return;
+    if (this.outputSupported === undefined) await this.settings();
+    if (!this.outputSupported)
+      fail("出力方式や送信間隔を変更するには対応ファームウェアが必要です。");
+  }
+  async setOutput(options) {
+    if (!Number.isInteger(options) || options < 0 || options > 7)
+      fail("出力設定値が不正です。");
+    const packet = new Uint8Array(32);
+    packet.set([0xfa, 1, 6, 0, ...SIGNATURE]);
+    packet[31] = options;
+    const result = await this.request(packet);
+    if (result[0] !== 0xfa || result[1] !== 1 || result[2] !== 6 ||
+        SIGNATURE.some((v, i) => result[i + 4] !== v))
+      fail("出力設定の応答が一致しません。");
+    if (result[3] === 1) fail("キーボードのロックを解除してください。");
+    if (result[3] !== 0 || result[30] !== 1 || result[31] !== options)
+      fail("出力設定を保存できませんでした。");
+    return result[31];
+  }
+  async checkAutoImeSwitchSupport(settings) {
+    if (settings.autoImeSwitch !== false) return;
+    if (this.autoImeSwitchSupported === undefined) await this.settings();
+    if (!this.autoImeSwitchSupported)
+      fail("IMEの自動切り替えをオフにするには対応ファームウェアが必要です。");
+  }
+  async setAutoImeSwitch(enabled) {
+    if (typeof enabled !== "boolean") fail("IME切り替えの設定値が不正です。");
+    const packet = new Uint8Array(32);
+    packet.set([0xfa, 1, 5, 0, ...SIGNATURE]);
+    packet[29] = Number(enabled);
+    const result = await this.request(packet);
+    if (
+      result[0] !== 0xfa ||
+      result[1] !== 1 ||
+      result[2] !== 5 ||
+      SIGNATURE.some((v, i) => result[i + 4] !== v)
+    )
+      fail("IME切り替え設定の応答が一致しません。");
+    if (result[3] === 1) fail("キーボードのロックを解除してください。");
+    if (result[3] !== 0 || result[28] !== 1 || result[29] !== Number(enabled))
+      fail("IME切り替え設定を保存できませんでした。");
+    return !!result[29];
+  }
+  async checkImmediateSokuonSupport(settings) {
+    if (!settings.immediateSokuon) return;
+    if (this.immediateSokuonSupported === undefined) await this.settings();
+    if (!this.immediateSokuonSupported)
+      fail("この設定を使うには対応ファームウェアを書き込んでください。");
+  }
+  async setImmediateSokuon(enabled) {
+    if (typeof enabled !== "boolean") fail("促音の設定値が不正です。");
+    const packet = new Uint8Array(32);
+    packet.set([0xfa, 1, 4, 0, ...SIGNATURE]);
+    packet[27] = Number(enabled);
+    const result = await this.request(packet);
+    if (
+      result[0] !== 0xfa ||
+      result[1] !== 1 ||
+      result[2] !== 4 ||
+      SIGNATURE.some((v, i) => result[i + 4] !== v)
+    )
+      fail("促音設定の応答が一致しません。");
+    if (result[3] === 1) fail("キーボードのロックを解除してください。");
+    if (result[3] !== 0 || result[26] !== 1 || result[27] !== Number(enabled))
+      fail("促音設定を保存できませんでした。");
+    return !!result[27];
   }
   async setTiming(timing) {
     validateTiming(timing);
@@ -340,6 +441,10 @@ export class MejiroHID {
   async save(before, after, settings, progress = () => {}) {
     if (!(await this.unlockStatus())[0])
       fail("キーボードのロックを解除してください。");
+    validateSettings(settings, this.data);
+    await this.checkImmediateSokuonSupport(settings);
+    await this.checkAutoImeSwitchSupport(settings);
+    await this.checkOutputSupport(settings);
     if (settings.timing) {
       validateTiming(settings.timing);
       if (this.timingSupported === undefined) await this.settings();
@@ -365,10 +470,18 @@ export class MejiroHID {
         fail("書き込みの応答が一致しません。");
       progress(edits.length ? ((i + 1) / edits.length) * 0.5 : 0.5);
     }
-    const actualSettings = await this.settings(settings);
+    await this.settings(settings);
+    const actualSettings = await this.settings();
     const actual = await this.readKeymap((p) => progress(0.5 + p * 0.5));
     if (
       changes(after, actual).length ||
+      (settings.outputMode !== undefined &&
+        (actualSettings.outputMode ?? "romaji") !== settings.outputMode) ||
+      (settings.outputGap !== undefined && (actualSettings.outputGap ?? 0) !== settings.outputGap) ||
+      (settings.autoImeSwitch !== undefined &&
+        (actualSettings.autoImeSwitch ?? true) !== settings.autoImeSwitch) ||
+      (actualSettings.immediateSokuon ?? false) !==
+        (settings.immediateSokuon ?? false) ||
       (settings.timing &&
         ["combo", "continuation", "hold"].some(
           (key) => actualSettings.timing?.[key] !== settings.timing[key],

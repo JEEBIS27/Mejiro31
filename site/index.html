@@ -9,9 +9,9 @@
       content="Mejiro31のキーマップ・入力設定・ファームウェア。"
     />
     <title>Mejiro31</title>
-    <link rel="stylesheet" href="./style.css?v=20261031-cap96" />
+    <link rel="stylesheet" href="./style.css?v=20261125-output1" />
     <script type="module" src="./ui.js?v=20261031-timing1"></script>
-    <script type="module" src="./app.js?v=20261106-verbsearch1"></script>
+    <script type="module" src="./app.js?v=20261125-output1"></script>
   </head>
   <body>
     <header class="topbar">
@@ -376,7 +376,67 @@
                 ><input id="first-up" type="checkbox" checked />First up chords
                 send（最初のキーを離した時点で送信）</label
               >
+              <div class="setting-with-help">
+                <label class="checkbox-label">
+                  <input
+                    id="auto-ime-switch"
+                    type="checkbox"
+                    checked
+                    aria-describedby="auto-ime-switch-help auto-ime-switch-support"
+                  />
+                  モード切替時にPCのIMEも切り替える
+                </label>
+                <p id="auto-ime-switch-help" class="fine">
+                  日本語プロファイルでメジロ式を使うとき、速記モードに入るとIMEをオンにし、戻るとキーボード側の言語に合わせます。Ploverや英語プロファイルでは自動で切り替えません。言語キーを手動で押す操作には影響しません。
+                </p>
+                <p id="auto-ime-switch-support" class="fine" hidden>
+                  この設定を使うには対応ファームウェアを書き込んでください。
+                </p>
+              </div>
+              <div class="setting-with-help">
+                <label class="checkbox-label">
+                  <input
+                    id="immediate-sokuon"
+                    type="checkbox"
+                    aria-describedby="immediate-sokuon-help immediate-sokuon-support"
+                  />
+                  ストローク末尾の「っ」をすぐ入力
+                </label>
+                <p id="immediate-sokuon-help" class="fine">
+                  オンにすると「っ」を次の打鍵に持ち越しません。日本語IMEが
+                  <code>ltsu</code> に対応している必要があります。タイピングサイトではオフを推奨します。
+                </p>
+                <p id="immediate-sokuon-support" class="fine" hidden>
+                  この設定を使うには対応ファームウェアを書き込んでください。
+                </p>
+              </div>
             </div>
+          </div>
+          <div class="settings-card">
+            <h2>メジロ式の出力</h2>
+            <div class="settings-fields">
+              <label for="output-mode">出力方式
+                <select id="output-mode" aria-describedby="output-kana-help output-support">
+                  <option value="romaji">ローマ字</option>
+                  <option value="jis-kana">JISかな</option>
+                </select>
+              </label>
+              <label for="output-gap">キーの送信間隔
+                <select id="output-gap" aria-describedby="output-gap-help output-support">
+                  <option value="0">標準</option>
+                  <option value="2">2 ms</option>
+                  <option value="5">5 ms</option>
+                  <option value="10">10 ms</option>
+                </select>
+                <small id="output-gap-help" class="fine">速記の出力が速すぎて取りこぼす場合は、間隔を長くしてください。</small>
+              </label>
+            </div>
+            <p id="output-kana-help" class="fine" hidden>
+              PC側も日本語（JIS）配列と、かな入力対応のIMEに設定してください。「…」など、かなのキーで直接入力できない記号は送信しません。
+            </p>
+            <p id="output-support" class="fine" hidden>
+              この設定を使うには対応ファームウェアを書き込んでください。
+            </p>
           </div>
           <div class="settings-card rule-card">
             <h2>メジロ式の逆引き</h2>
