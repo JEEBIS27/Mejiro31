@@ -154,8 +154,7 @@ h2 { font-size: 18px; }
 #shortcut-settings .fine { margin-top: 8px; }
 #modifier-fields { margin-top: 14px; }
 
-/* The IME navigation and search dock share 18px glyphs on a 24-unit grid. */
-.sidebar .icon, .search-field .icon, #save .icon {
+#sidebar-toggle .icon, .search-field .icon, .mejiro-mark {
   width: 18px; height: 18px; stroke-width: 1.8;
 }
 .mejiro-mark {
