@@ -231,13 +231,13 @@ h2 { font-size: 18px; }
   position: absolute; inset: 0 auto auto 0; pointer-events: none;
   background: var(--selected); border-radius: 13px;
 }
-.page-dock:has(.save-bar:not(:has(button:enabled, [aria-busy="true"], .save-spinner:not([hidden])))) { column-gap: 0; }
+.page-dock:has(.save-bar:not(:has(button:enabled, [aria-busy="true"], .save-feedback:not([hidden])))) { column-gap: 0; }
 .page-dock { position: relative; }
-:root .page-dock .save-bar:not(:has(button:enabled, [aria-busy="true"], .save-spinner:not([hidden]))) { min-height: 0; position: static; }
-.save-actions:not(:has(button:enabled, [aria-busy="true"], .save-spinner:not([hidden]))) { display: none; }
+:root .page-dock .save-bar:not(:has(button:enabled, [aria-busy="true"], .save-feedback:not([hidden]))) { min-height: 0; position: static; }
+.save-actions:not(:has(button:enabled, [aria-busy="true"], .save-feedback:not([hidden]))) { display: none; }
 button:disabled:not([aria-busy="true"]) { display: none; }
 #save[aria-busy="true"] { opacity: 1; cursor: progress; }
-:is(#save[aria-busy="true"], .save-spinner) .icon { width: 18px; height: 18px; stroke-width: 2; }
+:is(#save[aria-busy="true"], .save-feedback) .icon { width: 18px; height: 18px; stroke-width: 2; }
 
 @media (prefers-reduced-motion: no-preference) {
   .rail-highlight { transition: transform 320ms cubic-bezier(.30,.35,.30,1), width 300ms ease-out; }
@@ -253,8 +253,8 @@ button:disabled:not([aria-busy="true"]) { display: none; }
   .checkbox-label input[role="switch"]::before {
     transition: transform 240ms cubic-bezier(.32,0,.28,1), background-color 210ms ease-in-out;
   }
-  #save:not(:disabled), #save[aria-busy="true"], .save-spinner { animation: save-appear 340ms cubic-bezier(.35,0,.35,1); }
-  :is(#save[aria-busy="true"], .save-spinner) .icon { animation: save-spin 768ms linear infinite; }
+  #save:not(:disabled), #save[aria-busy="true"], .save-feedback[data-icon="spinner"] { animation: save-appear 340ms cubic-bezier(.35,0,.35,1); }
+  :is(#save[aria-busy="true"], .save-feedback[data-icon="spinner"]) .icon { animation: save-spin 768ms linear infinite; }
   #tooltip:not([hidden]) { animation: surface-appear 150ms ease-out; }
 }
 @keyframes page-enter { from { opacity: .68; } }
@@ -264,11 +264,11 @@ button:disabled:not([aria-busy="true"]) { display: none; }
 @keyframes save-spin { to { transform: rotate(1turn); } }
 
 .save-bar:not([data-editor]) .save-actions > button { display: none; }
-:root .page-dock .save-bar:not([data-editor]):not(:has(.save-spinner:not([hidden]))) {
+:root .page-dock .save-bar:not([data-editor]):not(:has(.save-feedback:not([hidden]))) {
   min-height: 0;
   position: static;
 }
-.save-bar:not([data-editor]):not(:has(.save-spinner:not([hidden]))) .save-actions,
-.save-bar:not([data-editor]):not(:has(.save-spinner:not([hidden]))) progress { display: none; }
-.page-dock:has(.save-bar:not([data-editor]):not(:has(.save-spinner:not([hidden])))) { column-gap: 0; }
-.save-spinner { cursor: progress; }
+.save-bar:not([data-editor]):not(:has(.save-feedback:not([hidden]))) .save-actions,
+.save-bar:not([data-editor]):not(:has(.save-feedback:not([hidden]))) progress { display: none; }
+.page-dock:has(.save-bar:not([data-editor]):not(:has(.save-feedback:not([hidden])))) { column-gap: 0; }
+.save-feedback { pointer-events: none; }

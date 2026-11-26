@@ -13,7 +13,7 @@ import {
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
-import { setIcon } from "./ui.js?v=20261126-autosave";
+import { setIcon } from "./ui.js?v=20261127-save-feedback";
 import {
   keyChoices,
   searchChoices,
@@ -328,6 +328,7 @@ try {
   state.autoSave = localStorage.getItem("mejiro31-auto-save") === "true";
 } catch {}
 let autoSaveTimer;
+let saveConfirmationTimer;
 function queueAutoSave() {
   clearTimeout(autoSaveTimer);
   if (
@@ -1023,8 +1024,15 @@ function render() {
     save.setAttribute("aria-busy", String(manualSaving));
     setIcon(save, manualSaving ? "spinner" : "save", manualSaving ? "保存中…" : "キーボードに保存");
   }
-  $("auto-save-spinner").hidden = !state.saving || !state.autoSave;
-  $("save").disabled = !state.client || !state.unlocked || state.busy || !dirty || state.autoSave;
+  save.disabled = !state.client || !state.unlocked || state.busy || !dirty || state.autoSave;
+  const feedback = $("save-feedback");
+  const showConfirmation = !!saveConfirmationTimer && !state.busy && !!state.client && save.disabled;
+  const feedbackIcon = showConfirmation ? "check" : "spinner";
+  if (feedback.dataset.icon !== feedbackIcon) {
+    feedback.dataset.icon = feedbackIcon;
+    setIcon(feedback, feedbackIcon);
+  }
+  feedback.hidden = !showConfirmation && !(state.saving && state.autoSave);
   $("unlock").disabled = !state.client || state.busy;
   $("unlock").setAttribute(
     "aria-pressed",
@@ -1446,6 +1454,8 @@ async function saveChanges() {
   const client = state.client;
   const restoreFocus = document.activeElement === $("save");
   const startPage = location.hash;
+  clearTimeout(saveConfirmationTimer);
+  saveConfirmationTimer = undefined;
   state.saving = true;
   busy(true);
   try {
@@ -1460,8 +1470,13 @@ async function saveChanges() {
       state.rules,
       (p) => ($("progress").value = p),
     );
+    if (state.client !== client || client.disconnected) throw Error(t("デバイスが切断されました"));
     state.baseline = { ...clone(result), rules: clone(rules) };
     state.modified = false;
+    saveConfirmationTimer = setTimeout(() => {
+      saveConfirmationTimer = undefined;
+      $("save-feedback").hidden = true;
+    }, 500);
     status(t("キーボードに保存し、読み戻して内容を確認しました。"), "success");
   } catch (e) {
     const disconnected = client.disconnected || state.client !== client;
