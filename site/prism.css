@@ -55,7 +55,7 @@
 }
 .sidebar .connection { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 14px; gap: 7px; }
 .connection .button { margin: 0; }
-#connect { margin-left: auto; }
+.sidebar .connection #theme-toggle { margin-left: auto; }
 .workspace { margin: 0 0 0 var(--sidebar); height: 100dvh; }
 main { padding: clamp(24px, 3.4vw, 54px); }
 .workspace-heading { margin-bottom: 26px; }
@@ -169,7 +169,7 @@ h2 { font-size: 18px; }
   .sidebar.collapsed { width: 60px; align-items: center; }
   .sidebar.collapsed .brand, .sidebar.collapsed #connection-label { display: none; }
   .sidebar.collapsed .connection { margin-top: auto; flex-direction: column; }
-  .sidebar.collapsed #connect { margin: 0; }
+  .sidebar.collapsed .connection #theme-toggle { margin: 0; }
   .sidebar.collapsed + .workspace { margin-left: 60px; }
 }
 .search-field { display: block; position: relative; min-width: 0; }
@@ -216,7 +216,6 @@ h2 { font-size: 18px; }
   .page-dock, :root .page-dock .save-bar, .page-dock .save-actions { gap: 5px; }
   :root .search-field input[type="search"] { font-size: 16px; }
   .page-search { position: static; }
-  .page-dock { position: relative; }
   #page-search-results { inset: auto 12px 100%; }
 }
 
@@ -232,14 +231,11 @@ h2 { font-size: 18px; }
   position: absolute; inset: 0 auto auto 0; pointer-events: none;
   background: var(--selected); border-radius: 13px;
 }
-#save-state { display: inline-flex; align-items: center; color: var(--muted); }
-#save-state:is([data-icon="check"], [data-icon="unsaved"]) { color: var(--green); }
-#save-state.saving {
-  width: 0; height: 0; overflow: hidden;
-}
+.page-dock:has(.save-bar:not(:has(button:enabled, [aria-busy="true"]))) { column-gap: 0; }
+.page-dock { position: relative; }
+:root .page-dock .save-bar:not(:has(button:enabled, [aria-busy="true"])) { min-height: 0; position: static; }
 .save-actions:not(:has(button:enabled, [aria-busy="true"])) { display: none; }
-.save-bar:has(#save-state.saving) { gap: 0; }
-#save-state.saving .icon, button:disabled:not([aria-busy="true"]) { display: none; }
+button:disabled:not([aria-busy="true"]) { display: none; }
 #save[aria-busy="true"] { opacity: 1; cursor: progress; }
 #save[aria-busy="true"] .icon { width: 18px; height: 18px; stroke-width: 2; }
 

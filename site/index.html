@@ -10,9 +10,9 @@
     />
     <title>Mejiro31</title>
     <link rel="stylesheet" href="./style.css?v=20261126-rmk-preview" />
-    <link rel="stylesheet" href="./prism.css?v=20261126-motion" />
-    <script type="module" src="./ui.js?v=20261126-motion"></script>
-    <script type="module" src="./app.js?v=20261126-motion"></script>
+    <link rel="stylesheet" href="./prism.css?v=20261126-dock" />
+    <script type="module" src="./ui.js?v=20261126-dock"></script>
+    <script type="module" src="./app.js?v=20261126-dock"></script>
   </head>
   <body>
     <aside class="sidebar" aria-label="Mejiro31">
@@ -85,21 +85,21 @@
     </nav>
       <div class="connection">
         <button
+          id="connect" disabled
+          class="button icon-button primary"
+          data-icon="plug"
+          data-tip="キーボードを接続"
+          aria-label="キーボードを接続"
+        ></button>
+        <span class="dot" id="connection-dot"></span>
+        <span id="connection-label">未接続</span>
+        <button
           id="theme-toggle"
           class="button icon-button"
           data-icon="moon"
           data-tip="ダークモード"
           aria-label="ダークモード"
           aria-pressed="false"
-        ></button>
-        <span class="dot" id="connection-dot"></span
-        ><span id="connection-label">未接続</span
-        ><button
-          id="connect" disabled
-          class="button icon-button primary"
-          data-icon="plug"
-          data-tip="キーボードを接続"
-          aria-label="キーボードを接続"
         ></button>
       </div>
     </aside>
@@ -673,9 +673,6 @@
           </div>
         </search>
         <footer class="save-bar">
-          <span id="save-state" data-icon="offline" title="オフライン">
-            <span id="dirty-label" class="sr-only" role="status">オフライン</span>
-          </span>
           <div class="save-actions">
             <button
               id="unlock" disabled
@@ -700,6 +697,7 @@
               aria-pressed="false"
             ></button>
           </div>
+          <span id="dirty-label" class="sr-only" role="status"></span>
           <progress
             id="progress"
             max="1"

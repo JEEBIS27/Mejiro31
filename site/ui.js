@@ -3,9 +3,6 @@ import { initPageSearch } from "./page-search.js";
 import { initInputTest } from "./input-test.js?v=20261126-motion";
 // View navigation and accessible icon controls, independent of device state.
 const paths = {
-  offline: '<path d="M3 3l18 18M8 3v2m8-2v5M10 8h8v3c0 1-.2 1.8-.6 2.6M6 9v2a6 6 0 0 0 9.6 4.8M12 17v4"/>',
-  unsaved: '<path d="m4 15 11-11 4 4L8 19l-5 2zM13 6l4 4"/>',
-  transfer: '<path d="M3 8h17l-4-4M21 16H4l4 4"/>',
   spinner: '<path d="M12 3a9 9 0 1 1-9 9"/>',
   sidebar: '<path d="M4 6 H20 M4 12 H20 M4 18 H20"/>',
   search: '<path d="M15.5 15.5 21 21 M17.5 10.5 A7 7 0 1 1 3.5 10.5 A7 7 0 1 1 17.5 10.5Z"/>',

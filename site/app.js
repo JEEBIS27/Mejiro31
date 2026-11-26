@@ -13,7 +13,7 @@ import {
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName, macKeySymbol } from "./key-names.js?v=20261126-prism";
-import { setIcon } from "./ui.js?v=20261126-motion";
+import { setIcon } from "./ui.js?v=20261126-dock";
 import {
   keyChoices,
   searchChoices,
@@ -1010,15 +1010,7 @@ function render() {
       : state.client
         ? t("保存済み")
         : t("オフライン");
-  const stateIcon = state.busy ? "transfer" : dirty ? "unsaved" : state.client ? "check" : "offline";
-  const indicator = $("save-state");
-  if (indicator.dataset.icon !== stateIcon) {
-    indicator.dataset.icon = stateIcon;
-    setIcon(indicator, stateIcon);
-  }
-  indicator.title = stateLabel;
   if ($("dirty-label").textContent !== stateLabel) $("dirty-label").textContent = stateLabel;
-  indicator.classList.toggle("saving", state.saving);
   const save = $("save");
   if (save.getAttribute("aria-busy") !== String(state.saving)) {
     save.setAttribute("aria-busy", String(state.saving));
