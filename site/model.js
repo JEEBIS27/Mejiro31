@@ -1,5 +1,5 @@
 import { shortcutHomeModes } from "./shortcuts.js?v=20261126-prism";
-import { t } from "./locale.js?v=20261127-language";
+import { t } from "./locale.js?v=20261127-key-legends";
 import { validateRules } from "./rules.js?v=20261031-cap96";
 export const ROWS = 4,
   COLS = 12,
@@ -144,6 +144,15 @@ export function changes(before, after) {
         });
   return result;
 }
+// Keep the downloadable firmware defaults separate from the site's presets.
+export function sitePreset(data, profile) {
+  if (profile !== "en") return clone(data.defaults[profile]);
+  const code = name => data.keycodes.find(key => key.name === name).value;
+  const inherited = code("KC_TRNS");
+  const japaneseActions = new Set(["MJI_MEJIRO", "MJI_JIS", "KC_LNG1", "KC_LNG2"].map(code));
+  return data.defaults.en.map(layer => layer.map(key => japaneseActions.has(key) ? inherited : key));
+}
+
 export function selectRelease(releases, profile, layout = "qwerty") {
   if (!["jp", "en"].includes(profile) || layout !== "qwerty") return null;
   if (!Array.isArray(releases))

@@ -7,6 +7,7 @@ import {
   changes,
   clone,
   selectRelease,
+  sitePreset,
   supportedCode,
   storageAddress,
   encodeKeymap,
@@ -227,4 +228,15 @@ test("stable firmware release tags supply the download version", () => {
       browser_download_url: `https://github.com/JEEBIS27/Mejiro31/releases/download/${tag_name}/${filename}` }],
   }));
   assert.equal(selectRelease(releases, "en").version, "v0.5.3");
+});
+
+test("English site presets inherit Japanese-specific actions and keep Plover access", () => {
+  const english = sitePreset(data, "en");
+  assert.equal(english[2][0], 1);
+  assert.equal(english[3][0], 1);
+  assert.equal(english[4][0], 1);
+  assert.equal(english[0][29], data.defaults.en[0][29]);
+  assert.equal(english[2][11], data.defaults.en[2][11]);
+  assert.notEqual(data.defaults.en[2][0], 1);
+  assert.deepEqual(sitePreset(data, "jp"), data.defaults.jp);
 });

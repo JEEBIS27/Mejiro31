@@ -400,3 +400,7 @@ button:disabled:not([aria-busy="true"]) { display: none; }
 }
 @keyframes page-enter { from { opacity: .68; } }
 @keyframes save-spin { to { transform: rotate(1turn); } }
+
+#tooltip { white-space: pre-line; }
+.key-legends { width: 100%; min-width: 0; }
+.key-label, .key small { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }

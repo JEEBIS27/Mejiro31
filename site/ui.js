@@ -1,4 +1,4 @@
-import { english, languageSetting, localizePage, setSiteLanguage, t } from "./locale.js?v=20261127-firmware-version";
+import { english, languageSetting, localizePage, setSiteLanguage, t } from "./locale.js?v=20261127-key-legends";
 import { initPageSearch } from "./page-search.js?v=20261127-language";
 import { initInputTest } from "./input-test.js?v=20261127-language";
 // View navigation and accessible icon controls, independent of device state.

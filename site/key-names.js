@@ -1,5 +1,5 @@
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { t } from "./locale.js?v=20261127-language";
+import { t } from "./locale.js?v=20261127-key-legends";
 // User-facing names are separate from the firmware codes saved to the device.
 const symbols = {
   45: ["-", "Minus", "マイナス"],
@@ -205,10 +205,10 @@ export function keyName(code, fallback) {
   const actions = {
     MJI_00: "00",
     MJI_000: "000",
-    MJI_MODE: "Keyboard / Steno",
-    MJI_JIS: "JIS / US",
-    MJI_ALT: "代替配列 ON / OFF",
-    MJI_MEJIRO: "Mejiro / Plover",
+    MJI_MODE: t("通常入力／速記入力"),
+    MJI_JIS: t("PC側のJIS／US配列を切り替え"),
+    MJI_ALT: t("代替配列のオン／オフ"),
+    MJI_MEJIRO: t("メジロ式／Plover"),
     MJI_STICKY: "Sticky Shift",
     QK_BOOT: "再起動して書き込みモードへ",
     QK_BOOTLOADER: "再起動して書き込みモードへ",
@@ -235,4 +235,25 @@ export function keyName(code, fallback) {
     .toLowerCase()
     .replace(/\b\w/g, (c) => c.toUpperCase());
   return { label, search: label };
+}
+
+const actionDescriptions = {
+  1: "下のレイヤーにある同じ位置の割り当てを使います。",
+  0x7e02: "通常のキーボード入力と、複数キーを同時に押す速記入力を切り替えます。",
+  0x7e03: "PC側のキーボード配列に合わせ、記号の送信をJIS用とUS用で切り替えます。",
+  0x7e04: "代替配列を有効または無効にします。",
+  0x7e05: "速記入力で、メジロ式の文字出力とPloverへのストローク送信を切り替えます。",
+  0x7e06: "次のキー1回だけにShiftを適用します。",
+  0x52a2: "次のキー1回だけにShiftを適用します。",
+  0x7c00: "キーボードを再起動し、ファームウェアの書き込みモードに入ります。",
+};
+
+export function keyDescription(code, fallback) {
+  const description = actionDescriptions[code];
+  const label = keyName(code, fallback).label;
+  if (description) return `${label} — ${t(description)}`;
+  if (code >= 0x5220 && code <= 0x5225) {
+    return `${label} — ${t("押している間だけこのレイヤーを使います。")}`;
+  }
+  return label;
 }

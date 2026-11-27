@@ -1,7 +1,7 @@
 import { replaceButtons } from "./button-motion.js?v=20261127-ime-motion";
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { english, t } from "./locale.js?v=20261127-firmware-version";
+import { english, t } from "./locale.js?v=20261127-key-legends";
 import { reverseLookup } from "./reverse.js?v=20261126-lexical";
 import { hasKanji, lookupSpelling, lookupVerbReading } from "./lexical-lookup.js?v=20261127-verb-reading";
 import { grammarSpans } from "./grammar.js?v=20261126-lexical";
@@ -11,14 +11,14 @@ import {
   ruleNames,
   searchDictionary,
 } from "./dictionary.js?v=20261126-lexical";
-import { createKeyIcon } from "./key-icons.js";
-import { downloadKeymapPNG } from "./keymap-image.js";
-import { keyName, macKeySymbol } from "./key-names.js?v=20261127-language";
-import { setIcon } from "./ui.js?v=20261127-firmware-version";
+import { createKeyIcon } from "./key-icons.js?v=20261127-key-legends";
+import { downloadKeymapPNG } from "./keymap-image.js?v=20261127-key-legends";
+import { keyDescription, keyName, macKeySymbol } from "./key-names.js?v=20261127-key-legends";
+import { setIcon } from "./ui.js?v=20261127-key-legends";
 import {
   keyChoices,
   searchChoices,
-} from "./key-choices.js?v=20261031-capture1";
+} from "./key-choices.js?v=20261127-key-legends";
 import {
   clone,
   DEFAULT_TIMING,
@@ -27,9 +27,10 @@ import {
   validateBackup,
   changes,
   selectRelease,
+  sitePreset,
   selectBundledFirmware,
   supportedCode,
-} from "./model.js?v=20261127-firmware-version";
+} from "./model.js?v=20261127-key-legends";
 import { connectKeyboard } from "./hid.js?v=20261127-language";
 import { ruleId, validateRules } from "./rules.js?v=20261031-cap96";
 import {
@@ -39,7 +40,7 @@ import {
   BOARD_HEIGHT,
 } from "./board-layout.js?v=20261031-cap96";
 const $ = (id) => document.getElementById(id);
-const data = await fetch("./data.json?v=20261031-cap96")
+const data = await fetch("./data.json?v=20261127-key-legends")
   .then((r) => {
     if (!r.ok) throw Error(t("設定データを読み込めません。"));
     return r.json();
@@ -48,6 +49,7 @@ const data = await fetch("./data.json?v=20261031-cap96")
     $("status").textContent = error.message;
     throw error;
   });
+const presets = { jp: sitePreset(data, "jp"), en: sitePreset(data, "en") };
 const mac = detectPlatform(navigator)?.legends === "mac";
 const initialProfile = english ? "en" : "jp";
 const state = {
@@ -64,7 +66,7 @@ const state = {
     timing: { ...DEFAULT_TIMING },
   },
   rules: [],
-  keymap: clone(data.defaults[initialProfile]),
+  keymap: clone(presets[initialProfile]),
   baseline: null,
   layer: 0,
   selected: 1,
@@ -185,6 +187,8 @@ function shortName(code) {
   if (punctuation[code]) return punctuation[code];
   if ((code & 0xff00) === 0x0200 && shifted[code & 0xff])
     return shifted[code & 0xff];
+  if (code >= 0x5220 && code <= 0x5225) return ["ABC", "⇧ABC", "123", "⇧123", "Fn", "ST"][code - 0x5220];
+  if (code >= 89 && code <= 98) return String(code === 98 ? 0 : code - 88);
   const name = codeName(code);
   const specials = {
     KC_NO: "—",
@@ -195,6 +199,13 @@ function shortName(code) {
     KC_DEL: "Del",
     KC_ESC: "Esc",
     KC_TAB: "Tab",
+    KC_LEFT: "←",
+    KC_RIGHT: "→",
+    KC_UP: "↑",
+    KC_DOWN: "↓",
+    KC_PGUP: "PgUp",
+    KC_PGDN: "PgDn",
+    KC_CAPS: "Caps",
     KC_LSFT: "⇧",
     KC_RSFT: "⇧",
     KC_LCTL: "Ctrl",
@@ -205,11 +216,11 @@ function shortName(code) {
     KC_RGUI: "Win",
     KC_LNG1: "かな",
     KC_LNG2: "英数",
-    MJI_MODE: "Layer",
-    MJI_JIS: "JIS/US",
-    MJI_ALT: "Layout ↔",
-    MJI_MEJIRO: "Steno ↔",
-    MJI_STICKY: "Sticky ⇧",
+    MJI_MODE: "⇄",
+    MJI_JIS: "⇄",
+    MJI_ALT: "⇄",
+    MJI_MEJIRO: "⇄",
+    MJI_STICKY: "⇧",
     MJI_00: "00",
     MJI_000: "000",
   };
@@ -393,7 +404,7 @@ $("reset-settings").onclick = async () => {
     ))
   )
     return;
-  state.keymap = clone(data.defaults[state.profile]);
+  state.keymap = clone(presets[state.profile]);
   state.settings = {
     flags: state.profile === "en" ? 2 : 6,
     en: 0,
@@ -885,7 +896,7 @@ function render() {
   for (const [i, b] of [...$("layers").children].entries()) {
     b.setAttribute("aria-selected", String(i === state.layer));
     b.tabIndex = i === state.layer ? 0 : -1;
-    const reference = state.baseline?.keymap || data.defaults[state.profile];
+    const reference = state.baseline?.keymap || presets[state.profile];
     b.classList.toggle(
       "dirty",
       state.keymap[i].some((_, pos) =>
@@ -910,7 +921,7 @@ function render() {
         (!combo && pair && [pair.a, pair.b].includes(pos) ? " source" : "") +
         (keyChanged(
           state.keymap,
-          state.baseline?.keymap || data.defaults[state.profile],
+          state.baseline?.keymap || presets[state.profile],
           state.layer,
           pos,
         )
@@ -928,8 +939,10 @@ function render() {
       button.style.width = `${((key.width - (combo ? 0 : 0.06)) / BOARD_WIDTH) * 100}%`;
       button.style.height = `${((key.height - (combo ? 0 : 0.06)) / BOARD_HEIGHT) * 100}%`;
 
-      button.title = `${combo ? t("同時押し") : t("キー")} · ${t("短く押す")}: ${keyName(code, codeName(code)).label} · ${t("長押し")}: ${keyName(hold, codeName(hold)).label}`;
-      button.setAttribute("aria-label", button.title);
+      const tapDescription = `${t("短く押す")}: ${keyDescription(code, codeName(code))}`;
+      const holdDescription = `${t("長押し")}: ${keyDescription(hold, codeName(hold))}`;
+      button.dataset.tip = `${tapDescription}\n${holdDescription}`;
+      button.setAttribute("aria-label", `${combo ? t("同時押し") : t("キー")} · ${tapDescription} · ${holdDescription}`);
       button.setAttribute("aria-pressed", String(state.selected === pos));
 
       const text = document.createElement("span");
@@ -1298,7 +1311,7 @@ $("edit-profile").onchange = async () => {
     return;
   }
   state.profile = $("edit-profile").value;
-  state.keymap = clone(data.defaults[state.profile]);
+  state.keymap = clone(presets[state.profile]);
   state.settings = {
     flags: state.profile === "en" ? 2 : 6,
     en: 0,
