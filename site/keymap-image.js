@@ -1,4 +1,4 @@
-import { paintKeyIcon } from "./key-icons.js?v=20261127-steno-caps";
+import { paintKeyIcon } from "./key-icons.js?v=20261127-layer-icon";
 // Render the current board at 2x resolution, including off-screen keys.
 export async function downloadKeymapPNG(board, layerName, profile) {
   await document.fonts.ready;
