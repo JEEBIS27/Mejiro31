@@ -148,7 +148,7 @@ function codeName(code) {
 function shortName(code) {
   const appleSymbol = macKeySymbol(code);
   if (appleSymbol) return appleSymbol;
-  const punctuation = {
+  const compactLabels = {
     45: "-",
     46: "=",
     47: "[",
@@ -161,6 +161,9 @@ function shortName(code) {
     54: ",",
     55: ".",
     56: "/",
+    57: "Caps",
+    75: "Pg↑",
+    78: "Pg↓",
   };
   const shifted = {
     30: "!",
@@ -185,7 +188,7 @@ function shortName(code) {
     55: ">",
     56: "?",
   };
-  if (punctuation[code]) return punctuation[code];
+  if (compactLabels[code]) return compactLabels[code];
   if ((code & 0xff00) === 0x0200 && shifted[code & 0xff])
     return shifted[code & 0xff];
   if (code >= 0x5220 && code <= 0x5225) return ["ABC", "⇧ABC", "123", "⇧123", "Fn", "ST"][code - 0x5220];
@@ -206,9 +209,6 @@ function shortName(code) {
     KC_RIGHT: "→",
     KC_UP: "↑",
     KC_DOWN: "↓",
-    KC_PGUP: "PgUp",
-    KC_PGDN: "PgDn",
-    KC_CAPS: "Caps",
     KC_LSFT: "⇧",
     KC_RSFT: "⇧",
     KC_LCTL: "Ctrl",
