@@ -75,7 +75,6 @@ In Plover 5.1.0 or later, select **Machine → Plover HID**. Tap the bottom-cent
 | `00` | Types two zeros. | Left side of Number. |
 | `000` | Types three zeros. | Left side of Number. |
 | Sticky Shift | Applies Shift to the next key only. | Assignable as a Tap action in the Configurator. |
-
 | Mejiro / Plover (bird icon) | Switches between built-in Mejiro text output and sending strokes to Plover. | A Japanese preset action. This position uses `▽` here. |
 | JIS / US toggle | Switches how the keyboard sends symbols to match the host layout. | A Japanese preset shortcut. This position uses `▽` here. Set the host layout in Keyboard settings. |
 
