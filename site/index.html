@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="./style.css?v=20261127-ime-motion" />
     <link rel="stylesheet" href="./prism.css?v=20261127-language" />
     <script type="module" src="./ui.js?v=20261127-language"></script>
-    <script type="module" src="./app.js?v=20261127-language"></script>
+    <script type="module" src="./app.js?v=20261127-verb-reading"></script>
   </head>
   <body>
     <aside class="sidebar" aria-label="Mejiro31">
@@ -475,7 +475,7 @@
           <div class="settings-card rule-card">
             <h2>メジロ式の逆引き</h2>
             <form id="reverse-form" class="reverse-form">
-              <label>読み・漢字表記からストロークを探す<span class="search-field" data-icon="search"><input id="reverse-query" type="search" name="reverse-query" spellcheck="false" placeholder="例：かえる、変える" autocomplete="off" required /></span></label>
+              <label>文章からストロークを探す<span class="search-field" data-icon="search"><input id="reverse-query" type="search" name="reverse-query" spellcheck="false" placeholder="例：にゅうりょくをさがす" autocomplete="off" required /></span></label>
               <label>候補の並べ方<select id="reverse-grammar"><option value="off">シンプル（構文解析なし）</option><option value="on">文法を考慮（構文解析あり）</option></select></label>
               <button type="submit" class="button">逆引き</button>
             </form>
@@ -492,7 +492,7 @@
                 >辞書を検索<span class="search-field" data-icon="search"><input
                   id="dictionary-search"
                   type="search" autocomplete="off" name="dictionary-search" spellcheck="false"
-                  placeholder="ストローク・出力文字・種類で検索"
+                  placeholder="単語の読み・漢字表記・ストロークで検索"
               /></span></label>
               <label
                 >種類<select id="dictionary-kind">

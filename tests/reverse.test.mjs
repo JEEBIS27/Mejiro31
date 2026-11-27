@@ -103,3 +103,10 @@ test("dictionary search prefers the complete dictionary-form reading", async () 
   assert.equal(first.key, "KA-IA");
   assert.equal(dictionaryReading(first), "かえる");
 });
+
+test("kana lookup includes verbs derived by the engine and favors dictionary forms", async () => {
+  const { lookupVerbReading } = await import("../site/lexical-lookup.js");
+  assert.ok((await lookupVerbReading("いく", [])).some(candidate => candidate.strokes === "I-K*"));
+  const kaeru = await lookupVerbReading("かえる", []);
+  assert.deepEqual(kaeru.map(candidate => candidate.strokes), ["KA-IA*", "KA-SKIA*"]);
+});

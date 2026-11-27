@@ -3,7 +3,7 @@ import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
 import { english, t } from "./locale.js?v=20261127-language";
 import { reverseLookup } from "./reverse.js?v=20261126-lexical";
-import { hasKanji, lookupSpelling } from "./lexical-lookup.js?v=20261126-lexical";
+import { hasKanji, lookupSpelling, lookupVerbReading } from "./lexical-lookup.js?v=20261127-verb-reading";
 import { grammarSpans } from "./grammar.js?v=20261126-lexical";
 import { captureKey, isModifierEvent } from "./key-capture.js";
 import {
@@ -540,6 +540,7 @@ function editRule(rule) {
   $("rule-key").focus();
 }
 let spellingSearch = null;
+let readingSearch = null;
 function dictionaryResult({ title, description, rule }) {
   const row = document.createElement("div");
   row.className = "rule-item dictionary-result";
@@ -571,12 +572,14 @@ function renderDictionary() {
   const kind = $("dictionary-kind").value;
   if (!query) {
     spellingSearch = null;
+    readingSearch = null;
     replaceButtons($("dictionary-results"), []);
     $("dictionary-count").textContent = "";
     $("dictionary-more").hidden = true;
     return;
   }
   if (!ruleNames.includes(query) && kind !== "0" && hasKanji(query) && /^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}々ー]+$/u.test(query)) {
+    readingSearch = null;
     const rules = state.rules;
     const key = JSON.stringify([query, rules]);
     if (spellingSearch?.key !== key) {
@@ -623,6 +626,40 @@ function renderDictionary() {
   }
   spellingSearch = null;
   const entries = searchDictionary(dictionary, state.rules, query, kind);
+  if ((kind === "" || kind === "4") && /^[\u3041-\u3096ー]{1,32}$/u.test(query)) {
+    const rules = state.rules;
+    const key = JSON.stringify([query, rules]);
+    if (readingSearch?.key !== key) {
+      const search = { key };
+      readingSearch = search;
+      setTimeout(async () => {
+        if (readingSearch !== search) return;
+        try {
+          search.candidates = await lookupVerbReading(query, rules);
+        } catch {
+          // Local dictionary entries are still available if the engine cannot load.
+          search.candidates = [];
+        }
+        if (readingSearch === search) renderDictionary();
+      }, 180);
+    }
+    if (readingSearch.candidates?.length) {
+      const exact = new Map(entries.filter(rule => rule.kind === 4 && !rule.hidden &&
+        dictionaryReading(rule) === query).map(rule => [rule.key, rule]));
+      const matched = new Set();
+      const results = readingSearch.candidates.map(candidate => {
+        const rule = exact.get(candidate.strokes.replace(/\*$/, ""));
+        if (rule) matched.add(rule.key);
+        return { title: `動詞 · ${candidate.strokes}`, description: query, rule };
+      });
+      showDictionary([...results, ...entries.filter(rule =>
+        rule.kind !== 4 || !matched.has(rule.key)).map(editableDictionaryResult)]);
+      return;
+    }
+    showDictionary(entries.map(editableDictionaryResult), !readingSearch.candidates ? "動詞を照合中…" : dictionaryError);
+    return;
+  }
+  readingSearch = null;
   showDictionary(entries.map(editableDictionaryResult));
 }
 function editableDictionaryResult(rule) {

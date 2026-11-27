@@ -69,3 +69,10 @@ export async function lookupSpelling(surface, rules, lookup = reverseLookup, tok
   await Promise.all(searches);
   return [...matches.values()].sort((a, b) => a.strokes.localeCompare(b.strokes));
 }
+
+export async function lookupVerbReading(reading, rules) {
+  const { all } = await reverseLookup(reading, [], rules, { wordOnly: true });
+  const verbs = all.filter(candidate => candidate.verb_class);
+  const dictionaryForms = verbs.filter(candidate => candidate.verb_form === 5);
+  return dictionaryForms.length ? dictionaryForms : verbs;
+}
