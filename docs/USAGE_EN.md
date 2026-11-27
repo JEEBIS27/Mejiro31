@@ -2,13 +2,15 @@
 
 [Home](../README_EN.md) · [日本語](USAGE.md) · [Flash firmware and change key assignments](CONFIGURATOR_EN.md)
 
-[Typing](#typing) · [Numbers and function keys](#numbers-and-function-keys) · [Steno](#steno)
+[Typing](#typing) · [Numbers and function keys](#numbers-and-function-keys) · [Steno](#steno) · [Custom keys](#custom-keys)
 
 ## Typing
 
-![Base Mejiro31 layout with Layer at the bottom center, Space/Shift under the left thumb, and Enter/Shift under the right thumb.](imgs/layer_qwerty.png)
+### Keyboard
 
-The diagram shows the base QWERTY positions. Your active layout and saved key assignments determine what the keyboard sends.
+![Keyboard layer with the typing and steno toggle at the bottom center, Space under the left thumb, and Enter under the right thumb.](imgs/keymap/en-keyboard.png)
+
+The diagrams show the default QWERTY preset exported from the Configurator. Small legends below a key show its Hold assignment. Your active layout and saved key assignments determine what the keyboard sends.
 
 | Key | Tap and release | Hold while pressing another key |
 | --- | --- | --- |
@@ -17,6 +19,12 @@ The diagram shows the base QWERTY positions. Your active layout and saved key as
 | Large right thumb key | Enter | Shift |
 
 For example, **hold the large left thumb key and press E** to type an uppercase `E`. After using the thumb key as Shift, release it to end Shift.
+
+### ⇧ Keyboard
+
+![Shifted keyboard layer showing shifted symbols and thumb-key assignments.](imgs/keymap/en-keyboard-shift.png)
+
+Hold Shift while typing to use this layer.
 
 ### Type middle-row letters with two-row compression
 
@@ -34,8 +42,43 @@ In base QWERTY, **press E and the C directly below it together → D**. The smal
 
 Use the [Configurator](https://jeebis27.github.io/Mejiro31/?lang=en) to see the key positions on each layer or change the alternate layout and US/JIS settings.
 
+### Number
+
+![Number layer with digits on the left and navigation keys on the right.](imgs/keymap/en-number.png)
+
+Hold the bottom-center Layer key to use this layer.
+
+### ⇧ Number
+
+![Shifted Number layer with brackets and other symbols on the left.](imgs/keymap/en-number-shift.png)
+
+Hold Shift while using the Number layer to type these symbols.
+
+### Function
+
+![Function layer showing F-keys, brightness, volume, and media controls.](imgs/keymap/en-function.png)
+
+While on the Number layer, hold the rightmost key with the **Fn** assignment to use this layer.
+
 ## Steno
 
 In Plover 5.1.0 or later, select **Machine → Plover HID**. Tap the bottom-center **Layer** key to enter steno. Tap it again to return to typing.
+
+![Steno layer with the mode toggle at the bottom center.](imgs/keymap/steno.png)
+
+## Custom keys
+
+| Key | Function | Default assignment |
+| --- | --- | --- |
+| Keyboard / Steno | Tap to switch between typing and steno. | Bottom center on Keyboard, ⇧ Keyboard, and Steno. Hold to use Number. |
+| Alternate layout toggle | Enables or disables the selected alternate layout. | Top-right key on Number and ⇧ Number. |
+| `00` | Types two zeros. | Left side of Number. |
+| `000` | Types three zeros. | Left side of Number. |
+| Sticky Shift | Applies Shift to the next key only. | Assignable as a Tap action in the Configurator. |
+
+| Mejiro / Plover (bird icon) | Switches between built-in Mejiro text output and sending strokes to Plover. | A Japanese preset action. This position uses `▽` here. |
+| JIS / US toggle | Switches how the keyboard sends symbols to match the host layout. | A Japanese preset shortcut. This position uses `▽` here. Set the host layout in Keyboard settings. |
+
+`▽` uses the assignment from a lower layer. `—` means unassigned. Hover over a key in the Configurator to see its Tap and Hold actions.
 
 [Back to home](../README_EN.md)
