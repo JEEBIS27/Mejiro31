@@ -1,4 +1,4 @@
-import { keyName } from "./key-names.js?v=20261127-english-copy";
+import { keyName } from "./key-names.js?v=20261127-steno-caps";
 import { supportedCode } from "./model.js?v=20261127-english-copy";
 export function keyChoices(
   data,

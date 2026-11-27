@@ -11,14 +11,14 @@ import {
   ruleNames,
   searchDictionary,
 } from "./dictionary.js?v=20261126-lexical";
-import { createKeyIcon } from "./key-icons.js?v=20261127-platform-icons";
-import { downloadKeymapPNG } from "./keymap-image.js?v=20261127-platform-icons";
-import { keyDescription, keyName, macKeySymbol } from "./key-names.js?v=20261127-english-copy";
+import { createKeyIcon } from "./key-icons.js?v=20261127-steno-caps";
+import { downloadKeymapPNG } from "./keymap-image.js?v=20261127-steno-caps";
+import { keyDescription, keyName, macKeySymbol, stenoKeyLegend } from "./key-names.js?v=20261127-steno-caps";
 import { setIcon } from "./ui.js?v=20261127-english-copy";
 import {
   keyChoices,
   searchChoices,
-} from "./key-choices.js?v=20261127-english-copy";
+} from "./key-choices.js?v=20261127-steno-caps";
 import {
   clone,
   DEFAULT_TIMING,
@@ -191,6 +191,8 @@ function shortName(code) {
   if (code >= 0x5220 && code <= 0x5225) return ["ABC", "⇧ABC", "123", "⇧123", "Fn", "ST"][code - 0x5220];
   if (code >= 89 && code <= 98) return String(code === 98 ? 0 : code - 88);
   const name = codeName(code);
+  const stenoLegend = stenoKeyLegend(name);
+  if (stenoLegend) return stenoLegend;
   const specials = {
     KC_NO: "—",
     KC_TRNS: "▽",
@@ -219,7 +221,7 @@ function shortName(code) {
     KC_LNG2: "英数",
     MJI_MODE: "⇄",
     MJI_JIS: "⇄",
-    MJI_ALT: "⇄",
+    MJI_ALT: "A⇄B",
     MJI_MEJIRO: "⇄",
     MJI_STICKY: "⇧",
     MJI_00: "00",

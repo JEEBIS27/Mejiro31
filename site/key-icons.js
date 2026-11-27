@@ -2,7 +2,6 @@
 const speaker = "M3 9h4l5-4v14l-5-4H3z";
 const sun =
   "M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5";
-const swap = "M4 9h16l-3-3M20 15H4l3 3";
 const icons = {
   0x7e02: {
     paths: ["M3 4h18v7H3zM6 7.5h1m4 0h1m4 0h1", "M12 14v7m-3-3 3 3 3-3"],
@@ -10,7 +9,6 @@ const icons = {
   0x7e03: {
     paths: ["M4 3h16v18H4zM8 7h8M8 11h4M8 15h8", "m15 10 3 2-3 2"],
   },
-  0x7e04: { paths: ["M5 4h14v16H5z", swap] },
   0x7e05: { image: "./assets/mejiro-mark.png" },
   0x7e06: { paths: ["m4 12 8-8 8 8h-4v8h-8v-8z", "M11 16h2"] },
   0x52a2: { paths: ["m4 12 8-8 8 8h-4v8h-8v-8z", "M11 16h2"] },

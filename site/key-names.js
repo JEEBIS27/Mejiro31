@@ -143,6 +143,16 @@ export function macKeySymbol(code) {
   return appleKeys[code]?.[0];
 }
 
+// Steno aliases identify physical usages; keycaps show only the stroke character.
+export function stenoKeyLegend(name) {
+  if (!name.startsWith("STN_")) return undefined;
+  const usage = name.slice(4);
+  if (usage === "NUM" || /^N[1-9ABC]$/.test(usage)) return "#";
+  if (usage === "STR" || /^ST[1-4]$/.test(usage)) return "*";
+  if (/^S[12]$/.test(usage) || /^[A-Z][LR]?$/.test(usage)) return usage[0];
+  return { FN: "Fn", PWR: "⏻", RES1: "—", RES2: "—", RE1: "—", RE2: "—" }[usage];
+}
+
 export function keyName(code, fallback) {
   if (mac && appleKeys[code]) {
     const [symbol, name] = appleKeys[code];
