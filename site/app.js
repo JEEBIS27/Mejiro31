@@ -11,8 +11,8 @@ import {
   ruleNames,
   searchDictionary,
 } from "./dictionary.js?v=20261126-lexical";
-import { createKeyIcon } from "./key-icons.js?v=20261127-layer-icon";
-import { downloadKeymapPNG } from "./keymap-image.js?v=20261127-layer-icon";
+import { createKeyIcon } from "./key-icons.js?v=20261127-layout-icon";
+import { downloadKeymapPNG } from "./keymap-image.js?v=20261127-layout-icon";
 import { keyDescription, keyName, macKeySymbol, stenoKeyLegend } from "./key-names.js?v=20261127-steno-caps";
 import { setIcon } from "./ui.js?v=20261127-english-copy";
 import {
@@ -221,7 +221,6 @@ function shortName(code) {
     KC_LNG2: "英数",
     MJI_MODE: "⇄",
     MJI_JIS: "⇄",
-    MJI_ALT: "A⇄B",
     MJI_MEJIRO: "⇄",
     MJI_STICKY: "⇧",
     MJI_00: "00",

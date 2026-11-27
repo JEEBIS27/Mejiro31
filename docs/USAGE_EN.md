@@ -71,7 +71,7 @@ In Plover 5.1.0 or later, select **Machine → Plover HID**. Tap the bottom-cent
 | Key | Function | Default assignment |
 | --- | --- | --- |
 | Keyboard / Steno | Tap to switch between typing and steno. | Bottom center on Keyboard, ⇧ Keyboard, and Steno. Hold to use Number. |
-| Alternate layout toggle (A⇄B) | Enables or disables the selected alternate layout. | Top-right key on Number and ⇧ Number. |
+| Alternate layout toggle (keyboard with a two-way arrow) | Enables or disables the selected alternate layout. | Top-right key on Number and ⇧ Number. |
 | `00` | Types two zeros. | Left side of Number. |
 | `000` | Types three zeros. | Left side of Number. |
 | Sticky Shift | Applies Shift to the next key only. | Assignable as a Tap action in the Configurator. |

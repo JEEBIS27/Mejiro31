@@ -9,6 +9,10 @@ const icons = {
   0x7e03: {
     paths: ["M4 3h16v18H4zM8 7h8M8 11h4M8 15h8", "m15 10 3 2-3 2"],
   },
+  0x7e04: {
+    paths: ["M4 4h16q2 0 2 2v12q0 2-2 2H4q-2 0-2-2V6q0-2 2-2z",
+      "M6 8h2m3 0h2m3 0h2", "M6 14h12m-9-3-3 3 3 3m6-6 3 3-3 3"],
+  },
   0x7e05: { image: "./assets/mejiro-mark.png" },
   0x7e06: { paths: ["m4 12 8-8 8 8h-4v8h-8v-8z", "M11 16h2"] },
   0x52a2: { paths: ["m4 12 8-8 8 8h-4v8h-8v-8z", "M11 16h2"] },
