@@ -151,15 +151,17 @@ export function selectRelease(releases, profile, layout = "qwerty") {
   const filename = `mejiro31_${profile}.uf2`;
   // A latest release without the selected asset must never silently fall back
   // to an older binary. All variants are published together by our workflow.
-  const release = releases.find(
-    (r) => !r.draft && !r.prerelease && /^vial-v/.test(r.tag_name),
-  );
+  const release = releases.find((release) => {
+    if (release.draft || release.prerelease) return false;
+    const match = /^(vial-)?v(\d+)\.(\d+)\.(\d+)$/.exec(release.tag_name);
+    return match && (match[1] || Number(match[2]) > 0 || Number(match[3]) >= 5);
+  });
   const asset = release?.assets?.find((a) => a.name === filename);
   if (!asset) return null;
   const expected = `https://github.com/JEEBIS27/Mejiro31/releases/download/${encodeURIComponent(release.tag_name)}/${filename}`;
   if (asset.browser_download_url !== expected)
     throw Error("ダウンロード先を確認できませんでした。");
-  return { url: expected, filename, tag: release.tag_name, size: asset.size };
+  return { url: expected, filename, tag: release.tag_name, version: release.tag_name.replace(/^vial-/, ""), size: asset.size };
 }
 
 export function selectBundledFirmware(manifest, profile, layout = "qwerty") {

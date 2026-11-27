@@ -217,3 +217,14 @@ test("output settings survive backup, with only named modes and supported spacin
   delete backup.settings.outputGap;
   assert.equal(validateBackup(backup, data).settings.outputMode, undefined);
 });
+
+test("stable firmware release tags supply the download version", () => {
+  const filename = "mejiro31_en.uf2";
+  const tags = ["v0.5.4", "v0.5.3", "v0.5.2"];
+  const releases = tags.map((tag_name) => ({
+    tag_name, prerelease: tag_name === "v0.5.4",
+    assets: [{ name: filename, size: 656384,
+      browser_download_url: `https://github.com/JEEBIS27/Mejiro31/releases/download/${tag_name}/${filename}` }],
+  }));
+  assert.equal(selectRelease(releases, "en").version, "v0.5.3");
+});

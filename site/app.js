@@ -1,7 +1,7 @@
 import { replaceButtons } from "./button-motion.js?v=20261127-ime-motion";
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { english, t } from "./locale.js?v=20261127-language";
+import { english, t } from "./locale.js?v=20261127-firmware-version";
 import { reverseLookup } from "./reverse.js?v=20261126-lexical";
 import { hasKanji, lookupSpelling, lookupVerbReading } from "./lexical-lookup.js?v=20261127-verb-reading";
 import { grammarSpans } from "./grammar.js?v=20261126-lexical";
@@ -14,7 +14,7 @@ import {
 import { createKeyIcon } from "./key-icons.js";
 import { downloadKeymapPNG } from "./keymap-image.js";
 import { keyName, macKeySymbol } from "./key-names.js?v=20261127-language";
-import { setIcon } from "./ui.js?v=20261127-language";
+import { setIcon } from "./ui.js?v=20261127-firmware-version";
 import {
   keyChoices,
   searchChoices,
@@ -29,7 +29,7 @@ import {
   selectRelease,
   selectBundledFirmware,
   supportedCode,
-} from "./model.js?v=20261127-language";
+} from "./model.js?v=20261127-firmware-version";
 import { connectKeyboard } from "./hid.js?v=20261127-language";
 import { ruleId, validateRules } from "./rules.js?v=20261031-cap96";
 import {
@@ -1625,8 +1625,8 @@ function selectedFirmware() {
   const profile = english ? "en" : $("download-profile").value;
   const layout = "qwerty";
   return (
-    selectBundledFirmware(state.firmwareManifest, profile, layout) ||
-    selectRelease(state.releases, profile, layout)
+    selectRelease(state.releases, profile, layout) ||
+    selectBundledFirmware(state.firmwareManifest, profile, layout)
   );
 }
 function updateDownload() {
@@ -1634,7 +1634,7 @@ function updateDownload() {
     const asset = selectedFirmware();
     $("download").disabled = !asset;
     $("release-status").textContent = asset
-      ? `${t(asset.tag)} · ${asset.filename} · ${Math.round(asset.size / 1024)} KB`
+      ? `${asset.version ?? t(asset.tag === "試作ファームウェア" ? asset.tag : "サイト同梱版（バージョン未確認）")} · ${asset.filename} · ${Math.round(asset.size / 1024)} KB`
       : t("このプロファイルのUF2はまだ用意されていません。配布UF2はQWERTYです。代替配列は書き込み後、このサイトの設定から変更できます。");
   } catch (e) {
     $("download").disabled = true;
