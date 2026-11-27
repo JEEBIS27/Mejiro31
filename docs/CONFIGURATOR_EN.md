@@ -13,7 +13,7 @@
 
 1. Open the [Configurator](https://jeebis27.github.io/Mejiro31/?lang=en) in a desktop browser with WebHID support, such as Chrome or Edge, and connect the keyboard.
 2. Select a key to edit Tap or Hold. Select a small button between keys to edit the output of that fixed two-key combination.
-3. Use keyboard settings to choose alternate layouts, select the host US or JIS layout, and adjust timing where supported. Displayed assignments are the keys before layout conversion.
+3. Use keyboard settings to choose an alternate layout and adjust timing where supported. Displayed assignments are the keys before layout conversion.
 4. If the keyboard is locked, select the unlock control and hold both outer keys on the top row.
 5. Save your settings to the keyboard. If it disconnects during saving, reconnect it and read back the settings.
 

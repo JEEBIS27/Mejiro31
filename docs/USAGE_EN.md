@@ -40,7 +40,7 @@ In base QWERTY, **press E and the C directly below it together → D**. The smal
 | Use F-keys or adjust volume | Hold **Layer** and the **far-right key on the lower row**, then press the desired key |
 | Toggle the alternate layout | Hold **Layer** and tap the **far-right key on the upper row** |
 
-Use the [Configurator](https://jeebis27.github.io/Mejiro31/?lang=en) to see the key positions on each layer or change the alternate layout and US/JIS settings.
+Use the [Configurator](https://jeebis27.github.io/Mejiro31/?lang=en) to see the key positions on each layer or change the alternate layout.
 
 ### Number
 
@@ -75,8 +75,6 @@ In Plover 5.1.0 or later, select **Machine → Plover HID**. Tap the bottom-cent
 | `00` | Types two zeros. | Left side of Number. |
 | `000` | Types three zeros. | Left side of Number. |
 | Sticky Shift | Applies Shift to the next key only. | Assignable as a Tap action in the Configurator. |
-| Mejiro / Plover (bird icon) | Switches between built-in Mejiro text output and sending strokes to Plover. | A Japanese preset action. This position uses `▽` here. |
-| JIS / US toggle | Switches how the keyboard sends symbols to match the host layout. | A Japanese preset shortcut. This position uses `▽` here. Set the host layout in Keyboard settings. |
 
 `▽` uses the assignment from a lower layer. `—` means unassigned. Hover over a key in the Configurator to see its Tap and Hold actions.
 
