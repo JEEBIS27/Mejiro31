@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { detectPlatform } from "../site/platform.js";
 import { keyChoices, searchChoices } from "../site/key-choices.js";
 const data = JSON.parse(
   readFileSync(new URL("../site/data.json", import.meta.url)),
@@ -114,7 +115,9 @@ test("Hold includes modifier combinations and names each layer", () => {
   assert.ok(searchChoices(choices, "Alt Ctrl").includes(altCtrl));
   assert.equal(
     choices.find((c) => c.value === 0x1f00).label,
-    "Right Ctrl + Right Shift + Right Alt + Right Win / Command",
+    detectPlatform(globalThis.navigator)?.legends === "linux"
+      ? "Right Ctrl + Right Shift + Right Alt + Right Super"
+      : "Right Ctrl + Right Shift + Right Alt + Right Win / Command",
   );
   assert.equal(
     choices.find((c) => c.value === 0x5220).label,

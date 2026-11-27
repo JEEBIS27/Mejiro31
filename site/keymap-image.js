@@ -1,4 +1,4 @@
-import { paintKeyIcon } from "./key-icons.js?v=20261127-key-legends";
+import { paintKeyIcon } from "./key-icons.js?v=20261127-platform-icons";
 // Render the current board at 2x resolution, including off-screen keys.
 export async function downloadKeymapPNG(board, layerName, profile) {
   await document.fonts.ready;
@@ -58,14 +58,15 @@ export async function downloadKeymapPNG(board, layerName, profile) {
     ctx.stroke();
     for (const label of key.querySelectorAll(".key-label,small")) {
       if (label.dataset.iconCode) {
-        const icon = label.querySelector("svg").getBoundingClientRect();
-        paintKeyIcon(
+        const icon = label.querySelector(".key-symbol").getBoundingClientRect();
+        await paintKeyIcon(
           ctx,
           Number(label.dataset.iconCode),
           icon.left - bounds.left + padding,
           icon.top - bounds.top + padding + heading,
           icon.width,
-          style.color,
+          getComputedStyle(label).color,
+          label.dataset.iconPlatform,
         );
         continue;
       }

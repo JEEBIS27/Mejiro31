@@ -404,3 +404,7 @@ button:disabled:not([aria-busy="true"]) { display: none; }
 #tooltip { white-space: pre-line; }
 .key-legends { width: 100%; min-width: 0; }
 .key-label, .key small { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
+.key-symbol.mejiro-mark { width: 3.2cqw; height: 3.2cqw; }
+.key small:has(.key-symbol) { display: flex; }
+.key small .key-symbol { width: 1.2cqw; height: 1.2cqw; }

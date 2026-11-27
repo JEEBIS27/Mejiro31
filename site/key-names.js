@@ -102,7 +102,8 @@ export const layerNames = [
   "Function",
   "Steno",
 ];
-const mac = detectPlatform(globalThis.navigator)?.legends === "mac";
+const platform = detectPlatform(globalThis.navigator)?.legends;
+const mac = platform === "mac";
 // Standard characters used in Apple keyboard menus and shortcut documentation.
 const appleKeys = {
   40: ["⏎", "Return"],
@@ -146,6 +147,9 @@ export function keyName(code, fallback) {
   if (mac && appleKeys[code]) {
     const [symbol, name] = appleKeys[code];
     return { label: `${symbol} ${name}`, search: names[code]?.[1] ?? name };
+  }
+  if (platform === "linux" && (code === 0xe3 || code === 0xe7)) {
+    return { label: code === 0xe3 ? "Left Super" : "Right Super", search: names[code]?.[1] ?? "Super" };
   }
   if (code >= 4 && code <= 29)
     return {

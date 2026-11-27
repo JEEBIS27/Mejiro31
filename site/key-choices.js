@@ -1,4 +1,4 @@
-import { keyName } from "./key-names.js?v=20261127-key-legends";
+import { keyName } from "./key-names.js?v=20261127-platform-icons";
 import { supportedCode } from "./model.js?v=20261127-language";
 export function keyChoices(
   data,

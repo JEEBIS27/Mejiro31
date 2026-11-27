@@ -11,14 +11,14 @@ import {
   ruleNames,
   searchDictionary,
 } from "./dictionary.js?v=20261126-lexical";
-import { createKeyIcon } from "./key-icons.js?v=20261127-key-legends";
-import { downloadKeymapPNG } from "./keymap-image.js?v=20261127-key-legends";
-import { keyDescription, keyName, macKeySymbol } from "./key-names.js?v=20261127-key-legends";
+import { createKeyIcon } from "./key-icons.js?v=20261127-platform-icons";
+import { downloadKeymapPNG } from "./keymap-image.js?v=20261127-platform-icons";
+import { keyDescription, keyName, macKeySymbol } from "./key-names.js?v=20261127-platform-icons";
 import { setIcon } from "./ui.js?v=20261127-key-legends";
 import {
   keyChoices,
   searchChoices,
-} from "./key-choices.js?v=20261127-key-legends";
+} from "./key-choices.js?v=20261127-platform-icons";
 import {
   clone,
   DEFAULT_TIMING,
@@ -50,7 +50,8 @@ const data = await fetch("./data.json?v=20261127-key-legends")
     throw error;
   });
 const presets = { jp: sitePreset(data, "jp"), en: sitePreset(data, "en") };
-const mac = detectPlatform(navigator)?.legends === "mac";
+const keyPlatform = detectPlatform(navigator)?.legends;
+const mac = keyPlatform === "mac";
 const initialProfile = english ? "en" : "jp";
 const state = {
   profile: initialProfile,
@@ -210,10 +211,10 @@ function shortName(code) {
     KC_RSFT: "⇧",
     KC_LCTL: "Ctrl",
     KC_LALT: "Alt",
-    KC_LGUI: "Win",
+    KC_LGUI: keyPlatform === "linux" ? "Super" : "Win",
     KC_RCTL: "Ctrl",
     KC_RALT: "Alt",
-    KC_RGUI: "Win",
+    KC_RGUI: keyPlatform === "linux" ? "Super" : "Win",
     KC_LNG1: "かな",
     KC_LNG2: "英数",
     MJI_MODE: "⇄",
@@ -955,11 +956,12 @@ function render() {
         !combo && [0, 1].includes(code) && hasHold
           ? holdLabel
           : outputLegend(code);
-      const iconCode = !combo && [0, 1].includes(code) && hasHold ? hold : code;
-      const symbol = createKeyIcon(iconCode);
+      const iconCode = outputKey(!combo && [0, 1].includes(code) && hasHold ? hold : code);
+      const symbol = createKeyIcon(iconCode, keyPlatform);
       if (symbol) {
         text.replaceChildren(symbol);
         text.dataset.iconCode = iconCode;
+        if (keyPlatform) text.dataset.iconPlatform = keyPlatform;
       }
       button.style.setProperty(
         "--label-size",
@@ -969,7 +971,15 @@ function render() {
       const hint = document.createElement("small");
       hint.textContent =
         !combo && ![0, 1].includes(code) && hasHold ? holdLabel : "";
-      if (hint.textContent) button.classList.add("has-hold");
+      if (hint.textContent) {
+        button.classList.add("has-hold");
+        const holdCode = outputKey(hold);
+        if (keyPlatform === "windows" && (holdCode === 0xe3 || holdCode === 0xe7)) {
+          hint.replaceChildren(createKeyIcon(holdCode, keyPlatform));
+          hint.dataset.iconCode = holdCode;
+          hint.dataset.iconPlatform = keyPlatform;
+        }
+      }
       const legends = document.createElement("span");
       legends.className = "key-legends";
       legends.append(text, hint);

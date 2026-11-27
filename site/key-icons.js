@@ -11,7 +11,7 @@ const icons = {
     paths: ["M4 3h16v18H4zM8 7h8M8 11h4M8 15h8", "m15 10 3 2-3 2"],
   },
   0x7e04: { paths: ["M5 4h14v16H5z", swap] },
-  0x7e05: { paths: [swap, "M8 4h.01M12 4h.01M16 4h.01M8 20h.01M12 20h.01M16 20h.01"] },
+  0x7e05: { image: "./assets/mejiro-mark.png" },
   0x7e06: { paths: ["m4 12 8-8 8 8h-4v8h-8v-8z", "M11 16h2"] },
   0x52a2: { paths: ["m4 12 8-8 8 8h-4v8h-8v-8z", "M11 16h2"] },
   0x7c00: { paths: ["M6 13h12l2 6H4zM12 3v12m-4-8 4-4 4 4"] },
@@ -38,12 +38,23 @@ const icons = {
     name: "画面を暗くする",
   },
 };
-export function keyIcon(code) {
+const windowsKey = {
+  paths: ["M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"],
+  filled: true,
+};
+export function keyIcon(code, platform) {
+  if (platform === "windows" && (code === 0xe3 || code === 0xe7)) return windowsKey;
   return icons[code] || null;
 }
-export function createKeyIcon(code) {
-  const icon = keyIcon(code);
+export function createKeyIcon(code, platform) {
+  const icon = keyIcon(code, platform);
   if (!icon) return null;
+  if (icon.image) {
+    const mark = document.createElement("span");
+    mark.className = "key-symbol mejiro-mark";
+    mark.setAttribute("aria-hidden", "true");
+    return mark;
+  }
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
   svg.setAttribute("class", "key-symbol");
@@ -51,13 +62,33 @@ export function createKeyIcon(code) {
   for (const d of icon.paths) {
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("d", d);
+    if (icon.filled) path.setAttribute("style", "fill: currentColor; stroke: none;");
     svg.append(path);
   }
   return svg;
 }
-export function paintKeyIcon(ctx, code, x, y, size, color) {
-  const icon = keyIcon(code);
+const iconImages = new Map();
+export async function paintKeyIcon(ctx, code, x, y, size, color, platform) {
+  const icon = keyIcon(code, platform);
   if (!icon) return;
+  if (icon.image) {
+    if (!iconImages.has(icon.image)) {
+      const image = new Image();
+      image.src = icon.image;
+      iconImages.set(icon.image, image.decode().then(() => image));
+    }
+    const image = await iconImages.get(icon.image);
+    const canvas = document.createElement("canvas");
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const tint = canvas.getContext("2d");
+    tint.drawImage(image, 0, 0);
+    tint.globalCompositeOperation = "source-in";
+    tint.fillStyle = color;
+    tint.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(canvas, x, y, size, size);
+    return;
+  }
   ctx.save();
   ctx.translate(x, y);
   ctx.scale(size / 24, size / 24);
@@ -65,6 +96,10 @@ export function paintKeyIcon(ctx, code, x, y, size, color) {
   ctx.lineWidth = 2;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
-  for (const d of icon.paths) ctx.stroke(new Path2D(d));
+  ctx.fillStyle = color;
+  for (const d of icon.paths) {
+    if (icon.filled) ctx.fill(new Path2D(d));
+    else ctx.stroke(new Path2D(d));
+  }
   ctx.restore();
 }
