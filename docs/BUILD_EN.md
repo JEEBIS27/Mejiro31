@@ -56,7 +56,7 @@ Here are some recommended switches for your reference.
 
 ## 3. Assembly
 
-Open the [Configurator](https://jeebis27.github.io/Mejiro31/), select the Japanese or English profile, and download its UF2 file.
+Open the [Firmware page](https://jeebis27.github.io/Mejiro31/?lang=en#firmware) and select **Download UF2**.
 
 After downloading, hold the BOOT button on the PCB while connecting it to your PC.
 The PCB BOOT button is on the side away from the USB connector. Use this method to enter the bootloader.

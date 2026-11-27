@@ -2,7 +2,7 @@
 
 [トップ](../README.md) · [English](CONFIGURATOR_EN.md)
 
-[設定スタジオを開く](https://jeebis27.github.io/Mejiro31/)
+[設定スタジオを開く](https://jeebis27.github.io/Mejiro31/?lang=ja)
 
 ## 利用者の操作
 
