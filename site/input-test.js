@@ -1,4 +1,4 @@
-import { english, t } from "./locale.js?v=20261127-key-legends";
+import { english, t } from "./locale.js?v=20261127-english-copy";
 // Tests host-visible keyboard events only; never requests raw matrix access.
 export function inputEventLabel(event) {
   const names = { " ": "Space", Dead: "Dead key", Process: "IME" };

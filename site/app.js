@@ -1,7 +1,7 @@
 import { replaceButtons } from "./button-motion.js?v=20261127-ime-motion";
 import { modifierOrder, modifierOrders } from "./shortcuts.js?v=20261126-prism";
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { english, t } from "./locale.js?v=20261127-key-legends";
+import { english, t } from "./locale.js?v=20261127-english-copy";
 import { reverseLookup } from "./reverse.js?v=20261126-lexical";
 import { hasKanji, lookupSpelling, lookupVerbReading } from "./lexical-lookup.js?v=20261127-verb-reading";
 import { grammarSpans } from "./grammar.js?v=20261126-lexical";
@@ -13,12 +13,12 @@ import {
 } from "./dictionary.js?v=20261126-lexical";
 import { createKeyIcon } from "./key-icons.js?v=20261127-platform-icons";
 import { downloadKeymapPNG } from "./keymap-image.js?v=20261127-platform-icons";
-import { keyDescription, keyName, macKeySymbol } from "./key-names.js?v=20261127-platform-icons";
-import { setIcon } from "./ui.js?v=20261127-key-legends";
+import { keyDescription, keyName, macKeySymbol } from "./key-names.js?v=20261127-english-copy";
+import { setIcon } from "./ui.js?v=20261127-english-copy";
 import {
   keyChoices,
   searchChoices,
-} from "./key-choices.js?v=20261127-platform-icons";
+} from "./key-choices.js?v=20261127-english-copy";
 import {
   clone,
   DEFAULT_TIMING,
@@ -30,8 +30,8 @@ import {
   sitePreset,
   selectBundledFirmware,
   supportedCode,
-} from "./model.js?v=20261127-key-legends";
-import { connectKeyboard } from "./hid.js?v=20261127-language";
+} from "./model.js?v=20261127-english-copy";
+import { connectKeyboard } from "./hid.js?v=20261127-english-copy";
 import { ruleId, validateRules } from "./rules.js?v=20261031-cap96";
 import {
   boardKeys,
@@ -1287,6 +1287,7 @@ function openPicker(id) {
   const hold = id === "hold-code";
   pickerChoices = keyChoices(data, choiceName, {
     hold,
+    englishOnly: english,
     steno:
       state.layer === 5 &&
       !data.pairs.some((p) => p.logical === state.selected),
@@ -1407,7 +1408,7 @@ $("import-file").onchange = async () => {
     if (file.size > 100000) throw Error(t("設定ファイルが大きすぎます。"));
     const parsed = validateBackup(JSON.parse(await file.text()), data);
     if (english && (parsed.profile !== "en" || !englishLayouts.has(data.layouts[parsed.settings.en]?.id)))
-      throw Error("Choose a backup that uses an English profile and layout.");
+      throw Error("This backup uses a profile or layout that this site cannot load.");
     if (state.client && !state.client.shortcutsSupported &&
         ((parsed.settings.shortcutHome ?? "auto") !== "auto" || parsed.settings.modifierOrder))
       throw Error(t("本体に保存するには対応ファームウェアが必要です。"));
@@ -1479,7 +1480,7 @@ $("connect").onclick = async () => {
     client = result.client;
     Object.assign(result.settings, await client.shortcuts());
     if (english && client.profile !== "en")
-      throw Error("This page requires the English Mejiro31 firmware.");
+      throw Error("This keyboard is running an incompatible firmware profile.");
     const keymap = await client.readKeymap((p) => ($("progress").value = p));
     const rules = await client.readRules((p) => ($("progress").value = p));
     state.unlocked = !!(await client.unlockStatus())[0];

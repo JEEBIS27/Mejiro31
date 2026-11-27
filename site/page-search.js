@@ -1,5 +1,5 @@
 import { replaceButtons } from "./button-motion.js?v=20261127-ime-motion";
-import { english } from "./locale.js?v=20261127-key-legends";
+import { english } from "./locale.js?v=20261127-english-copy";
 
 const normalize = (text) => text.normalize("NFKC").toLocaleLowerCase().trim();
 

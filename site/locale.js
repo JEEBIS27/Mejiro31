@@ -35,7 +35,7 @@ const translations = new Map(`
 RMKファームウェア（試験版）=RMK firmware preview
 実機検証向けです。書き込む前に、現在のキーマップと辞書を設定スタジオからJSONに書き出してください。=For hardware testing. Export your current keymap and dictionary as JSON before flashing.
 試験版の設定変更には、RMK対応の試験用スタジオが必要です。=Use the RMK-compatible preview of Studio to edit these firmware settings.
-試験版 v0.0.1 ENのUF2=English preview UF2 v0.0.1
+試験版 v0.0.1 ENのUF2=Download preview UF2 v0.0.1
 サイト同梱版（バージョン未確認）=Bundled firmware (version unverified)
 ショートカットの互換設定=Shortcut compatibility
 Home／Endの動作=Home and End behavior
@@ -103,7 +103,7 @@ JavaScriptを有効にしてください。=Please enable JavaScript.
 0 件=0 events
 キー入力履歴=Key event history
 配列と出力=Layout and output
-英数入力の配列=English layout
+英数入力の配列=Typing layout
 PC側の配列=Host layout
 代替配列を有効にする=Enable alternative layout
 入力の判定時間=Input timing
@@ -122,7 +122,7 @@ UF2 ダウンロード=Firmware download
 基本プロファイル=Profile
 英語 — 記号キーを優先=English
 UF2をダウンロード=Download UF2
-選択したプロファイルのUF2をダウンロード=Download the English UF2
+選択したプロファイルのUF2をダウンロード=Download the UF2
 配布UF2の初期配列はQWERTYです。代替配列は書き込み後、このサイトの設定から選択して保存できます。=The UF2 starts with QWERTY. After flashing, choose and save an alternative layout in Keyboard settings.
 Vial対応リリースを確認中…=Checking for firmware…
 接続と保存=Connect and save
@@ -154,6 +154,9 @@ USBアクセス設定=USB access settings
 キーを選択=Choose a key
 キーを入力=Capture a key
 入力したキーを使う=Use captured key
+再起動して書き込みモードへ=Restart in flashing mode
+テンキー=Keypad
+Shift（次の1回）=One-shot Shift
 名前で検索=Search by name
 例: #、Hash、シャープ、Enter、左Alt=Example: #, Hash, Enter, Left Alt
 割り当て候補=Available keys
@@ -187,8 +190,8 @@ Mejiro31の設定を読み込みました。変更後はロックを解除して
 ロック解除をキャンセルしました。=Unlock canceled.
 ロックを解除しました。変更内容を確認して「キーボードに保存」を押してください。=Keyboard unlocked. Review your changes and select Save to keyboard.
 時間内にロックを解除できませんでした。もう一度お試しください。=Unlock timed out. Try again.
-このプロファイルのUF2はまだ用意されていません。配布UF2はQWERTYです。代替配列は書き込み後、このサイトの設定から変更できます。=The English UF2 is currently unavailable.
-この組み合わせのUF2はまだ用意されていません。=The English UF2 is currently unavailable.
+このプロファイルのUF2はまだ用意されていません。配布UF2はQWERTYです。代替配列は書き込み後、このサイトの設定から変更できます。=The UF2 is currently unavailable.
+この組み合わせのUF2はまだ用意されていません。=The UF2 is currently unavailable.
 UF2を取得できませんでした。再読み込みしてお試しください。=Could not fetch the UF2. Reload and try again.
 UF2の検証に失敗しました。書き込まず、ファイルを再配置してください。=UF2 verification failed. Reload and download it again before flashing.
 設定ファイルが大きすぎます。=The settings file is too large.
@@ -220,12 +223,13 @@ export function localizePage(doc) {
   if (!english) return;
   doc.documentElement.lang = "en";
   doc.querySelector('meta[name="description"]').content =
-    "Configure your Mejiro31 keymap and download English firmware.";
+    "Configure your Mejiro31 keymap and download firmware.";
   doc.querySelector('[data-view="mejiro"]').hidden = true;
   doc.querySelector("#japanese-layout").closest("label").hidden = true;
   for (const id of ["edit-profile", "download-profile"]) {
     const select = doc.getElementById(id);
-    select.querySelector('[value="jp"]').remove();
+    select.closest("label").hidden = true;
+    select.querySelector('[value="jp"]')?.remove();
     select.value = "en";
   }
   doc.querySelector("#firmware .download-actions a").hidden = true;

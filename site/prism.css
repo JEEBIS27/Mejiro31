@@ -408,3 +408,6 @@ button:disabled:not([aria-busy="true"]) { display: none; }
 .key-symbol.mejiro-mark { width: 3.2cqw; height: 3.2cqw; }
 .key small:has(.key-symbol) { display: flex; }
 .key small .key-symbol { width: 1.2cqw; height: 1.2cqw; }
+
+:root[lang="en"] .editor-toolbar { justify-content: flex-end; }
+:root[lang="en"] .download-options { grid-template-columns: 1fr; }

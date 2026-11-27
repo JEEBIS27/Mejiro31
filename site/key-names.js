@@ -1,5 +1,5 @@
 import { detectPlatform } from "./platform.js?v=20261126-prism";
-import { t } from "./locale.js?v=20261127-key-legends";
+import { t } from "./locale.js?v=20261127-english-copy";
 // User-facing names are separate from the firmware codes saved to the device.
 const symbols = {
   45: ["-", "Minus", "マイナス"],
@@ -162,10 +162,10 @@ export function keyName(code, fallback) {
     const label = `F${code <= 69 ? code - 57 : code - 91}`;
     return {label, search: label};
   }
-  if (code >= 89 && code <= 98) return {label: `テンキー ${code === 98 ? 0 : code - 88}`, search: `Keypad Numpad ${code === 98 ? 0 : code - 88}`};
+  if (code >= 89 && code <= 98) return {label: `${t("テンキー")} ${code === 98 ? 0 : code - 88}`, search: `Keypad Numpad ${code === 98 ? 0 : code - 88}`};
   if (code === 0x52a2)
     return {
-      label: "Shift（次の1回）",
+      label: t("Shift（次の1回）"),
       search: "Sticky Shift シフト ワンショット",
     };
   if (symbols[code]) {
@@ -214,8 +214,8 @@ export function keyName(code, fallback) {
     MJI_ALT: t("代替配列のオン／オフ"),
     MJI_MEJIRO: t("メジロ式／Plover"),
     MJI_STICKY: "Sticky Shift",
-    QK_BOOT: "再起動して書き込みモードへ",
-    QK_BOOTLOADER: "再起動して書き込みモードへ",
+    QK_BOOT: t("再起動して書き込みモードへ"),
+    QK_BOOTLOADER: t("再起動して書き込みモードへ"),
   };
   if (actions[fallback])
     return {
@@ -228,7 +228,7 @@ export function keyName(code, fallback) {
       .replace(/_/g, " ")
       .toLowerCase()
       .replace(/\b\w/g, (c) => c.toUpperCase());
-    return { label: `テンキー ${key}`, search: `Keypad Numpad ${key}` };
+    return { label: `${t("テンキー")} ${key}`, search: `Keypad Numpad ${key}` };
   }
   const label = fallback
     .replace(/^KC_/, "")

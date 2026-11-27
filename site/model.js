@@ -1,5 +1,5 @@
 import { shortcutHomeModes } from "./shortcuts.js?v=20261126-prism";
-import { t } from "./locale.js?v=20261127-key-legends";
+import { t } from "./locale.js?v=20261127-english-copy";
 import { validateRules } from "./rules.js?v=20261031-cap96";
 export const ROWS = 4,
   COLS = 12,

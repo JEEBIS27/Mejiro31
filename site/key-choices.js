@@ -1,9 +1,9 @@
-import { keyName } from "./key-names.js?v=20261127-platform-icons";
-import { supportedCode } from "./model.js?v=20261127-language";
+import { keyName } from "./key-names.js?v=20261127-english-copy";
+import { supportedCode } from "./model.js?v=20261127-english-copy";
 export function keyChoices(
   data,
   nameFor,
-  { hold = false, steno = false } = {},
+  { hold = false, steno = false, englishOnly = false } = {},
 ) {
   const aliases = new Map();
   for (const { name, value } of data.keycodes) {
@@ -22,6 +22,7 @@ export function keyChoices(
   return [...aliases]
     .filter(([code]) => {
       if (!supportedCode(code)) return false;
+      if (englishOnly && [135, 136, 137, 138, 139, 144, 145, 0x7e03, 0x7e05].includes(code)) return false;
       const mod = code >= 0xe0 && code <= 0xe7;
       const layer = code >= 0x5220 && code <= 0x5225;
       if (hold)
